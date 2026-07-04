@@ -1,5 +1,5 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 import {
   LayoutDashboard, Briefcase, BarChart2, Cpu,
   Settings, KanbanSquare, X,
@@ -19,10 +19,13 @@ export default function Sidebar({ mobileOpen, onClose }) {
     <aside className="w-64 h-full bg-[#080820] border-r border-white/8 flex flex-col shrink-0">
       {/* Brand */}
       <div className="flex items-center justify-between p-6">
-        <div>
+        <Link
+          to="/"
+          onClick={onClose}
+          className="block hover:opacity-80 transition-opacity duration-200"
+        >
           <h1 className="text-2xl font-bold gradient-text">TrackrAI</h1>
-          <p className="text-[11px] text-white/30 mt-0.5">AI Job Tracker</p>
-        </div>
+        </Link>
         {/* Close button — only shown in mobile drawer */}
         {onClose && (
           <button
