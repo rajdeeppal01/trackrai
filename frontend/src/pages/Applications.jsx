@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useApplications } from '../hooks/useApplications'
 import ApplicationGrid from '../components/applications/ApplicationGrid'
 import ApplicationForm from '../components/applications/ApplicationForm'

@@ -66,6 +66,8 @@ export function useApplications() {
   }, [])
 
   useEffect(() => {
+    // Intentional one-time fetch on mount to sync with the backend.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchApplications()
   }, [fetchApplications])
 

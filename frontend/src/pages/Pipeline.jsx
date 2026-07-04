@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useApplications } from '../hooks/useApplications'
 import {
   DndContext, closestCorners, PointerSensor, useSensor, useSensors,
@@ -6,10 +6,8 @@ import {
 } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { motion } from 'framer-motion'
-import { ALL_STATUSES, STATUS_CONFIG, PIPELINE_STAGES } from '../utils/statusConfig'
+import { ALL_STATUSES, STATUS_CONFIG } from '../utils/statusConfig'
 import { KanbanSquare, Building2, GripVertical } from 'lucide-react'
-import StatusBadge from '../components/ui/StatusBadge'
 
 // ── Draggable card ───────────────────────────────────────────────
 function KanbanCard({ application }) {

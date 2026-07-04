@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ApplicationCard from './ApplicationCard';
 import { ApplicationCardSkeleton } from '../ui/Skeletons';
@@ -148,6 +148,7 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
                   onEdit={onEdit}
                   onDelete={requestDelete}
                   deleting={deletingId === app.id}
+                  disabled={submitting}
                 />
               </motion.div>
             ))

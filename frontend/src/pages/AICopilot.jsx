@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { useApplications } from '../hooks/useApplications'
 import { generateInsights, INSIGHT_STYLES } from '../utils/insightEngine'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -7,7 +7,6 @@ import {
   CheckCircle, AlertCircle, BookOpen, MessageSquare, Zap
 } from 'lucide-react'
 import { InsightSkeleton } from '../components/ui/Skeletons'
-import { ALL_STATUSES, STATUS_CONFIG } from '../utils/statusConfig'
 
 function InsightCard({ insight, index }) {
   const style = INSIGHT_STYLES[insight.type] || INSIGHT_STYLES.stat
@@ -193,7 +192,7 @@ export default function AICopilot() {
             <h2 className="font-bold text-white">Job Search Playbook</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tips.map((tip, i) => (
+            {tips.map((tip) => (
               <TipCard key={tip.title} {...tip} />
             ))}
           </div>

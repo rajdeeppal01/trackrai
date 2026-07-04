@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApplications } from '../hooks/useApplications';
 import StatsRow from '../components/dashboard/StatsRow';
 import ApplicationChart from '../components/dashboard/ApplicationChart';

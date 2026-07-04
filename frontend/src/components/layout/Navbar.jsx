@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Bell, Menu, Sparkles, Plus, Pencil, Trash2, X, CheckCheck } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { formatDistanceToNow, parseISO, isValid } from 'date-fns'
@@ -45,11 +45,6 @@ export default function Navbar({ onMenuOpen }) {
   const [activity, setActivity] = useState([])
   const notifRef = useRef(null)
 
-  // Load activity whenever panel opens
-  useEffect(() => {
-    if (notifOpen) setActivity(loadActivity())
-  }, [notifOpen])
-
   // Close on outside click
   useEffect(() => {
     if (!notifOpen) return
@@ -69,6 +64,14 @@ export default function Navbar({ onMenuOpen }) {
     document.addEventListener('keydown', handleKey)
     return () => document.removeEventListener('keydown', handleKey)
   }, [notifOpen])
+
+  function toggleNotifications() {
+    setNotifOpen((v) => {
+      const next = !v
+      if (next) setActivity(loadActivity())
+      return next
+    })
+  }
 
   function clearNotifications() {
     localStorage.removeItem('trackrai_activity')
@@ -101,7 +104,7 @@ export default function Navbar({ onMenuOpen }) {
         {/* ── Notifications bell ─────────────────────────────── */}
         <div className="relative" ref={notifRef}>
           <button
-            onClick={() => setNotifOpen(v => !v)}
+            onClick={toggleNotifications}
             className="relative w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 border border-white/8 transition-all duration-200"
             aria-label="Notifications"
           >

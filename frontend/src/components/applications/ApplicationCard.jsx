@@ -6,7 +6,7 @@ import Button from '../ui/Button'
 import { PIPELINE_STAGES } from '../../utils/statusConfig'
 import { formatDate } from '../../utils/formatters'
 
-export default function ApplicationCard({ application, onEdit, onDelete, deleting }) {
+export default function ApplicationCard({ application, onEdit, onDelete, deleting, disabled }) {
   const [expanded, setExpanded] = useState(false)
   const { id, company, role, status, applied_date, link, notes } = application
   const stageIdx = PIPELINE_STAGES.indexOf(status)
@@ -105,8 +105,8 @@ export default function ApplicationCard({ application, onEdit, onDelete, deletin
         </AnimatePresence>
 
         <div className="flex gap-2 mt-4 pt-4 border-t border-white/5">
-          <Button variant="secondary" size="sm" icon={Pencil} onClick={() => onEdit(application)} className="flex-1">Edit</Button>
-          <Button variant="danger" size="sm" icon={Trash2} loading={deleting === id} disabled={deleting === id} onClick={() => onDelete(id)} className="flex-1">Delete</Button>
+          <Button variant="secondary" size="sm" icon={Pencil} disabled={disabled} onClick={() => onEdit(application)} className="flex-1">Edit</Button>
+          <Button variant="danger" size="sm" icon={Trash2} loading={deleting === id} disabled={disabled || deleting === id} onClick={() => onDelete(id)} className="flex-1">Delete</Button>
         </div>
       </div>
     </motion.div>

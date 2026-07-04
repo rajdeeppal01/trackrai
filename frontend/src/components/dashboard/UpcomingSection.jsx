@@ -74,6 +74,9 @@ export default function UpcomingSection({ applications, loading, onEdit }) {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate">{app.company}</p>
                   <p className="text-xs text-white/40 truncate">{app.role}</p>
+                  {app.applied_date && (
+                    <p className="text-[10px] text-white/25 mt-0.5">Applied {formatDate(app.applied_date)}</p>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-2">

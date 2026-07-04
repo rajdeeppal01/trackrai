@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { useApplications } from '../hooks/useApplications'
 import {
   BarChart, Bar, AreaChart, Area,
@@ -6,7 +6,7 @@ import {
   ResponsiveContainer, Cell, PieChart, Pie, Legend
 } from 'recharts'
 import { groupByMonth } from '../utils/formatters'
-import { STATUS_CONFIG, PIPELINE_STAGES, ALL_STATUSES } from '../utils/statusConfig'
+import { ALL_STATUSES } from '../utils/statusConfig'
 import { TrendingUp, Target, Trophy, XCircle, BarChart2, Zap } from 'lucide-react'
 import { differenceInDays, parseISO, isValid, format, subDays } from 'date-fns'
 import { StatCardSkeleton } from '../components/ui/Skeletons'
