@@ -3,6 +3,7 @@ import { Bell, Menu, Sparkles, Plus, Pencil, Trash2, X, CheckCheck } from 'lucid
 import { useLocation, useNavigate } from 'react-router-dom'
 import { formatDistanceToNow, parseISO, isValid } from 'date-fns'
 import { motion, AnimatePresence } from 'framer-motion'
+import ThemeToggle from '../ui/ThemeToggle'
 
 const PAGE_TITLES = {
   '/':             'Dashboard',
@@ -193,6 +194,9 @@ export default function Navbar({ onMenuOpen }) {
             )}
           </AnimatePresence>
         </div>
+
+        {/* ── Theme toggle ───────────────────────────────────── */}
+        <ThemeToggle />
 
         {/* ── AI Assistant button ────────────────────────────── */}
         <button
