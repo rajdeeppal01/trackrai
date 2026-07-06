@@ -20,6 +20,7 @@ app = FastAPI(
 allowed_origins = [
     "http://localhost:5173",
     "http://localhost:3000",
+    "https://frontend-zeta-ebon-6g2mglih0o.vercel.app",
 ]
 env_origins = os.getenv("ALLOWED_ORIGINS")
 if env_origins:
