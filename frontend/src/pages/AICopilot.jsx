@@ -1,15 +1,24 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect, useRef } from 'react'
 import { useApplications } from '../hooks/useApplications'
-import { generateInsights, INSIGHT_STYLES } from '../utils/insightEngine'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Cpu, Sparkles, Brain, TrendingUp, Target, Lightbulb,
-  CheckCircle, AlertCircle, BookOpen, MessageSquare, Zap
+  CheckCircle, BookOpen, MessageSquare, Zap, Send, Bot, User
 } from 'lucide-react'
 import { InsightSkeleton } from '../components/ui/Skeletons'
+import api from '../api/applications'
+import toast from 'react-hot-toast'
 
 function InsightCard({ insight, index }) {
-  const style = INSIGHT_STYLES[insight.type] || INSIGHT_STYLES.stat
+  const styles = {
+    stat: { border: 'border-brand-500/20', iconBg: 'bg-brand-500/10', badge: 'bg-brand-500/20 text-brand-300', label: 'Insight' },
+    tip: { border: 'border-yellow-500/20', iconBg: 'bg-yellow-500/10', badge: 'bg-yellow-500/20 text-yellow-300', label: 'Tip' },
+    warning: { border: 'border-orange-500/20', iconBg: 'bg-orange-500/10', badge: 'bg-orange-500/20 text-orange-300', label: 'Action' },
+    success: { border: 'border-emerald-500/20', iconBg: 'bg-emerald-500/10', badge: 'bg-emerald-500/20 text-emerald-300', label: 'Achievement' },
+    action: { border: 'border-purple-500/20', iconBg: 'bg-purple-500/10', badge: 'bg-purple-500/20 text-purple-300', label: 'Focus' },
+  }
+  const style = styles[insight.type] || styles.stat
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -19,13 +28,13 @@ function InsightCard({ insight, index }) {
     >
       <div className="flex items-start gap-4">
         <div className={`w-11 h-11 rounded-2xl ${style.iconBg} flex items-center justify-center flex-shrink-0 text-xl`}>
-          {insight.icon}
+          {insight.icon || '💡'}
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1.5">
             <p className="font-semibold text-white">{insight.title}</p>
             <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${style.badge}`}>
-              {style.badgeLabel}
+              {style.label}
             </span>
           </div>
           <p className="text-sm text-white/50 leading-relaxed">{insight.body}</p>
@@ -52,52 +61,97 @@ function TipCard({ icon: Icon, title, body, color, border }) {
 }
 
 export default function AICopilot() {
-  const { applications, loading } = useApplications()
-  const insights = useMemo(() => generateInsights(applications), [applications])
+  const { applications, loading: appsLoading } = useApplications()
+  
+  // Insights state
+  const [insights, setInsights] = useState([])
+  const [insightsLoading, setInsightsLoading] = useState(true)
+
+  // Chatbot state
+  const [chatInput, setChatInput] = useState('')
+  const [messages, setMessages] = useState([
+    {
+      role: 'assistant',
+      content: "Hello! I am your TrackrAI Copilot. Ask me anything about your pipeline, how to prepare for an upcoming interview, or request templates to follow up with recruiters."
+    }
+  ])
+  const [chatLoading, setChatLoading] = useState(false)
+  const chatBottomRef = useRef(null)
+
+  // Load insights from backend `/copilot/insights`
+  useEffect(() => {
+    async function fetchInsights() {
+      setInsightsLoading(true)
+      try {
+        const res = await api.get('/copilot/insights')
+        setInsights(res.data)
+      } catch (err) {
+        console.error('Failed to load insights', err)
+        toast.error('Failed to fetch AI insights')
+      } finally {
+        setInsightsLoading(false)
+      }
+    }
+    if (applications.length > 0) {
+      fetchInsights()
+    } else {
+      setInsights([
+        {
+          type: 'tip',
+          icon: '💡',
+          title: 'Get Started',
+          body: 'Add your first job application to unlock smart insights about your job search.',
+        }
+      ])
+      setInsightsLoading(false)
+    }
+  }, [applications])
+
+  // Scroll to bottom of chat
+  useEffect(() => {
+    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
+  // Chat message send handler
+  async function handleSend(e) {
+    e.preventDefault()
+    if (!chatInput.trim() || chatLoading) return
+
+    const userMsg = { role: 'user', content: chatInput }
+    setMessages(prev => [...prev, userMsg])
+    setChatInput('')
+    setChatLoading(true)
+
+    // Build history parameter
+    const history = messages.map(m => ({
+      role: m.role,
+      content: m.content
+    }))
+
+    try {
+      const res = await api.post('/copilot/chat', {
+        message: userMsg.content,
+        history: history
+      })
+      setMessages(prev => [...prev, { role: 'assistant', content: res.data.reply }])
+    } catch (err) {
+      console.error('Chat failed', err)
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: 'Sorry, I encountered an error attempting to contact the AI model. Please try again.'
+      }])
+    } finally {
+      setChatLoading(false)
+    }
+  }
 
   const tips = [
-    {
-      icon: Target,
-      title: 'Optimize Your Resume per Role',
-      body: 'Tailor your resume keywords to match each job description. ATS systems scan for exact matches — generic resumes get filtered out.',
-      color: 'bg-indigo-500/80',
-      border: 'border-indigo-500/20',
-    },
-    {
-      icon: MessageSquare,
-      title: 'Follow Up After 7 Days',
-      body: 'Send a short, polite follow-up email one week after applying. Candidates who follow up are 2× more likely to get a response.',
-      color: 'bg-purple-500/80',
-      border: 'border-purple-500/20',
-    },
-    {
-      icon: BookOpen,
-      title: 'Research Before Interviews',
-      body: 'Read recent news about the company, understand their product, and prepare questions. Interviewers can tell who has done their homework.',
-      color: 'bg-cyan-500/80',
-      border: 'border-cyan-500/20',
-    },
-    {
-      icon: Zap,
-      title: 'Apply in Bulk, Iterate Fast',
-      body: 'The first 10 applications are your calibration period. Track response patterns to learn what works — then double down.',
-      color: 'bg-yellow-500/80',
-      border: 'border-yellow-500/20',
-    },
-    {
-      icon: Brain,
-      title: 'Use STAR Method for Answers',
-      body: 'Structure behavioral answers with Situation, Task, Action, Result. This keeps answers concise and impactful every time.',
-      color: 'bg-emerald-500/80',
-      border: 'border-emerald-500/20',
-    },
-    {
-      icon: TrendingUp,
-      title: 'Network While Applying',
-      body: 'Connect with engineers or employees at target companies on LinkedIn. Internal referrals increase interview chances by 5–10×.',
-      color: 'bg-rose-500/80',
-      border: 'border-rose-500/20',
-    },
+    { icon: Target, title: 'Optimize Your Resume per Role', body: 'Tailor your resume keywords to match each job description. ATS systems scan for exact matches — generic resumes get filtered out.', color: 'bg-indigo-500/80', border: 'border-indigo-500/20' },
+    { icon: MessageSquare, title: 'Follow Up After 7 Days', body: 'Send a short, polite follow-up email one week after applying. Candidates who follow up are 2× more likely to get a response.', color: 'bg-purple-500/80', border: 'border-purple-500/20' },
+    { icon: BookOpen, title: 'Research Before Interviews', body: 'Read recent news about the company, understand their product, and prepare questions. Interviewers can tell who has done their homework.', color: 'bg-cyan-500/80', border: 'border-cyan-500/20' },
+    { icon: Zap, title: 'Apply in Bulk, Iterate Fast', body: 'The first 10 applications are your calibration period. Track response patterns to learn what works — then double down.', color: 'bg-yellow-500/80', border: 'border-yellow-500/20' },
+    { icon: Brain, title: 'Use STAR Method for Answers', body: 'Structure behavioral answers with Situation, Task, Action, Result. This keeps answers concise and impactful every time.', color: 'bg-emerald-500/80', border: 'border-emerald-500/20' },
+    { icon: TrendingUp, title: 'Network While Applying', body: 'Connect with engineers or employees at target companies on LinkedIn. Internal referrals increase interview chances by 5–10×.', color: 'bg-rose-500/80', border: 'border-rose-500/20' },
   ]
 
   // Pipeline health score
@@ -170,22 +224,90 @@ export default function AICopilot() {
             <span className="text-xs text-white/30">— based on your {applications.length} application{applications.length !== 1 ? 's' : ''}</span>
           </div>
 
-          {loading ? (
+          {insightsLoading || appsLoading ? (
             <div className="space-y-3">
-              {[1,2,3].map(i => <InsightSkeleton key={i} />)}
+              {[1, 2, 3].map(i => <InsightSkeleton key={i} />)}
             </div>
           ) : (
             <div className="space-y-3">
               <AnimatePresence>
                 {insights.map((insight, i) => (
-                  <InsightCard key={insight.title} insight={insight} index={i} />
+                  <InsightCard key={insight.title || i} insight={insight} index={i} />
                 ))}
               </AnimatePresence>
             </div>
           )}
         </section>
 
-        {/* Job Search Tips */}
+        {/* Real-time Interactive Chatbot Window */}
+        <section className="glass rounded-3xl p-6 border border-purple-500/20 relative flex flex-col h-[500px]">
+          <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-4">
+            <div className="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center">
+              <Bot size={18} className="text-purple-400" />
+            </div>
+            <div>
+              <h3 className="font-bold text-white text-sm">Ask TrackrAI Copilot</h3>
+              <p className="text-[10px] text-white/35">Real-time interview support and analysis</p>
+            </div>
+          </div>
+
+          {/* Messages feed */}
+          <div className="flex-1 overflow-y-auto space-y-4 pr-2 mb-4 scrollbar-thin scrollbar-thumb-white/5 scrollbar-track-transparent">
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`flex gap-3 max-w-[85%] ${msg.role === 'user' ? 'ml-auto flex-row-reverse' : ''}`}
+              >
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-white ${
+                  msg.role === 'user' ? 'bg-indigo-500/80' : 'bg-purple-500/20 border border-purple-500/30'
+                }`}>
+                  {msg.role === 'user' ? <User size={14} /> : <Bot size={14} className="text-purple-400" />}
+                </div>
+                <div className={`p-3.5 rounded-2xl text-sm leading-relaxed ${
+                  msg.role === 'user'
+                    ? 'bg-indigo-600/90 text-white rounded-tr-none'
+                    : 'bg-white/5 text-white/90 border border-white/5 rounded-tl-none font-light'
+                }`}>
+                  <p className="whitespace-pre-wrap">{msg.content}</p>
+                </div>
+              </div>
+            ))}
+            {chatLoading && (
+              <div className="flex gap-3 max-w-[85%]">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-purple-500/20 border border-purple-500/30">
+                  <Bot size={14} className="text-purple-400" />
+                </div>
+                <div className="bg-white/5 text-white/40 border border-white/5 p-3 rounded-2xl rounded-tl-none flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/40 animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/40 animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/40 animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+              </div>
+            )}
+            <div ref={chatBottomRef} />
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSend} className="relative flex gap-2">
+            <input
+              type="text"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              disabled={chatLoading}
+              placeholder="Ask about your pipeline, or request interview prep help..."
+              className="flex-1 glass border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-purple-500 transition-colors disabled:opacity-55"
+            />
+            <button
+              type="submit"
+              disabled={chatLoading || !chatInput.trim()}
+              className="w-11 h-11 rounded-xl bg-purple-500 hover:bg-purple-600 active:scale-95 transition-all text-white flex items-center justify-center cursor-pointer disabled:opacity-40 disabled:scale-100 disabled:cursor-not-allowed"
+            >
+              <Send size={16} />
+            </button>
+          </form>
+        </section>
+
+        {/* Job Search Playbook */}
         <section>
           <div className="flex items-center gap-2 mb-4">
             <CheckCircle size={16} className="text-emerald-400" />
@@ -197,17 +319,6 @@ export default function AICopilot() {
             ))}
           </div>
         </section>
-
-        {/* Coming Soon banner */}
-        <div className="glass rounded-2xl p-6 border border-purple-500/20 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center mx-auto mb-3">
-            <AlertCircle size={22} className="text-purple-400" />
-          </div>
-          <h3 className="font-bold text-white mb-1">AI Chat Coming Soon</h3>
-          <p className="text-sm text-white/40 max-w-sm mx-auto">
-            Ask TrackrAI anything — "How do I prepare for a Google interview?" or "Review my resume?" — powered by Gemini.
-          </p>
-        </div>
 
       </div>
     </div>

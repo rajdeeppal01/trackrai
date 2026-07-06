@@ -43,7 +43,7 @@ function SettingRow({ label, description, children }) {
 }
 
 export default function Settings() {
-  const { applications, removeApplication } = useApplications()
+  const { applications, clearApplications } = useApplications()
   const [confirmClear, setConfirmClear] = useState(false)
   const [clearing, setClearing] = useState(false)
 
@@ -86,16 +86,9 @@ export default function Settings() {
   async function clearAllData() {
     setClearing(true)
     try {
-      // Delete from backend one by one
-      for (const app of applications) {
-        await removeApplication(app.id)
-      }
-      // Clear localStorage activity log
-      localStorage.removeItem('trackrai_activity')
-      localStorage.removeItem('trackrai_pipeline')
-      toast.success('All data cleared.')
+      await clearApplications()
     } catch {
-      toast.error('Failed to clear some data.')
+      // Error handled by context
     } finally {
       setClearing(false)
       setConfirmClear(false)

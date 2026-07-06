@@ -1,8 +1,9 @@
 import { NavLink, Link } from 'react-router-dom'
 import {
   LayoutDashboard, Briefcase, BarChart2, Cpu,
-  Settings, KanbanSquare, X,
+  Settings, KanbanSquare, X, LogOut,
 } from 'lucide-react'
+import { useAuth } from '../../context/AuthContext'
 
 const NAV_ITEMS = [
   { path: '/',            label: 'Dashboard',    icon: LayoutDashboard },
@@ -14,6 +15,10 @@ const NAV_ITEMS = [
 ]
 
 export default function Sidebar({ mobileOpen, onClose }) {
+  const { user, logout } = useAuth()
+  const displayName = user?.email ? user.email.split('@')[0] : 'User'
+  const avatarInitials = user?.email ? user.email.substring(0, 2).toUpperCase() : 'US'
+
   const content = (
     <aside className="w-64 h-full bg-[#080820] border-r border-white/8 flex flex-col shrink-0">
       {/* Brand */}
@@ -63,15 +68,24 @@ export default function Sidebar({ mobileOpen, onClose }) {
       </nav>
 
       {/* User card */}
-      <div className="p-4">
-        <div className="flex items-center gap-3 glass rounded-2xl p-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
-            RP
+      <div className="p-4 space-y-2">
+        <div className="flex items-center justify-between gap-2 glass rounded-2xl p-3">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
+              {avatarInitials}
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-xs font-semibold text-white truncate">{displayName}</p>
+              <p className="text-[10px] text-indigo-400">Premium User</p>
+            </div>
           </div>
-          <div className="overflow-hidden">
-            <p className="text-sm font-semibold text-white truncate">Rajdeep Pal</p>
-            <p className="text-[11px] text-indigo-400">Premium User</p>
-          </div>
+          <button
+            onClick={logout}
+            title="Log Out"
+            className="w-8 h-8 rounded-lg bg-white/5 hover:bg-red-500/10 text-white/40 hover:text-red-400 flex items-center justify-center transition-all cursor-pointer shrink-0"
+          >
+            <LogOut size={14} />
+          </button>
         </div>
       </div>
     </aside>

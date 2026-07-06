@@ -1,9 +1,48 @@
 from datetime import date, datetime
-from typing import Optional, Literal
-from pydantic import BaseModel, field_validator
+from typing import Optional
+from pydantic import BaseModel, EmailStr, field_validator
 
 VALID_STATUSES = {"Applied", "OA", "Interview", "HR", "Offer", "Rejected"}
 
+
+# ─── User Auth Schemas ─────────────────────────────────────────────
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+
+    @field_validator("password")
+    @classmethod
+    def password_length(cls, v: str) -> str:
+        if len(v) < 6:
+            raise ValueError("Password must be at least 6 characters long")
+        return v
+
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class UserResponse(BaseModel):
+    id: int
+    email: EmailStr
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    user_id: Optional[int] = None
+
+
+# ─── Application Schemas ───────────────────────────────────────────
 
 class ApplicationBase(BaseModel):
     company: str
@@ -50,6 +89,7 @@ class ApplicationUpdate(BaseModel):
 
 class ApplicationResponse(ApplicationBase):
     id: int
+    user_id: int
     created_at: datetime
     updated_at: datetime
 

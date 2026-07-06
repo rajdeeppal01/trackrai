@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useApplications } from '../hooks/useApplications'
 import {
   DndContext, closestCorners, PointerSensor, useSensor, useSensors,
-  DragOverlay,
+  DragOverlay, useDroppable,
 } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -59,6 +59,9 @@ function DragCard({ application }) {
 
 // ── Column ───────────────────────────────────────────────────────
 function KanbanColumn({ status, items }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: status,
+  })
   const cfg = STATUS_CONFIG[status] || {}
   const itemIds = items.map(a => String(a.id))
 
@@ -74,7 +77,12 @@ function KanbanColumn({ status, items }) {
       </div>
 
       {/* Drop zone */}
-      <div className={`flex-1 rounded-2xl border ${cfg.border} bg-white/2 p-2 space-y-2 min-h-[120px]`}>
+      <div
+        ref={setNodeRef}
+        className={`flex-1 rounded-2xl border ${cfg.border} p-2 space-y-2 min-h-[120px] transition-colors duration-200 ${
+          isOver ? 'bg-white/5 border-white/20' : 'bg-white/2'
+        }`}
+      >
         <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
           {items.length === 0 ? (
             <div className="flex items-center justify-center h-20 text-[11px] text-white/15 text-center px-3">
