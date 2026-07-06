@@ -31,10 +31,14 @@ export function AuthProvider({ children }) {
         setUser(res.data);
       } catch (err) {
         console.error('Failed to load profile:', err.response?.status, err.response?.data || err.message);
-        // Clear expired or invalid token
-        localStorage.removeItem('trackrai_token');
-        setToken(null);
-        setUser(null);
+        
+        // Only log out if the token is explicitly rejected (401 or 403)
+        const status = err.response?.status;
+        if (status === 401 || status === 403) {
+          localStorage.removeItem('trackrai_token');
+          setToken(null);
+          setUser(null);
+        }
       } finally {
         setLoading(false);
       }
