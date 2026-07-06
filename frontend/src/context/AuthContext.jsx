@@ -10,21 +10,13 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Configure authorization header interceptor
+  // Update axios headers when token changes
   useEffect(() => {
-    const interceptor = api.interceptors.request.use(
-      (config) => {
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-      },
-      (error) => Promise.reject(error)
-    );
-
-    return () => {
-      api.interceptors.request.eject(interceptor);
-    };
+    if (token) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } else {
+      delete api.defaults.headers.common['Authorization'];
+    }
   }, [token]);
 
   // Load user data if token is present
@@ -38,7 +30,7 @@ export function AuthProvider({ children }) {
         const res = await api.get('/auth/me');
         setUser(res.data);
       } catch (err) {
-        console.error('Failed to load profile', err);
+        console.error('Failed to load profile:', err.response?.status, err.response?.data || err.message);
         // Clear expired or invalid token
         localStorage.removeItem('trackrai_token');
         setToken(null);
