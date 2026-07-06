@@ -6,6 +6,20 @@ const api = axios.create({
   timeout: 60000,
 })
 
+// Dynamically inject token from localStorage on every request to avoid race conditions during initial mounting
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('trackrai_token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
 // ─── Applications ────────────────────────────────────────────────
 export const getApplications = () =>
   api.get('/applications/').then((r) => r.data)
