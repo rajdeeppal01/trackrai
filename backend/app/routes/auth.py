@@ -4,7 +4,6 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt  # pyjwt is installed, we can import jwt
 import jwt as pyjwt_lib      # we will use pyjwt since it is standard
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
