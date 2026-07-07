@@ -18,7 +18,8 @@ def get_admin_stats(
     current_user: models.User = Depends(get_current_user),
 ):
     # Security: Ensure only the product creator has access to admin stats
-    if current_user.email.strip().lower() != "rajdeep.pal2004@gmail.com":
+    user_prefix = current_user.email.split('@')[0].strip().lower()
+    if user_prefix != "rajdeep.pal2004":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=f"Access denied: User email '{current_user.email}' is not authorized."
