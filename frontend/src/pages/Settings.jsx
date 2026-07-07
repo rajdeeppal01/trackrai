@@ -57,6 +57,8 @@ export default function Settings() {
   const [gmailConnected, setGmailConnected] = useState(false)
   const [gmailSyncEnabled, setGmailSyncEnabled] = useState(false)
   const [lastGmailSync, setLastGmailSync] = useState('')
+  const [isPremium, setIsPremium] = useState(false)
+  const [gmailScansUsed, setGmailScansUsed] = useState(0)
   const [syncingGmail, setSyncingGmail] = useState(false)
   const [profileLoading, setProfileLoading] = useState(true)
   const [profileSaving, setProfileSaving] = useState(false)
@@ -71,6 +73,8 @@ export default function Settings() {
         setGmailConnected(res.data.gmail_connected || false)
         setGmailSyncEnabled(res.data.gmail_sync_enabled || false)
         setLastGmailSync(res.data.last_gmail_sync || '')
+        setIsPremium(res.data.is_premium || false)
+        setGmailScansUsed(res.data.gmail_scans_used || 0)
       } catch (err) {
         console.error('Failed to load profile', err)
       } finally {
@@ -138,11 +142,26 @@ export default function Settings() {
       } else {
         toast.success('Sync completed. No new status updates found.')
       }
+      
+      // Update local state if not premium
+      if (!isPremium) {
+        setGmailScansUsed(prev => prev + 1)
+      }
     } catch (err) {
       console.error('Failed to run Gmail sync', err)
       toast.error(err.response?.data?.detail || 'Failed to sync Gmail messages.')
     } finally {
       setSyncingGmail(false)
+    }
+  }
+
+  async function handleUpgradePremium() {
+    try {
+      const res = await api.post('/auth/upgrade-premium')
+      setIsPremium(res.data.is_premium)
+      toast.success('Successfully upgraded to Premium Mode!')
+    } catch (err) {
+      toast.error('Failed to upgrade.')
     }
   }
 
@@ -343,34 +362,62 @@ export default function Settings() {
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10 flex items-center justify-between gap-4">
-                <div className="space-y-0.5">
-                  <p className="text-sm font-semibold text-emerald-400 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                    Connected to Gmail
-                  </p>
-                  <p className="text-xs text-white/35 font-medium">
-                    Last scanned: {lastGmailSync ? new Date(lastGmailSync).toLocaleString() : 'Never'}
-                  </p>
+              <div className="p-4 rounded-xl border flex flex-col gap-4 bg-emerald-500/5 border-emerald-500/10">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-semibold text-emerald-400 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                      Connected to Gmail
+                    </p>
+                    <p className="text-xs text-white/35 font-medium">
+                      Last scanned: {lastGmailSync ? new Date(lastGmailSync).toLocaleString() : 'Never'}
+                    </p>
+                  </div>
+                  
+                  {!isPremium && gmailScansUsed >= 2 ? (
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={handleUpgradePremium}
+                    >
+                      ✨ Upgrade to Premium
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      loading={syncingGmail}
+                      onClick={triggerSync}
+                    >
+                      Sync Inbox Now
+                    </Button>
+                  )}
                 </div>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  loading={syncingGmail}
-                  onClick={triggerSync}
-                >
-                  Sync Inbox Now
-                </Button>
+
+                {!isPremium && (
+                  <div className="pt-2 flex items-center justify-between border-t border-white/5">
+                    <span className="text-xs font-semibold text-white/50">Free Tier Usage</span>
+                    <span className={`text-xs font-bold ${gmailScansUsed >= 2 ? 'text-red-400' : 'text-amber-400'}`}>
+                      {gmailScansUsed} / 2 Scans Used
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="h-px bg-white/5" />
 
               <SettingRow
-                label="Enable Automated Sync"
+                label={<span className="flex items-center gap-2">Enable Automated Sync <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[8px] font-bold uppercase tracking-wider">Premium</span></span>}
                 description="Automatically parse incoming messages to update application cards dynamically."
               >
                 <button
-                  onClick={() => toggleGmailSync(!gmailSyncEnabled)}
+                  onClick={() => {
+                    if (!isPremium) {
+                      toast.error('Automated Sync requires Premium.')
+                      return
+                    }
+                    toggleGmailSync(!gmailSyncEnabled)
+                  }}
                   className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${gmailSyncEnabled ? 'bg-indigo-600' : 'bg-white/10'}`}
                 >
                   <span className={`w-4 h-4 rounded-full bg-white absolute top-1 left-1 transition-transform ${gmailSyncEnabled ? 'translate-x-5' : ''}`} />

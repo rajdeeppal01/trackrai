@@ -159,3 +159,18 @@ def update_profile(
     db.commit()
     db.refresh(current_user)
     return current_user
+
+
+@router.post("/upgrade-premium", response_model=schemas.UserProfileResponse)
+def upgrade_premium(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """
+    Mock endpoint to instantly unlock Premium tier for testing.
+    Normally this would create a Stripe Checkout Session.
+    """
+    current_user.is_premium = True
+    db.commit()
+    db.refresh(current_user)
+    return current_user

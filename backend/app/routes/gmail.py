@@ -165,6 +165,12 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
             detail="Google Account is not connected. Please authenticate first."
         )
 
+    if not current_user.is_premium and current_user.gmail_scans_used >= 2:
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail="Free scans exhausted. Please upgrade to Premium."
+        )
+
     # 1. Get fresh access token from Google
     token_url = "https://oauth2.googleapis.com/token"
     payload = {
@@ -361,6 +367,7 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
             })
 
     current_user.last_gmail_sync = datetime.now(timezone.utc)
+    current_user.gmail_scans_used += 1
     db.commit()
 
     return {

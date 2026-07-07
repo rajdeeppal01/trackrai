@@ -66,6 +66,8 @@ class UserProfileResponse(BaseModel):
     gmail_connected: bool = False
     gmail_sync_enabled: bool = False
     last_gmail_sync: Optional[datetime] = None
+    is_premium: bool = False
+    gmail_scans_used: int = 0
 
     class Config:
         from_attributes = True

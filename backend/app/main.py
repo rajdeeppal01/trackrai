@@ -28,6 +28,8 @@ try:
             conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS google_refresh_token VARCHAR(500)"))
             conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS gmail_sync_enabled BOOLEAN DEFAULT FALSE NOT NULL"))
             conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS last_gmail_sync TIMESTAMP WITH TIME ZONE"))
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_premium BOOLEAN DEFAULT FALSE NOT NULL"))
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS gmail_scans_used INTEGER DEFAULT 0 NOT NULL"))
             conn.commit()
         else:
             # SQLite doesn't support "IF NOT EXISTS" for ADD COLUMN, so check first
@@ -47,6 +49,10 @@ try:
                 conn.execute(text("ALTER TABLE users ADD COLUMN gmail_sync_enabled BOOLEAN DEFAULT 0 NOT NULL"))
             if "last_gmail_sync" not in existing_columns:
                 conn.execute(text("ALTER TABLE users ADD COLUMN last_gmail_sync TIMESTAMP"))
+            if "is_premium" not in existing_columns:
+                conn.execute(text("ALTER TABLE users ADD COLUMN is_premium BOOLEAN DEFAULT 0 NOT NULL"))
+            if "gmail_scans_used" not in existing_columns:
+                conn.execute(text("ALTER TABLE users ADD COLUMN gmail_scans_used INTEGER DEFAULT 0 NOT NULL"))
             conn.commit()
 except Exception as e:
     print(f"Migration check skipped/failed: {e}")
