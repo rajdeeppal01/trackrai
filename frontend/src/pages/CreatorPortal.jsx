@@ -79,7 +79,7 @@ export default function CreatorPortal() {
                 { title: 'Total Visits', value: stats.total_visits, desc: 'Total page views', icon: Activity, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
                 { title: 'Unique Visitors', value: stats.unique_visitors, desc: 'Unique IPs logged', icon: Users, color: 'text-indigo-400', bg: 'bg-indigo-500/10' },
                 { title: 'Total Users', value: stats.total_users, desc: 'Accounts created', icon: Users, color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
-                { title: 'Conversion', value: `${stats.conversion_rate}%`, desc: 'Visits to user ratio', icon: Target, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
+                { title: 'Premium Users', value: stats.premium_users, desc: 'Upgraded accounts', icon: Shield, color: 'text-amber-400', bg: 'bg-amber-500/10' },
                 { title: 'Apps Tracked', value: stats.total_applications, desc: 'Job roles tracked', icon: Briefcase, color: 'text-purple-400', bg: 'bg-purple-500/10' },
                 { title: 'Engagement', value: `${stats.avg_applications_per_user} apps/u`, desc: 'Avg apps per user', icon: Activity, color: 'text-pink-400', bg: 'bg-pink-500/10' },
               ].map((kpi, idx) => {

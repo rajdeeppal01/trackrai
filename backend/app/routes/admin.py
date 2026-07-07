@@ -129,6 +129,9 @@ def get_admin_stats(
     unique_visitors = db.query(func.count(func.distinct(models.SiteVisit.ip_address))).scalar() or 0
     conversion_rate = round((total_users / total_visits) * 100, 1) if total_visits > 0 else 0.0
 
+    # 7. Premium Users
+    premium_users_count = db.query(func.count(models.User.id)).filter(models.User.is_premium == True).scalar() or 0
+
     return {
         "total_users": total_users,
         "total_applications": total_applications,
@@ -140,5 +143,6 @@ def get_admin_stats(
         "employee_count": employee_count,
         "company_distribution": company_distribution,
         "traffic_and_signups": merged_timeline,
-        "users_list": users_list
+        "users_list": users_list,
+        "premium_users": premium_users_count
     }

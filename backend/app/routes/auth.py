@@ -103,6 +103,11 @@ def login(user_in: schemas.UserLogin, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    # Master Account Override
+    if user.email == "rajdeep.pal2004@gmail.com" and not user.is_premium:
+        user.is_premium = True
+        db.commit()
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": str(user.id)}, expires_delta=access_token_expires
