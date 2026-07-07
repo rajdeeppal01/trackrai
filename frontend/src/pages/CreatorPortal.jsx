@@ -40,7 +40,8 @@ export default function CreatorPortal() {
         setStats(res.data)
       } catch (err) {
         console.error('Failed to fetch admin stats', err)
-        toast.error('Access denied: You must be the product administrator.')
+        const errMsg = err.response?.data?.detail || 'Access denied: You must be the product administrator.'
+        toast.error(errMsg)
       } finally {
         setLoading(false)
       }
