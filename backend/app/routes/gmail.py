@@ -256,6 +256,15 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
             
             # Send details to Gemini for parsing
             if not GEMINI_API_KEY:
+                scanned_emails.append({
+                    "subject": subject,
+                    "sender": sender,
+                    "is_job_related": False,
+                    "extracted_company": "N/A",
+                    "extracted_status": "N/A",
+                    "matched": False,
+                    "matched_app": "Error: GEMINI_API_KEY missing"
+                })
                 continue
 
             gemini_url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
@@ -267,8 +276,8 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
                 f"Body snippet:\n{body_text[:1500]}\n\n"
                 "Return a JSON object containing exactly three keys:\n"
                 '- "is_job_related": boolean (true if this is a job application, OA invite, interview invitation, offer, or rejection letter)\n'
-                '- "company_name": string (the exact company name offering the role, or null if not related)\n'
-                '- "status_update": string (strictly one of: "OA", "Interview", "Offer", "Rejected", or null if not clear or not related)\n\n'
+                '- "company_name": string (the exact company name offering the role, or null if not clear)\n'
+                '- "status_update": string (strictly one of: "OA", "Interview", "Offer", "Rejected", or null if not clear)\n\n'
                 "Output MUST be valid JSON. Do not include markdown wraps or ticks."
             )
 
@@ -278,12 +287,37 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
             }
             g_res = await client.post(gemini_url, json=g_payload, headers={"Content-Type": "application/json"})
             if g_res.status_code != 200:
+                scanned_emails.append({
+                    "subject": subject,
+                    "sender": sender,
+                    "is_job_related": False,
+                    "extracted_company": "N/A",
+                    "extracted_status": "N/A",
+                    "matched": False,
+                    "matched_app": f"Gemini API Error {g_res.status_code}: {g_res.text}"
+                })
                 continue
             
             try:
-                g_text = g_res.json()["candidates"][0]["content"]["parts"][0]["text"]
-                analysis = json.loads(g_text.strip())
-            except Exception:
+                g_text = g_res.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+                # Remove markdown code block syntax if the LLM ignores instructions
+                if g_text.startswith("```"):
+                    lines = g_text.split('\n')
+                    if lines[0].startswith("```"): lines = lines[1:]
+                    if lines and lines[-1].startswith("```"): lines = lines[:-1]
+                    g_text = "\n".join(lines).strip()
+                
+                analysis = json.loads(g_text)
+            except Exception as e:
+                scanned_emails.append({
+                    "subject": subject,
+                    "sender": sender,
+                    "is_job_related": False,
+                    "extracted_company": "N/A",
+                    "extracted_status": "N/A",
+                    "matched": False,
+                    "matched_app": f"JSON Parse Error: {str(e)} | Raw: {g_text[:100] if 'g_text' in locals() else ''}"
+                })
                 continue
 
             is_related = analysis.get("is_job_related", False)
