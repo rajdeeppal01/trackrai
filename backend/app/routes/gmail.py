@@ -187,11 +187,10 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
         raise HTTPException(status_code=500, detail=f"Google connection failed: {str(e)}")
 
     # 2. Fetch recent messages list from Gmail API
-    # We query for keywords related to job updates
-    query = "subject:(interview OR offer OR application OR update OR status OR assessment)"
+    # We retrieve the raw recent 15 emails directly to bypass Gmail search index lag
     messages_url = "https://gmail.googleapis.com/gmail/v1/users/me/messages"
     headers = {"Authorization": f"Bearer {access_token}"}
-    params = {"q": query, "maxResults": 10}
+    params = {"maxResults": 15}
 
     messages = []
     try:
