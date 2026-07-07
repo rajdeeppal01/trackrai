@@ -105,7 +105,8 @@ export default function Settings() {
       window.location.href = res.data.auth_url
     } catch (err) {
       console.error('Failed to get Gmail OAuth URL', err)
-      toast.error('Failed to initialize Google connection.')
+      const errMsg = err.response?.data?.detail || 'Failed to initialize Google connection.'
+      toast.error(errMsg)
     }
   }
 

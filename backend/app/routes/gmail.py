@@ -45,8 +45,10 @@ def extract_body_text(payload) -> str:
     return body or payload.get("snippet", "")
 
 
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+
 @router.get("/auth-url")
-def get_auth_url(token: str):
+def get_auth_url(token: str, request: Request):
     """
     Generate Google OAuth URL.
     We pass the user's JWT token in the 'state' parameter to identify them in the callback.
@@ -54,15 +56,19 @@ def get_auth_url(token: str):
     if not GOOGLE_CLIENT_ID:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Google OAuth Client ID is not configured on the server."
+            detail="Google OAuth client credentials are not configured on the server. Please add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to the server environment."
         )
+    
+    # Dynamically build callback redirect based on backend host
+    scheme = "https" if "localhost" not in request.url.netloc else "http"
+    redirect_uri = f"{scheme}://{request.url.netloc}/gmail/callback"
     
     scope = "https://www.googleapis.com/auth/gmail.readonly"
     auth_url = (
         f"https://accounts.google.com/o/oauth2/v2/auth?"
         f"response_type=code"
         f"&client_id={GOOGLE_CLIENT_ID}"
-        f"&redirect_uri={GOOGLE_REDIRECT_URI}"
+        f"&redirect_uri={redirect_uri}"
         f"&scope={scope}"
         f"&access_type=offline"
         f"&prompt=consent"
@@ -72,7 +78,7 @@ def get_auth_url(token: str):
 
 
 @router.get("/callback")
-async def oauth_callback(code: str, state: str, db: Session = Depends(get_db)):
+async def oauth_callback(code: str, state: str, request: Request, db: Session = Depends(get_db)):
     """
     Handle Google OAuth callback redirect.
     """
@@ -99,11 +105,14 @@ async def oauth_callback(code: str, state: str, db: Session = Depends(get_db)):
 
     # 2. Exchange code for OAuth refresh/access tokens
     token_url = "https://oauth2.googleapis.com/token"
+    scheme = "https" if "localhost" not in request.url.netloc else "http"
+    redirect_uri = f"{scheme}://{request.url.netloc}/gmail/callback"
+    
     payload = {
         "code": code,
         "client_id": GOOGLE_CLIENT_ID,
         "client_secret": GOOGLE_CLIENT_SECRET,
-        "redirect_uri": GOOGLE_REDIRECT_URI,
+        "redirect_uri": redirect_uri,
         "grant_type": "authorization_code"
     }
 
