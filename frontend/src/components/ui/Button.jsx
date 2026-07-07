@@ -17,7 +17,7 @@ export default function Button({
   ...props
 }) {
   const base =
-    'inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 select-none'
+    'inline-flex items-center justify-center gap-2 font-semibold rounded-[6px] transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 select-none'
 
   const variants = {
     primary:

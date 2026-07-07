@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
-/* ─── Design tokens ──────────────────────────────────────────── */
 @theme {
   --color-brand-400: #818cf8;
   --color-brand-500: #6366f1;
   --color-brand-600: #4f46e5;
   --color-brand-900: #1e1b4b;
 
-  --font-sans: "Inter", system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 
-  --radius-xl:  0.75rem;
-  --radius-2xl: 1rem;
-  --radius-3xl: 1.5rem;
+  --radius-xl:  6px;
+  --radius-2xl: 6px;
+  --radius-3xl: 6px;
 }
 
 /* ─── Theme variables ─────────────────────────────────────────── */
@@ -127,7 +127,7 @@
     );
     background-size: 200% 100%;
     animation: skeleton-shimmer 1.5s infinite;
-    border-radius: 0.5rem;
+    border-radius: 6px;
   }
 
   @keyframes skeleton-shimmer {
@@ -147,5 +147,20 @@
   .focus-ring:focus-visible {
     outline: 2px solid #6366f1;
     outline-offset: 2px;
+  }
+
+  /* Portfolio grid overlay background */
+  .saas-grid-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.007) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.007) 1px, transparent 1px);
+    background-size: 50px 50px;
+    z-index: -1;
+    pointer-events: none;
   }
 }

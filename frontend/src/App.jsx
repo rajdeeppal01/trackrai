@@ -167,6 +167,7 @@ export default function App() {
             </div>
 
             {/* Main content rendering */}
+            <div className="saas-grid-bg" />
             <AppContent mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
 
             {/* ── Toaster ──────────────────────────────────────────── */}
@@ -177,7 +178,7 @@ export default function App() {
                   background: 'rgba(15,15,35,0.95)',
                   color: '#fff',
                   border: '1px solid rgba(255,255,255,0.10)',
-                  borderRadius: '14px',
+                  borderRadius: '6px',
                   backdropFilter: 'blur(12px)',
                   fontSize: '13px',
                 },
