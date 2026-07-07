@@ -16,6 +16,7 @@ const AICopilot    = lazy(() => import('./pages/AICopilot'))
 const ColdEmailer  = lazy(() => import('./pages/ColdEmailer'))
 const Settings     = lazy(() => import('./pages/Settings'))
 const Login        = lazy(() => import('./pages/Login'))
+const CreatorPortal = lazy(() => import('./pages/CreatorPortal'))
 
 function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
   const { isAuthenticated, loading } = useAuth()
@@ -66,6 +67,7 @@ function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
               <Route path="/copilot"      element={<AICopilot    />} />
               <Route path="/cold-email"   element={<ColdEmailer  />} />
               <Route path="/settings"     element={<Settings     />} />
+              <Route path="/admin"        element={<CreatorPortal/>} />
               <Route path="*"             element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>

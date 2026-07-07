@@ -1,7 +1,7 @@
 import { NavLink, Link } from 'react-router-dom'
 import {
   LayoutDashboard, Briefcase, BarChart2, Cpu,
-  Settings, KanbanSquare, X, LogOut, Mail,
+  Settings, KanbanSquare, X, LogOut, Mail, Terminal,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
@@ -19,6 +19,11 @@ export default function Sidebar({ mobileOpen, onClose }) {
   const { user, logout } = useAuth()
   const displayName = user?.email ? user.email.split('@')[0] : 'User'
   const avatarInitials = user?.email ? user.email.substring(0, 2).toUpperCase() : 'US'
+
+  const isAdmin = user?.email && user.email.toLowerCase().startsWith('rajdeeppal01')
+  const visibleNavItems = isAdmin 
+    ? [...NAV_ITEMS, { path: '/admin', label: 'Creator Portal', icon: Terminal }]
+    : NAV_ITEMS
 
   const content = (
     <aside className="w-64 h-full bg-[#080820] border-r border-white/8 flex flex-col shrink-0">
@@ -44,7 +49,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
 
       {/* Nav */}
       <nav className="flex-1 px-3 space-y-1">
-        {NAV_ITEMS.map(({ path, label, icon: Icon }) => (
+        {visibleNavItems.map(({ path, label, icon: Icon }) => (
           <NavLink
             key={path}
             to={path}
