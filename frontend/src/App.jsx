@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 
@@ -8,14 +8,14 @@ import { ApplicationsProvider } from './context/ApplicationsContext'
 import Sidebar from './components/layout/Sidebar'
 import Navbar from './components/layout/Navbar'
 
-import Dashboard    from './pages/Dashboard'
-import Applications from './pages/Applications'
-import Pipeline     from './pages/Pipeline'
-import Analytics    from './pages/Analytics'
-import AICopilot    from './pages/AICopilot'
-import ColdEmailer  from './pages/ColdEmailer'
-import Settings     from './pages/Settings'
-import Login        from './pages/Login'
+const Dashboard    = lazy(() => import('./pages/Dashboard'))
+const Applications = lazy(() => import('./pages/Applications'))
+const Pipeline     = lazy(() => import('./pages/Pipeline'))
+const Analytics    = lazy(() => import('./pages/Analytics'))
+const AICopilot    = lazy(() => import('./pages/AICopilot'))
+const ColdEmailer  = lazy(() => import('./pages/ColdEmailer'))
+const Settings     = lazy(() => import('./pages/Settings'))
+const Login        = lazy(() => import('./pages/Login'))
 
 function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
   const { isAuthenticated, loading } = useAuth()
@@ -30,9 +30,15 @@ function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
 
   if (!isAuthenticated) {
     return (
-      <Routes>
-        <Route path="*" element={<Login />} />
-      </Routes>
+      <Suspense fallback={
+        <div className="min-h-screen bg-[#050510] flex items-center justify-center text-white">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-indigo-500" />
+        </div>
+      }>
+        <Routes>
+          <Route path="*" element={<Login />} />
+        </Routes>
+      </Suspense>
     )
   }
 
@@ -47,16 +53,22 @@ function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
         <Navbar onMenuOpen={() => setMobileMenuOpen(true)} />
 
         <main style={{ flex: 1, overflowY: 'auto' }}>
-          <Routes>
-            <Route path="/"             element={<Dashboard    />} />
-            <Route path="/applications" element={<Applications />} />
-            <Route path="/pipeline"     element={<Pipeline     />} />
-            <Route path="/analytics"    element={<Analytics    />} />
-            <Route path="/copilot"      element={<AICopilot    />} />
-            <Route path="/cold-email"   element={<ColdEmailer  />} />
-            <Route path="/settings"     element={<Settings     />} />
-            <Route path="*"             element={<Navigate to="/" replace />} />
-          </Routes>
+          <Suspense fallback={
+            <div className="h-full flex items-center justify-center text-white">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-indigo-500" />
+            </div>
+          }>
+            <Routes>
+              <Route path="/"             element={<Dashboard    />} />
+              <Route path="/applications" element={<Applications />} />
+              <Route path="/pipeline"     element={<Pipeline     />} />
+              <Route path="/analytics"    element={<Analytics    />} />
+              <Route path="/copilot"      element={<AICopilot    />} />
+              <Route path="/cold-email"   element={<ColdEmailer  />} />
+              <Route path="/settings"     element={<Settings     />} />
+              <Route path="*"             element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
         </main>
       </div>
     </div>

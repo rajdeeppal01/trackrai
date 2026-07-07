@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useApplications } from '../hooks/useApplications'
+import useDocumentTitle from '../hooks/useDocumentTitle'
 import {
   BarChart, Bar, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip,
@@ -35,6 +36,7 @@ function CustomTooltip({ active, payload, label }) {
 }
 
 export default function Analytics() {
+  useDocumentTitle('Analytics')
   const { applications, loading } = useApplications()
 
   const stats = useMemo(() => {

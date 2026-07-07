@@ -1,6 +1,9 @@
 import { useMemo, useState, useEffect, useRef } from 'react'
 import { useApplications } from '../hooks/useApplications'
-import { motion, AnimatePresence } from 'framer-motion'
+import useDocumentTitle from '../hooks/useDocumentTitle'
+import {
+  motion, AnimatePresence
+} from 'framer-motion'
 import {
   Cpu, Sparkles, Brain, TrendingUp, Target, Lightbulb,
   CheckCircle, BookOpen, MessageSquare, Zap, Send, Bot, User
@@ -61,6 +64,7 @@ function TipCard({ icon: Icon, title, body, color, border }) {
 }
 
 export default function AICopilot() {
+  useDocumentTitle('AI Copilot')
   const { applications, loading: appsLoading } = useApplications()
   
   // Insights state

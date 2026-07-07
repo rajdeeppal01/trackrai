@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useApplications } from '../hooks/useApplications'
+import useDocumentTitle from '../hooks/useDocumentTitle'
 import {
   DndContext, closestCorners, PointerSensor, useSensor, useSensors,
   DragOverlay, useDroppable,
@@ -99,6 +100,7 @@ function KanbanColumn({ status, items }) {
 
 // ── Main Pipeline page ────────────────────────────────────────────
 export default function Pipeline() {
+  useDocumentTitle('Pipeline')
   const { applications, loading, editApplication } = useApplications()
   const [activeId, setActiveId] = useState(null)
 

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useApplications } from '../hooks/useApplications'
+import useDocumentTitle from '../hooks/useDocumentTitle'
 import ApplicationGrid from '../components/applications/ApplicationGrid'
 import ApplicationForm from '../components/applications/ApplicationForm'
 import Modal from '../components/ui/Modal'
@@ -7,6 +8,7 @@ import Button from '../components/ui/Button'
 import { Briefcase, Plus } from 'lucide-react'
 
 export default function Applications() {
+  useDocumentTitle('Applications')
   const {
     applications,
     loading,

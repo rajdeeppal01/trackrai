@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useApplications } from '../hooks/useApplications';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 import StatsRow from '../components/dashboard/StatsRow';
 import ApplicationChart from '../components/dashboard/ApplicationChart';
 import AIInsights from '../components/dashboard/AIInsights';
@@ -12,6 +13,7 @@ import Button from '../components/ui/Button';
 import { Plus } from 'lucide-react';
 
 export default function Dashboard() {
+  useDocumentTitle('Dashboard');
   const {
     applications,
     loading,

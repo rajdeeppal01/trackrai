@@ -4,8 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LogIn, UserPlus, Mail, Lock, Cpu } from 'lucide-react';
 import Button from '../components/ui/Button';
+import useDocumentTitle from '../hooks/useDocumentTitle';
 
 export default function Login() {
+  useDocumentTitle('Login');
   const { login, signup, loading } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');

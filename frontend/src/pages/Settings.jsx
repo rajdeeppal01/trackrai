@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useApplications } from '../hooks/useApplications'
+import useDocumentTitle from '../hooks/useDocumentTitle'
 import { motion } from 'framer-motion'
 import {
   Settings as SettingsIcon, Download, Trash2, Database,
@@ -44,6 +45,7 @@ function SettingRow({ label, description, children }) {
 }
 
 export default function Settings() {
+  useDocumentTitle('Settings')
   const { applications, clearApplications } = useApplications()
   const [confirmClear, setConfirmClear] = useState(false)
   const [clearing, setClearing] = useState(false)

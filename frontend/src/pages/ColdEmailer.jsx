@@ -6,8 +6,13 @@ import {
 } from 'lucide-react'
 import api from '../api/applications'
 import toast from 'react-hot-toast'
+import useDocumentTitle from '../hooks/useDocumentTitle'
+import Input from '../components/ui/Input'
+import Textarea from '../components/ui/Textarea'
+import Select from '../components/ui/Select'
 
 export default function ColdEmailer() {
+  useDocumentTitle('Cold Emailer')
   const [email, setEmail] = useState('')
   const [recipientName, setRecipientName] = useState('')
   const [recipientRole, setRecipientRole] = useState('Founder/CEO')
@@ -209,99 +214,78 @@ export default function ColdEmailer() {
               </div>
 
               {/* Recipient Email */}
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-white/50">Recipient Email ID *</label>
-                <input
-                  type="email"
-                  required
-                  placeholder="e.g. founder@company.com"
-                  value={email}
-                  onChange={handleEmailChange}
-                  className="w-full glass border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors"
-                />
-              </div>
+              <Input
+                label="Recipient Email ID *"
+                type="email"
+                required
+                placeholder="e.g. founder@company.com"
+                value={email}
+                onChange={handleEmailChange}
+              />
 
               <div className="grid grid-cols-2 gap-4">
                 {/* Recipient Name */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-white/50">Recipient Name</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Jane"
-                    value={recipientName}
-                    onChange={(e) => setRecipientName(e.target.value)}
-                    className="w-full glass border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors"
-                  />
-                </div>
+                <Input
+                  label="Recipient Name"
+                  type="text"
+                  placeholder="e.g. Jane"
+                  value={recipientName}
+                  onChange={(e) => setRecipientName(e.target.value)}
+                />
 
                 {/* Company Name */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-white/50">Company Name</label>
-                  <input
-                    type="text"
-                    placeholder="Auto-extracted"
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    className="w-full glass border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors"
-                  />
-                </div>
+                <Input
+                  label="Company Name"
+                  type="text"
+                  placeholder="Auto-extracted"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 {/* Recipient Role */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-white/50">Recipient Role</label>
-                  <select
-                    value={recipientRole}
-                    onChange={(e) => setRecipientRole(e.target.value)}
-                    className="w-full glass border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors [&>option]:bg-[#080820]"
-                  >
-                    <option value="Founder/CEO">Founder/CEO</option>
-                    <option value="Hiring Manager/Recruiter">Hiring Manager</option>
-                    <option value="Engineering Lead">Engineering Lead</option>
-                    <option value="Individual Contributor">Individual Contributor</option>
-                  </select>
-                </div>
+                <Select
+                  label="Recipient Role"
+                  value={recipientRole}
+                  onChange={(e) => setRecipientRole(e.target.value)}
+                >
+                  <option value="Founder/CEO">Founder/CEO</option>
+                  <option value="Hiring Manager/Recruiter">Hiring Manager</option>
+                  <option value="Engineering Lead">Engineering Lead</option>
+                  <option value="Individual Contributor">Individual Contributor</option>
+                </Select>
 
                 {/* Tone */}
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-white/50">Email Tone</label>
-                  <select
-                    value={tone}
-                    onChange={(e) => setTone(e.target.value)}
-                    className="w-full glass border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 transition-colors [&>option]:bg-[#080820]"
-                  >
-                    <option value="Professional">Professional</option>
-                    <option value="Conversational">Casual & Warm</option>
-                    <option value="Direct">Direct & Short</option>
-                    <option value="Creative">Creative / Hook-based</option>
-                  </select>
-                </div>
+                <Select
+                  label="Email Tone"
+                  value={tone}
+                  onChange={(e) => setTone(e.target.value)}
+                >
+                  <option value="Professional">Professional</option>
+                  <option value="Conversational">Casual & Warm</option>
+                  <option value="Direct">Direct & Short</option>
+                  <option value="Creative">Creative / Hook-based</option>
+                </Select>
               </div>
 
               {/* Target Role */}
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-white/50">Target Role (Your Target)</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Software Engineer Intern, frontend dev"
-                  value={targetRole}
-                  onChange={(e) => setTargetRole(e.target.value)}
-                  className="w-full glass border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors"
-                />
-              </div>
+              <Input
+                label="Target Role (Your Target)"
+                type="text"
+                placeholder="e.g. Software Engineer Intern, frontend dev"
+                value={targetRole}
+                onChange={(e) => setTargetRole(e.target.value)}
+              />
 
               {/* Pitch/Bio */}
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-white/50">Your Brief Pitch / Highlights (Optional)</label>
-                <textarea
-                  rows={4}
-                  placeholder="Add 2-3 sentences about your core skills, notable projects, or achievements..."
-                  value={userBio}
-                  onChange={(e) => setUserBio(e.target.value)}
-                  className="w-full glass border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors resize-none"
-                />
-              </div>
+              <Textarea
+                label="Your Brief Pitch / Highlights (Optional)"
+                rows={4}
+                placeholder="Add 2-3 sentences about your core skills, notable projects, or achievements..."
+                value={userBio}
+                onChange={(e) => setUserBio(e.target.value)}
+              />
 
               {/* Action Button */}
               <button
