@@ -196,8 +196,14 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
     try:
         async with httpx.AsyncClient() as client:
             res = await client.get(messages_url, headers=headers, params=params)
-            if res.status_code == 200:
-                messages = res.json().get("messages", [])
+            if res.status_code != 200:
+                raise HTTPException(
+                    status_code=res.status_code,
+                    detail=f"Gmail API connection returned status {res.status_code}: {res.text}"
+                )
+            messages = res.json().get("messages", [])
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch Gmail list: {str(e)}")
 
