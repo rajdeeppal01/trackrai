@@ -200,9 +200,9 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
         pass
 
     # 2. Fetch recent messages list from Gmail API
-    # We retrieve the raw recent 15 emails directly to bypass Gmail search index lag
+    # We retrieve the raw recent 15 emails directly (including Spam/Trash for test emails)
     messages_url = "https://gmail.googleapis.com/gmail/v1/users/me/messages"
-    params = {"maxResults": 15}
+    params = {"maxResults": 15, "includeSpamTrash": "true"}
 
     messages = []
     try:
