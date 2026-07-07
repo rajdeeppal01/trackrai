@@ -111,7 +111,7 @@ def run_fallback_engine(applications: List[models.Application]) -> List[dict]:
 
 # ─── Gemini API Invoker ───────────────────────────────────────────
 
-async def generate_gemini_insights(applications: List[models.Application]) -> List[dict]:
+async def generate_gemini_insights(applications: List[models.Application], resume_text: Optional[str] = None) -> List[dict]:
     if not GEMINI_API_KEY:
         # Fallback to local heuristic engine
         return run_fallback_engine(applications)
@@ -127,15 +127,21 @@ async def generate_gemini_insights(applications: List[models.Application]) -> Li
             "notes": app.notes or ""
         })
 
+    resume_block = (
+        f"User's Resume:\n{resume_text}\n\n" if resume_text and resume_text.strip()
+        else "User has not uploaded a resume yet. If relevant, gently suggest adding one in Settings for more tailored insights.\n\n"
+    )
+
     prompt = (
-        "You are an expert career coach and recruiter. Analyze the user's job application pipeline and generate a JSON list of exactly 3 to 5 smart, highly personalized insights.\n"
-        "Do not offer generic advice. Look at the specific roles, companies, status ratios, and notes.\n"
+        "You are an expert career coach and recruiter. Analyze the user's resume and job application pipeline and generate a JSON list of exactly 3 to 5 smart, highly personalized insights.\n"
+        "Do not offer generic advice. Look at the specific roles, companies, status ratios, notes, and how well the resume matches each role.\n"
         "Your output must be a valid JSON array of objects. Do not wrap in markdown or blockticks.\n"
         "Each object in the array must contain:\n"
         '- "type": exactly one of "stat", "tip", "warning", "success", "action"\n'
         '- "icon": one relevant emoji representing the tip\n'
         '- "title": a short 3-6 word bold title\n'
         '- "body": a detailed, direct sentence offering analysis or concrete next action.\n\n'
+        f"{resume_block}"
         f"Applications Pipeline:\n{json.dumps(apps_data, indent=2)}"
     )
 
@@ -204,7 +210,7 @@ async def get_insights(
             pass
 
     # Cache is stale or empty, generate fresh insights
-    insights = await generate_gemini_insights(applications)
+    insights = await generate_gemini_insights(applications, current_user.resume_text)
     
     # Save cache
     current_user.cached_insights = json.dumps(insights)
@@ -233,10 +239,17 @@ async def copilot_chat(
     
     apps_str = "\n".join(apps_summary) if apps_summary else "No applications added yet."
 
+    resume_block = (
+        f"User's Resume:\n{current_user.resume_text}\n\n" if current_user.resume_text and current_user.resume_text.strip()
+        else "The user has not added a resume yet. If they ask for resume feedback, let them know they can paste it in Settings so you can give tailored advice, and offer general guidance in the meantime.\n\n"
+    )
+
     system_instruction = (
-        "You are TrackrAI, an expert AI job search copilot. You have access to the user's job application pipeline. "
-        "Your task is to answer user questions, help them prepare for interviews, give resume feedback, and suggest next actions. "
+        "You are TrackrAI, an expert AI job search copilot. You have access to the user's resume and job application pipeline. "
+        "Your task is to answer user questions, help them prepare for interviews, give specific resume feedback tailored to each role, and suggest next actions. "
+        "When asked how a resume looks for a specific company/role, actually compare the resume content against that role and give concrete, specific feedback — not generic tips. "
         "Keep your answers concise, structured, and action-oriented. Feel free to use markdown format.\n\n"
+        f"{resume_block}"
         f"User's Current Applications:\n{apps_str}"
     )
 

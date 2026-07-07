@@ -42,6 +42,17 @@ class TokenData(BaseModel):
     user_id: Optional[int] = None
 
 
+class ResumeUpdate(BaseModel):
+    resume_text: Optional[str] = None
+
+
+class ResumeResponse(BaseModel):
+    resume_text: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
 # ─── Application Schemas ───────────────────────────────────────────
 
 class ApplicationBase(BaseModel):

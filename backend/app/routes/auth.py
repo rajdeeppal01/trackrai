@@ -113,3 +113,20 @@ def login(user_in: schemas.UserLogin, db: Session = Depends(get_db)):
 @router.get("/me", response_model=schemas.UserResponse)
 def get_me(current_user: models.User = Depends(get_current_user)):
     return current_user
+
+
+@router.get("/resume", response_model=schemas.ResumeResponse)
+def get_resume(current_user: models.User = Depends(get_current_user)):
+    return current_user
+
+
+@router.put("/resume", response_model=schemas.ResumeResponse)
+def update_resume(
+    resume_in: schemas.ResumeUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    current_user.resume_text = resume_in.resume_text
+    db.commit()
+    db.refresh(current_user)
+    return current_user

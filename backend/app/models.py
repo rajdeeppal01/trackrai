@@ -12,6 +12,7 @@ class User(Base):
     hashed_password = Column(String(200), nullable=False)
     cached_insights = Column(Text, nullable=True)
     insights_updated_at = Column(DateTime(timezone=True), nullable=True)
+    resume_text = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     applications = relationship("Application", back_populates="user", cascade="all, delete-orphan")

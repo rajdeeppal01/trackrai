@@ -1,13 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useApplications } from '../hooks/useApplications'
 import { motion } from 'framer-motion'
 import {
   Settings as SettingsIcon, Download, Trash2, Database,
-  User, Shield
+  User, Shield, FileText, Save
 } from 'lucide-react'
 import Button from '../components/ui/Button'
 import ConfirmDialog from '../components/ui/ConfirmDialog'
 import toast from 'react-hot-toast'
+import api from '../api/applications'
 
 function Section({ title, description, icon: Icon, children }) {
   return (
@@ -46,6 +47,38 @@ export default function Settings() {
   const { applications, clearApplications } = useApplications()
   const [confirmClear, setConfirmClear] = useState(false)
   const [clearing, setClearing] = useState(false)
+
+  // ── Resume ────────────────────────────────────────────────────
+  const [resumeText, setResumeText] = useState('')
+  const [resumeLoading, setResumeLoading] = useState(true)
+  const [resumeSaving, setResumeSaving] = useState(false)
+
+  useEffect(() => {
+    async function fetchResume() {
+      try {
+        const res = await api.get('/auth/resume')
+        setResumeText(res.data.resume_text || '')
+      } catch (err) {
+        console.error('Failed to load resume', err)
+      } finally {
+        setResumeLoading(false)
+      }
+    }
+    fetchResume()
+  }, [])
+
+  async function saveResume() {
+    setResumeSaving(true)
+    try {
+      await api.put('/auth/resume', { resume_text: resumeText })
+      toast.success('Resume saved!')
+    } catch (err) {
+      console.error('Failed to save resume', err)
+      toast.error('Failed to save resume')
+    } finally {
+      setResumeSaving(false)
+    }
+  }
 
   // ── Export as JSON ───────────────────────────────────────────
   function exportJSON() {
@@ -122,6 +155,31 @@ export default function Settings() {
               <p className="text-xs text-white/30 mt-0.5">{applications.length} application{applications.length !== 1 ? 's' : ''} tracked</p>
             </div>
           </div>
+        </Section>
+
+        {/* Resume */}
+        <Section icon={FileText} title="Resume" description="Paste your resume so AI Copilot can give tailored feedback and insights">
+          {resumeLoading ? (
+            <div className="h-40 rounded-xl bg-white/3 animate-pulse" />
+          ) : (
+            <>
+              <textarea
+                value={resumeText}
+                onChange={(e) => setResumeText(e.target.value)}
+                placeholder="Paste your resume text here (plain text is fine — no need for formatting)..."
+                rows={10}
+                className="w-full rounded-xl bg-white/3 border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors resize-y"
+              />
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-white/30">
+                  {resumeText.trim() ? `${resumeText.trim().split(/\s+/).length} words` : 'No resume added yet'}
+                </p>
+                <Button variant="primary" size="sm" icon={Save} onClick={saveResume} loading={resumeSaving}>
+                  Save Resume
+                </Button>
+              </div>
+            </>
+          )}
         </Section>
 
         {/* Data & Export */}

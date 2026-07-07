@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 import os
 
 from app.database import engine
@@ -9,6 +10,25 @@ from app.routes.auth import router as auth_router
 from app.routes.copilot import router as copilot_router
 
 models.Base.metadata.create_all(bind=engine)
+
+# ─── Self-healing migration: add resume_text column if it's missing ──
+# create_all() only creates brand-new tables, it never adds columns to
+# tables that already exist. This runs a lightweight check on startup
+# and adds the column if needed, so no manual DB shell access is required.
+try:
+    with engine.connect() as conn:
+        if engine.dialect.name == "postgresql":
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS resume_text TEXT"))
+            conn.commit()
+        else:
+            # SQLite doesn't support "IF NOT EXISTS" for ADD COLUMN, so check first
+            result = conn.execute(text("PRAGMA table_info(users)"))
+            existing_columns = [row[1] for row in result]
+            if "resume_text" not in existing_columns:
+                conn.execute(text("ALTER TABLE users ADD COLUMN resume_text TEXT"))
+                conn.commit()
+except Exception as e:
+    print(f"Migration check skipped/failed (safe to ignore if column already exists): {e}")
 
 app = FastAPI(
     title="TrackrAI API",
