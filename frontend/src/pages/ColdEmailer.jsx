@@ -156,6 +156,15 @@ export default function ColdEmailer() {
     return `mailto:${activeDraft.email}?subject=${subjectEncoded}&body=${bodyEncoded}`
   }
 
+  // Pre-fill Gmail web-client compose URL safely
+  const getGmailLink = () => {
+    if (!activeDraft) return '#'
+    const to = encodeURIComponent(activeDraft.email)
+    const subject = encodeURIComponent(activeDraft.subject)
+    const body = encodeURIComponent(activeDraft.body)
+    return `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${body}`
+  }
+
   return (
     <div className="min-h-screen text-white p-4 md:p-8 font-sans">
       <div className="max-w-6xl mx-auto space-y-8">
@@ -344,22 +353,33 @@ export default function ColdEmailer() {
                   </div>
 
                   {/* Actions footer */}
-                  <div className="flex items-center justify-between border-t border-white/5 pt-4">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/5 pt-4">
                     <button
                       onClick={() => handleCopy(activeDraft.body, 'body')}
-                      className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/85 text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer"
+                      className="w-full sm:w-auto px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/85 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
                     >
                       {copiedBody ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
                       <span>Copy Email Body</span>
                     </button>
 
-                    <a
-                      href={getMailtoLink()}
-                      className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-2 transition-all shadow-md shadow-indigo-950/20 active:scale-95"
-                    >
-                      <Send size={13} />
-                      <span>Send in Mail App</span>
-                    </a>
+                    <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+                      <a
+                        href={getMailtoLink()}
+                        className="w-full sm:w-auto text-center px-4 py-2.5 rounded-xl border border-white/10 bg-white/3 hover:bg-white/7 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
+                      >
+                        <Mail size={13} />
+                        <span>Send in Mail App</span>
+                      </a>
+                      <a
+                        href={getGmailLink()}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full sm:w-auto text-center px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-md shadow-indigo-950/20 active:scale-95"
+                      >
+                        <Send size={13} />
+                        <span>Send via Gmail</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
               ) : (
