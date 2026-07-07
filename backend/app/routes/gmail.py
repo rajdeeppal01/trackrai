@@ -186,10 +186,22 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Google connection failed: {str(e)}")
 
+    headers = {"Authorization": f"Bearer {access_token}"}
+
+    # 1b. Check which Google email is actually connected
+    profile_url = "https://gmail.googleapis.com/gmail/v1/users/me/profile"
+    connected_email = "unknown"
+    try:
+        async with httpx.AsyncClient() as client:
+            profile_res = await client.get(profile_url, headers=headers)
+            if profile_res.status_code == 200:
+                connected_email = profile_res.json().get("emailAddress", "unknown")
+    except Exception:
+        pass
+
     # 2. Fetch recent messages list from Gmail API
     # We retrieve the raw recent 15 emails directly to bypass Gmail search index lag
     messages_url = "https://gmail.googleapis.com/gmail/v1/users/me/messages"
-    headers = {"Authorization": f"Bearer {access_token}"}
     params = {"maxResults": 15}
 
     messages = []
@@ -210,6 +222,7 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
     if not messages:
         return {
             "status": "success",
+            "connected_email": connected_email,
             "message": "No new job-related emails found.",
             "updated_applications": [],
             "scanned_emails": []
@@ -319,6 +332,7 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
 
     return {
         "status": "success",
+        "connected_email": connected_email,
         "last_gmail_sync": current_user.last_gmail_sync.isoformat(),
         "updated_applications": updated_applications,
         "scanned_emails": scanned_emails

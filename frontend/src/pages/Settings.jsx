@@ -129,6 +129,7 @@ export default function Settings() {
       
       // Console diagnostics for easy debugging
       console.log('Gmail Scan Diagnostics:', res.data.scanned_emails)
+      console.log('Connected Google Account:', res.data.connected_email)
       
       const count = res.data.updated_applications?.length || 0
       if (count > 0) {
