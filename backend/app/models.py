@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, Text, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .database import Base
@@ -16,6 +16,9 @@ class User(Base):
     current_position = Column(String(200), nullable=True)
     current_company = Column(String(200), nullable=True)
     bio = Column(Text, nullable=True)
+    google_refresh_token = Column(String(500), nullable=True)
+    gmail_sync_enabled = Column(Boolean, default=False, nullable=False)
+    last_gmail_sync = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     applications = relationship("Application", back_populates="user", cascade="all, delete-orphan")

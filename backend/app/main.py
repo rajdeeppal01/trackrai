@@ -10,6 +10,7 @@ from app.routes.auth import router as auth_router
 from app.routes.copilot import router as copilot_router
 from app.routes.admin import router as admin_router
 from app.routes.telemetry import router as telemetry_router
+from app.routes.gmail import router as gmail_router
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -24,6 +25,9 @@ try:
             conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS current_position VARCHAR(200)"))
             conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS current_company VARCHAR(200)"))
             conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT"))
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS google_refresh_token VARCHAR(500)"))
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS gmail_sync_enabled BOOLEAN DEFAULT FALSE NOT NULL"))
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS last_gmail_sync TIMESTAMP WITH TIME ZONE"))
             conn.commit()
         else:
             # SQLite doesn't support "IF NOT EXISTS" for ADD COLUMN, so check first
@@ -37,6 +41,12 @@ try:
                 conn.execute(text("ALTER TABLE users ADD COLUMN current_company VARCHAR(200)"))
             if "bio" not in existing_columns:
                 conn.execute(text("ALTER TABLE users ADD COLUMN bio TEXT"))
+            if "google_refresh_token" not in existing_columns:
+                conn.execute(text("ALTER TABLE users ADD COLUMN google_refresh_token VARCHAR(500)"))
+            if "gmail_sync_enabled" not in existing_columns:
+                conn.execute(text("ALTER TABLE users ADD COLUMN gmail_sync_enabled BOOLEAN DEFAULT 0 NOT NULL"))
+            if "last_gmail_sync" not in existing_columns:
+                conn.execute(text("ALTER TABLE users ADD COLUMN last_gmail_sync TIMESTAMP"))
             conn.commit()
 except Exception as e:
     print(f"Migration check skipped/failed: {e}")
@@ -72,6 +82,7 @@ app.include_router(application_router)
 app.include_router(copilot_router)
 app.include_router(admin_router)
 app.include_router(telemetry_router)
+app.include_router(gmail_router)
 
 
 @app.get("/")

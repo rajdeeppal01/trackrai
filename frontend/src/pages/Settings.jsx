@@ -4,7 +4,7 @@ import useDocumentTitle from '../hooks/useDocumentTitle'
 import { motion } from 'framer-motion'
 import {
   Settings as SettingsIcon, Download, Trash2, Database,
-  User, Shield, FileText, Save
+  User, Shield, FileText, Save, Mail
 } from 'lucide-react'
 import Button from '../components/ui/Button'
 import ConfirmDialog from '../components/ui/ConfirmDialog'
@@ -54,6 +54,10 @@ export default function Settings() {
   const [currentPosition, setCurrentPosition] = useState('')
   const [currentCompany, setCurrentCompany] = useState('')
   const [bio, setBio] = useState('')
+  const [gmailConnected, setGmailConnected] = useState(false)
+  const [gmailSyncEnabled, setGmailSyncEnabled] = useState(false)
+  const [lastGmailSync, setLastGmailSync] = useState('')
+  const [syncingGmail, setSyncingGmail] = useState(false)
   const [profileLoading, setProfileLoading] = useState(true)
   const [profileSaving, setProfileSaving] = useState(false)
 
@@ -64,6 +68,9 @@ export default function Settings() {
         setCurrentPosition(res.data.current_position || '')
         setCurrentCompany(res.data.current_company || '')
         setBio(res.data.bio || '')
+        setGmailConnected(res.data.gmail_connected || false)
+        setGmailSyncEnabled(res.data.gmail_sync_enabled || false)
+        setLastGmailSync(res.data.last_gmail_sync || '')
       } catch (err) {
         console.error('Failed to load profile', err)
       } finally {
@@ -87,6 +94,50 @@ export default function Settings() {
       toast.error('Failed to save profile settings')
     } finally {
       setProfileSaving(false)
+    }
+  }
+
+  // ── Gmail Integration ─────────────────────────────────────────
+  async function connectGmail() {
+    const localToken = localStorage.getItem('trackrai_token')
+    try {
+      const res = await api.get(`/gmail/auth-url?token=${localToken}`)
+      window.location.href = res.data.auth_url
+    } catch (err) {
+      console.error('Failed to get Gmail OAuth URL', err)
+      toast.error('Failed to initialize Google connection.')
+    }
+  }
+
+  async function toggleGmailSync(enabled) {
+    try {
+      await api.post(`/gmail/toggle?enabled=${enabled}`)
+      setGmailSyncEnabled(enabled)
+      toast.success(enabled ? 'Gmail auto-sync enabled!' : 'Gmail sync disabled.')
+    } catch (err) {
+      console.error('Failed to toggle Gmail sync', err)
+      toast.error(err.response?.data?.detail || 'Failed to toggle Gmail sync settings.')
+    }
+  }
+
+  async function triggerSync() {
+    setSyncingGmail(true)
+    try {
+      const res = await api.post('/gmail/sync')
+      setLastGmailSync(res.data.last_gmail_sync || '')
+      
+      const count = res.data.updated_applications?.length || 0
+      if (count > 0) {
+        toast.success(`Sync completed! Updated ${count} application status(es).`)
+        setTimeout(() => window.location.reload(), 1500)
+      } else {
+        toast.success('Sync completed. No new status updates found.')
+      }
+    } catch (err) {
+      console.error('Failed to run Gmail sync', err)
+      toast.error(err.response?.data?.detail || 'Failed to sync Gmail messages.')
+    } finally {
+      setSyncingGmail(false)
     }
   }
 
@@ -265,6 +316,62 @@ export default function Settings() {
                 </Button>
               </div>
             </>
+          )}
+        </Section>
+
+        {/* Gmail Sync (Premium) */}
+        <Section icon={Mail} title="Gmail Automation (Premium)" description="Connect your inbox to automatically parse and synchronize job application updates in real time">
+          {profileLoading ? (
+            <div className="h-28 rounded-xl bg-white/3 animate-pulse" />
+          ) : !gmailConnected ? (
+            <div className="p-4 rounded-xl bg-indigo-500/5 border border-indigo-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[9px] font-bold uppercase tracking-wider">Premium Mode</span>
+                <p className="text-sm font-semibold text-white">Gmail Integration is not connected</p>
+                <p className="text-xs text-white/40 leading-relaxed font-medium max-w-md">
+                  Authorize read-only access to search messages from recruiters. Gemini automatically extracts status updates and updates your pipeline.
+                </p>
+              </div>
+              <Button variant="primary" size="sm" onClick={connectGmail}>
+                Connect Google Account
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10 flex items-center justify-between gap-4">
+                <div className="space-y-0.5">
+                  <p className="text-sm font-semibold text-emerald-400 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                    Connected to Gmail
+                  </p>
+                  <p className="text-xs text-white/35 font-medium">
+                    Last scanned: {lastGmailSync ? new Date(lastGmailSync).toLocaleString() : 'Never'}
+                  </p>
+                </div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  loading={syncingGmail}
+                  onClick={triggerSync}
+                >
+                  Sync Inbox Now
+                </Button>
+              </div>
+
+              <div className="h-px bg-white/5" />
+
+              <SettingRow
+                label="Enable Automated Sync"
+                description="Automatically parse incoming messages to update application cards dynamically."
+              >
+                <button
+                  onClick={() => toggleGmailSync(!gmailSyncEnabled)}
+                  className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${gmailSyncEnabled ? 'bg-indigo-600' : 'bg-white/10'}`}
+                >
+                  <span className={`w-4 h-4 rounded-full bg-white absolute top-1 left-1 transition-transform ${gmailSyncEnabled ? 'translate-x-5' : ''}`} />
+                </button>
+              </SettingRow>
+            </div>
           )}
         </Section>
 

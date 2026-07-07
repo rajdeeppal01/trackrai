@@ -63,6 +63,9 @@ class UserProfileResponse(BaseModel):
     current_position: Optional[str] = None
     current_company: Optional[str] = None
     bio: Optional[str] = None
+    gmail_connected: bool = False
+    gmail_sync_enabled: bool = False
+    last_gmail_sync: Optional[datetime] = None
 
     class Config:
         from_attributes = True

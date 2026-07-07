@@ -134,7 +134,14 @@ def update_resume(
 
 @router.get("/profile", response_model=schemas.UserProfileResponse)
 def get_profile(current_user: models.User = Depends(get_current_user)):
-    return current_user
+    return {
+        "current_position": current_user.current_position,
+        "current_company": current_user.current_company,
+        "bio": current_user.bio,
+        "gmail_connected": current_user.google_refresh_token is not None,
+        "gmail_sync_enabled": current_user.gmail_sync_enabled,
+        "last_gmail_sync": current_user.last_gmail_sync
+    }
 
 
 @router.put("/profile", response_model=schemas.UserProfileResponse)
