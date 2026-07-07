@@ -26,6 +26,102 @@ class ChatRequest(BaseModel):
     history: Optional[List[dict]] = []
 
 
+class ColdEmailRequest(BaseModel):
+    recipient_email: str
+    recipient_name: Optional[str] = ""
+    recipient_role: Optional[str] = "Founder/CEO"
+    company_name: Optional[str] = ""
+    target_role: Optional[str] = ""
+    user_bio: Optional[str] = ""
+    tone: Optional[str] = "Professional"
+
+
+def extract_company_from_email(email: str) -> str:
+    if not email or "@" not in email:
+        return ""
+    domain = email.split("@")[-1].lower()
+    public_domains = {
+        "gmail.com", "yahoo.com", "outlook.com", "hotmail.com",
+        "protonmail.com", "aol.com", "icloud.com", "zoho.com",
+        "mail.com", "gmx.com", "yandex.com", "proton.me"
+    }
+    if domain in public_domains:
+        return ""
+    parts = domain.split(".")
+    if parts:
+        name = parts[0]
+        return name.capitalize()
+    return ""
+
+
+def run_cold_email_fallback(
+    recipient_email: str,
+    recipient_name: str,
+    recipient_role: str,
+    company_name: str,
+    target_role: str,
+    user_bio: str,
+    tone: str,
+    sender_name: str
+) -> dict:
+    name = recipient_name or "there"
+    company = company_name or extract_company_from_email(recipient_email) or "your team"
+    role_str = target_role or "a role"
+    bio_str = user_bio or "I am a software engineer passionate about building high-quality software solutions."
+    
+    if tone.lower() == "casual" or tone.lower() == "conversational":
+        subject = f"Quick question regarding {company}'s product engineering"
+        body = (
+            f"Hi {name},\n\n"
+            f"Hope you're having a great week.\n\n"
+            f"I've been following {company} and really love what you guys are building. "
+            f"I wanted to reach out because I'm a developer looking for new opportunities as a {role_str}. "
+            f"Here's a bit about me: {bio_str}\n\n"
+            f"I'd love to chat for 10 minutes sometime to learn more about your engineering team. "
+            f"Let me know if you have any availability this week!\n\n"
+            f"Best,\n"
+            f"{sender_name}"
+        )
+    elif tone.lower() == "direct" or tone.lower() == "short":
+        subject = f"{role_str} application - {company}"
+        body = (
+            f"Hi {name},\n\n"
+            f"I'm reaching out because I'm interested in joining {company} as a {role_str}.\n\n"
+            f"Here is my quick background: {bio_str}\n\n"
+            f"Are you open to a quick call or chat next week to see if I'd be a good fit?\n\n"
+            f"Thanks,\n"
+            f"{sender_name}"
+        )
+    elif tone.lower() == "creative":
+        subject = f"How I can help {company} grow as a {role_str}"
+        body = (
+            f"Hi {name},\n\n"
+            f"I wanted to reach out with a quick idea: I've been looking at {company} and noticed some cool opportunities "
+            f"for growth, specifically regarding the {role_str} scope.\n\n"
+            f"My background is in: {bio_str}. I'd love to apply these skills to solve challenges at {company}.\n\n"
+            f"Do you have 10 minutes for a virtual coffee next week? I'd love to bounce a couple of ideas off you.\n\n"
+            f"Cheers,\n"
+            f"{sender_name}"
+        )
+    else:  # Professional (Default)
+        subject = f"Inquiry: {role_str} opportunities at {company}"
+        body = (
+            f"Dear {name},\n\n"
+            f"I hope this email finds you well.\n\n"
+            f"I am writing to express my strong interest in joining the {company} team as a {role_str}. "
+            f"I have been following {company}'s growth and am highly impressed by your recent work.\n\n"
+            f"Briefly about my background: {bio_str}\n\n"
+            f"Given my skillset, I would welcome the opportunity to discuss how I can contribute to {company}. "
+            f"Would you be open to a brief 10-minute introductory call next week?\n\n"
+            f"Thank you for your time and consideration.\n\n"
+            f"Sincerely,\n"
+            f"{sender_name}"
+        )
+    
+    return {"subject": subject, "body": body}
+
+
+
 # ─── Fallback Rules Engine ─────────────────────────────────────────
 
 def run_fallback_engine(applications: List[models.Application]) -> List[dict]:
@@ -297,3 +393,86 @@ async def copilot_chat(
                 return {"reply": f"Sorry, Gemini API returned error: {response.text}"}
     except Exception as e:
         return {"reply": f"Sorry, I encountered an error when communicating with Gemini: {str(e)}"}
+
+
+@router.post("/draft-cold-email")
+async def draft_cold_email(
+    req: ColdEmailRequest,
+    current_user: models.User = Depends(get_current_user)
+):
+    sender_name = current_user.email.split("@")[0].capitalize()
+    
+    if not GEMINI_API_KEY:
+        return run_cold_email_fallback(
+            recipient_email=req.recipient_email,
+            recipient_name=req.recipient_name,
+            recipient_role=req.recipient_role,
+            company_name=req.company_name,
+            target_role=req.target_role,
+            user_bio=req.user_bio,
+            tone=req.tone,
+            sender_name=sender_name
+        )
+
+    company = req.company_name or extract_company_from_email(req.recipient_email) or "your company"
+    recipient = req.recipient_name or "there"
+    target = req.target_role or "a suitable role"
+    bio = req.user_bio or "a software professional eager to contribute value"
+
+    prompt = (
+        f"Draft a cold email from '{sender_name}' to a recipient at company '{company}'.\n\n"
+        f"Details:\n"
+        f"- Recipient Name: {recipient}\n"
+        f"- Recipient Role: {req.recipient_role}\n"
+        f"- Target Role: {target}\n"
+        f"- Sender Bio/Context: {bio}\n"
+        f"- Tone: {req.tone}\n\n"
+        f"Instructions:\n"
+        f"1. Generate a short, compelling subject line (3-6 words).\n"
+        f"2. Keep the email body under 150 words. Focus on how the sender's bio/skills can bring value to the company.\n"
+        f"3. Include a very clear, low-friction call to action (e.g., 'Are you open to a brief chat next week?').\n"
+        f"4. Do NOT use placeholders. If some info is missing, write natural text. Make sure to sign off with '{sender_name}'.\n"
+        f"5. Output MUST be a valid JSON object with exactly two keys: 'subject' and 'body'. Do not include markdown wrapper blocks or code fence blocks in the response."
+    )
+
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "responseMimeType": "application/json"
+        }
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=25.0) as client:
+            response = await client.post(url, headers=headers, json=payload)
+            if response.status_code == 200:
+                res_data = response.json()
+                text_response = res_data["candidates"][0]["content"]["parts"][0]["text"]
+                draft = json.loads(text_response.strip())
+                if isinstance(draft, dict) and "subject" in draft and "body" in draft:
+                    return draft
+            
+            return run_cold_email_fallback(
+                recipient_email=req.recipient_email,
+                recipient_name=req.recipient_name,
+                recipient_role=req.recipient_role,
+                company_name=company,
+                target_role=target,
+                user_bio=bio,
+                tone=req.tone,
+                sender_name=sender_name
+            )
+    except Exception:
+        return run_cold_email_fallback(
+            recipient_email=req.recipient_email,
+            recipient_name=req.recipient_name,
+            recipient_role=req.recipient_role,
+            company_name=company,
+            target_role=target,
+            user_bio=bio,
+            tone=req.tone,
+            sender_name=sender_name
+        )
+

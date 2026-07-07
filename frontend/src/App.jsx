@@ -13,6 +13,7 @@ import Applications from './pages/Applications'
 import Pipeline     from './pages/Pipeline'
 import Analytics    from './pages/Analytics'
 import AICopilot    from './pages/AICopilot'
+import ColdEmailer  from './pages/ColdEmailer'
 import Settings     from './pages/Settings'
 import Login        from './pages/Login'
 
@@ -52,6 +53,7 @@ function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
             <Route path="/pipeline"     element={<Pipeline     />} />
             <Route path="/analytics"    element={<Analytics    />} />
             <Route path="/copilot"      element={<AICopilot    />} />
+            <Route path="/cold-email"   element={<ColdEmailer  />} />
             <Route path="/settings"     element={<Settings     />} />
             <Route path="*"             element={<Navigate to="/" replace />} />
           </Routes>

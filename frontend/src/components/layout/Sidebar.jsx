@@ -1,7 +1,7 @@
 import { NavLink, Link } from 'react-router-dom'
 import {
   LayoutDashboard, Briefcase, BarChart2, Cpu,
-  Settings, KanbanSquare, X, LogOut,
+  Settings, KanbanSquare, X, LogOut, Mail,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { path: '/pipeline',    label: 'Pipeline',     icon: KanbanSquare    },
   { path: '/analytics',   label: 'Analytics',    icon: BarChart2       },
   { path: '/copilot',     label: 'AI Copilot',   icon: Cpu             },
+  { path: '/cold-email',  label: 'Cold Emailer', icon: Mail            },
   { path: '/settings',    label: 'Settings',     icon: Settings        },
 ]
 
