@@ -18,6 +18,9 @@ const ColdEmailer  = lazy(() => import('./pages/ColdEmailer'))
 const Settings     = lazy(() => import('./pages/Settings'))
 const Login        = lazy(() => import('./pages/Login'))
 const CreatorPortal = lazy(() => import('./pages/CreatorPortal'))
+const Landing      = lazy(() => import('./pages/Landing'))
+const EmailTemplates = lazy(() => import('./pages/resources/EmailTemplates'))
+const ResumeGuide  = lazy(() => import('./pages/resources/ResumeGuide'))
 
 function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
   const { isAuthenticated, loading } = useAuth()
@@ -50,7 +53,12 @@ function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
         </div>
       }>
         <Routes>
-          <Route path="*" element={<Login />} />
+          <Route path="/"                            element={<Landing />} />
+          <Route path="/login"                       element={<Login />} />
+          <Route path="/signup"                      element={<Login />} />
+          <Route path="/resources/cold-email-templates" element={<EmailTemplates />} />
+          <Route path="/resources/resume-guide"      element={<ResumeGuide />} />
+          <Route path="*"                            element={<Navigate to="/login" replace />} />
         </Routes>
       </Suspense>
     )
@@ -73,15 +81,17 @@ function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
             </div>
           }>
             <Routes>
-              <Route path="/"             element={<Dashboard    />} />
-              <Route path="/applications" element={<Applications />} />
-              <Route path="/pipeline"     element={<Pipeline     />} />
-              <Route path="/analytics"    element={<Analytics    />} />
-              <Route path="/copilot"      element={<AICopilot    />} />
-              <Route path="/cold-email"   element={<ColdEmailer  />} />
-              <Route path="/settings"     element={<Settings     />} />
-              <Route path="/admin"        element={<CreatorPortal/>} />
-              <Route path="*"             element={<Navigate to="/" replace />} />
+              <Route path="/"                            element={<Dashboard    />} />
+              <Route path="/applications"                element={<Applications />} />
+              <Route path="/pipeline"                    element={<Pipeline     />} />
+              <Route path="/analytics"                   element={<Analytics    />} />
+              <Route path="/copilot"                     element={<AICopilot    />} />
+              <Route path="/cold-email"                  element={<ColdEmailer  />} />
+              <Route path="/settings"                    element={<Settings     />} />
+              <Route path="/admin"                       element={<CreatorPortal/>} />
+              <Route path="/resources/cold-email-templates" element={<EmailTemplates />} />
+              <Route path="/resources/resume-guide"      element={<ResumeGuide />} />
+              <Route path="*"                            element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
         </main>
