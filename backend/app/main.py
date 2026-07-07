@@ -8,6 +8,7 @@ from app import models
 from app.routes.applications import router as application_router
 from app.routes.auth import router as auth_router
 from app.routes.copilot import router as copilot_router
+from app.routes.admin import router as admin_router
 
 models.Base.metadata.create_all(bind=engine)
 
