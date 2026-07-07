@@ -20,7 +20,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
   const displayName = user?.email ? user.email.split('@')[0] : 'User'
   const avatarInitials = user?.email ? user.email.substring(0, 2).toUpperCase() : 'US'
 
-  const isAdmin = user?.email && user.email.toLowerCase().startsWith('rajdeeppal01')
+  const isAdmin = user?.email && user.email.toLowerCase() === 'rajdeep.pal2004@gmail.com'
   const visibleNavItems = isAdmin 
     ? [...NAV_ITEMS, { path: '/admin', label: 'Creator Portal', icon: Terminal }]
     : NAV_ITEMS
