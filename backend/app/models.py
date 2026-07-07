@@ -33,3 +33,13 @@ class Application(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
     user = relationship("User", back_populates="applications")
+
+
+class SiteVisit(Base):
+    __tablename__ = "site_visits"
+
+    id = Column(Integer, primary_key=True, index=True)
+    path = Column(String(100), nullable=True)
+    user_agent = Column(String(500), nullable=True)
+    ip_address = Column(String(100), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)

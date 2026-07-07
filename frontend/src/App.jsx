@@ -1,5 +1,5 @@
-import { useState, lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useState, useEffect, lazy, Suspense } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 
 import { ThemeProvider } from './context/ThemeContext'
@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import { ApplicationsProvider } from './context/ApplicationsContext'
 import Sidebar from './components/layout/Sidebar'
 import Navbar from './components/layout/Navbar'
+import api from './api/applications'
 
 const Dashboard    = lazy(() => import('./pages/Dashboard'))
 const Applications = lazy(() => import('./pages/Applications'))
@@ -20,6 +21,18 @@ const CreatorPortal = lazy(() => import('./pages/CreatorPortal'))
 
 function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
   const { isAuthenticated, loading } = useAuth()
+  const location = useLocation()
+
+  useEffect(() => {
+    async function logVisit() {
+      try {
+        await api.post('/telemetry/visit', { path: location.pathname })
+      } catch (err) {
+        console.error('Failed to log telemetry visit', err)
+      }
+    }
+    logVisit()
+  }, [location.pathname])
 
   if (loading) {
     return (

@@ -9,6 +9,7 @@ from app.routes.applications import router as application_router
 from app.routes.auth import router as auth_router
 from app.routes.copilot import router as copilot_router
 from app.routes.admin import router as admin_router
+from app.routes.telemetry import router as telemetry_router
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -60,6 +61,7 @@ app.include_router(auth_router)
 app.include_router(application_router)
 app.include_router(copilot_router)
 app.include_router(admin_router)
+app.include_router(telemetry_router)
 
 
 @app.get("/")

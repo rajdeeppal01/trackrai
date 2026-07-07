@@ -106,3 +106,7 @@ class ApplicationResponse(ApplicationBase):
 
     class Config:
         from_attributes = True
+
+
+class TelemetryVisit(BaseModel):
+    path: Optional[str] = None

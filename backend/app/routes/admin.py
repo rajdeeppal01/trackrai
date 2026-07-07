@@ -46,7 +46,27 @@ def get_admin_stats(
             func.count(models.User.id).label('count')
         ).group_by('date').order_by('date').all()
 
-    signups_list = [{"date": r.date, "count": r.count} for r in signups_query]
+    # 4b. Telemetry Visits over time (grouped by date)
+    if db.bind.dialect.name == "postgresql":
+        visits_query = db.query(
+            func.to_char(models.SiteVisit.created_at, 'YYYY-MM-DD').label('date'),
+            func.count(models.SiteVisit.id).label('count')
+        ).group_by(func.to_char(models.SiteVisit.created_at, 'YYYY-MM-DD')).order_by('date').all()
+    else:
+        visits_query = db.query(
+            func.strftime('%Y-%m-%d', models.SiteVisit.created_at).label('date'),
+            func.count(models.SiteVisit.id).label('count')
+        ).group_by('date').order_by('date').all()
+
+    # Merge signups and visits by date for the frontend chart
+    timeline_dict = {}
+    for r in signups_query:
+        if r.date:
+            timeline_dict.setdefault(r.date, {"date": r.date, "signups": 0, "visits": 0})["signups"] = r.count
+    for r in visits_query:
+        if r.date:
+            timeline_dict.setdefault(r.date, {"date": r.date, "signups": 0, "visits": 0})["visits"] = r.count
+    merged_timeline = sorted(timeline_dict.values(), key=lambda x: x["date"])
 
     # 5. List of all active users and their application count (explicit GROUP BY for Postgres)
     users_query = db.query(
@@ -65,10 +85,18 @@ def get_admin_stats(
         } for r in users_query
     ]
 
+    # 6. Telemetry traffic totals
+    total_visits = db.query(func.count(models.SiteVisit.id)).scalar() or 0
+    unique_visitors = db.query(func.count(func.distinct(models.SiteVisit.ip_address))).scalar() or 0
+    conversion_rate = round((total_users / total_visits) * 100, 1) if total_visits > 0 else 0.0
+
     return {
         "total_users": total_users,
         "total_applications": total_applications,
         "avg_applications_per_user": avg_apps,
-        "signups_over_time": signups_list,
+        "total_visits": total_visits,
+        "unique_visitors": unique_visitors,
+        "conversion_rate": conversion_rate,
+        "traffic_and_signups": merged_timeline,
         "users_list": users_list
     }
