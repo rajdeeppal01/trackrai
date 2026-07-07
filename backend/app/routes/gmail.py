@@ -267,7 +267,7 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
                 })
                 continue
 
-            gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+            gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
             prompt = (
                 "You are an automated email classifier for TrackrAI. "
                 "Analyze the following email from a potential employer and classify the status change.\n\n"
