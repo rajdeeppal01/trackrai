@@ -128,6 +128,16 @@ export default function PremiumFeatures() {
     }
   }
 
+  async function handleCancelPremium() {
+    try {
+      const res = await api.post('/auth/cancel-premium')
+      setIsPremium(res.data.is_premium)
+      toast.success('Successfully downgraded to Free Tier.')
+    } catch (err) {
+      toast.error('Failed to cancel subscription.')
+    }
+  }
+
   return (
     <div className="h-full overflow-y-auto">
       <div className="max-w-4xl mx-auto p-8 lg:p-10 pb-32 space-y-8">
@@ -151,9 +161,13 @@ export default function PremiumFeatures() {
                     : 'Access to basic tracking. Try our premium Gmail scanner with 2 free scans.'}
                 </p>
               </div>
-              {!isPremium && (
+              {!isPremium ? (
                 <Button variant="primary" onClick={handleUpgradePremium}>
                   ✨ Upgrade to Premium
+                </Button>
+              ) : (
+                <Button variant="danger" size="sm" onClick={handleCancelPremium} className="opacity-80 hover:opacity-100">
+                  Cancel Subscription
                 </Button>
               )}
             </div>

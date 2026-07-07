@@ -179,3 +179,19 @@ def upgrade_premium(
     db.commit()
     db.refresh(current_user)
     return current_user
+
+
+@router.post("/cancel-premium", response_model=schemas.UserProfileResponse)
+def cancel_premium(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """
+    Mock endpoint to instantly downgrade from Premium tier for testing.
+    """
+    current_user.is_premium = False
+    # Optionally reset scan count so they don't immediately get locked if they had >2, 
+    # but practically they should stay locked out of free tier if they used it all.
+    db.commit()
+    db.refresh(current_user)
+    return current_user
