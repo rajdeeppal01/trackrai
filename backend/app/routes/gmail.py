@@ -282,8 +282,7 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
             )
 
             g_payload = {
-                "contents": [{"parts": [{"text": prompt}]}],
-                "generationConfig": {"responseMimeType": "application/json"}
+                "contents": [{"parts": [{"text": prompt}]}]
             }
             g_res = await client.post(gemini_url, json=g_payload, headers={"Content-Type": "application/json"})
             if g_res.status_code != 200:
