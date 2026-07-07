@@ -34,25 +34,33 @@ def get_admin_stats(
     # 3. Average applications per user
     avg_apps = round(total_applications / total_users, 1) if total_users > 0 else 0
 
-    # 4. Signups over time (grouped by date)
-    signups_query = db.query(
-        func.strftime('%Y-%m-%d', models.User.created_at).label('date'),
-        func.count(models.User.id).label('count')
-    ).group_by('date').order_by('date').all()
+    # 4. Signups over time (grouped by date, handling dialect mismatch)
+    if db.bind.dialect.name == "postgresql":
+        signups_query = db.query(
+            func.to_char(models.User.created_at, 'YYYY-MM-DD').label('date'),
+            func.count(models.User.id).label('count')
+        ).group_by(func.to_char(models.User.created_at, 'YYYY-MM-DD')).order_by('date').all()
+    else:
+        signups_query = db.query(
+            func.strftime('%Y-%m-%d', models.User.created_at).label('date'),
+            func.count(models.User.id).label('count')
+        ).group_by('date').order_by('date').all()
 
     signups_list = [{"date": r.date, "count": r.count} for r in signups_query]
 
-    # 5. List of all active users and their application count
+    # 5. List of all active users and their application count (explicit GROUP BY for Postgres)
     users_query = db.query(
         models.User.email,
         models.User.created_at,
         func.count(models.Application.id).label('apps_count')
-    ).outerjoin(models.Application).group_by(models.User.id).order_by(models.User.created_at.desc()).all()
+    ).outerjoin(models.Application).group_by(
+        models.User.id, models.User.email, models.User.created_at
+    ).order_by(models.User.created_at.desc()).all()
 
     users_list = [
         {
             "email": r.email,
-            "created_at": r.created_at.strftime('%Y-%m-%d %H:%M'),
+            "created_at": r.created_at.strftime('%Y-%m-%d %H:%M') if r.created_at else '',
             "apps_count": r.apps_count
         } for r in users_query
     ]
