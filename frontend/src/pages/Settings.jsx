@@ -4,7 +4,7 @@ import useDocumentTitle from '../hooks/useDocumentTitle'
 import { motion } from 'framer-motion'
 import {
   Settings as SettingsIcon, Download, Trash2, Database,
-  User, Shield, FileText, Save, Mail
+  User, Shield, FileText, Save, Mail, Zap
 } from 'lucide-react'
 import Button from '../components/ui/Button'
 import ConfirmDialog from '../components/ui/ConfirmDialog'
@@ -343,88 +343,108 @@ export default function Settings() {
           )}
         </Section>
 
-        {/* Gmail Sync (Premium) */}
-        <Section icon={Mail} title="Gmail Automation (Premium)" description="Connect your inbox to automatically parse and synchronize job application updates in real time">
-          {profileLoading ? (
-            <div className="h-28 rounded-xl bg-white/3 animate-pulse" />
-          ) : !gmailConnected ? (
-            <div className="p-4 rounded-xl bg-indigo-500/5 border border-indigo-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[9px] font-bold uppercase tracking-wider">Premium Mode</span>
-                <p className="text-sm font-semibold text-white">Gmail Integration is not connected</p>
-                <p className="text-xs text-white/40 leading-relaxed font-medium max-w-md">
-                  Authorize read-only access to search messages from recruiters. Gemini automatically extracts status updates and updates your pipeline.
+        {/* Subscription & Premium */}
+        <Section icon={Zap} title="Subscription & Premium Features" description="Manage your plan and access advanced automation tools like AI Gmail Sync">
+          
+          {/* Billing Card */}
+          {!profileLoading && (
+            <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-white font-bold flex items-center gap-2">
+                  {isPremium ? 'Premium Tier' : 'Free Tier'}
+                  {isPremium && <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[10px] font-bold uppercase tracking-wider">Active</span>}
+                </h3>
+                <p className="text-xs text-white/50 mt-1">
+                  {isPremium 
+                    ? 'You have unlimited access to all premium features including automated email sync.' 
+                    : 'Access to basic tracking. Try our premium Gmail scanner with 2 free scans.'}
                 </p>
               </div>
-              <Button variant="primary" size="sm" onClick={connectGmail}>
-                Connect Google Account
-              </Button>
+              {!isPremium && (
+                <Button variant="primary" onClick={handleUpgradePremium}>
+                  ✨ Upgrade to Premium
+                </Button>
+              )}
             </div>
-          ) : (
-            <div className="space-y-6">
-              <div className="p-4 rounded-xl border flex flex-col gap-4 bg-emerald-500/5 border-emerald-500/10">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <p className="text-sm font-semibold text-emerald-400 flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                      Connected to Gmail
-                    </p>
-                    <p className="text-xs text-white/35 font-medium">
-                      Last scanned: {lastGmailSync ? new Date(lastGmailSync).toLocaleString() : 'Never'}
-                    </p>
-                  </div>
-                  
-                  {!isPremium && gmailScansUsed >= 2 ? (
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={handleUpgradePremium}
-                    >
-                      ✨ Upgrade to Premium
-                    </Button>
-                  ) : (
+          )}
+
+          {/* Gmail Automation Feature */}
+          <div className="space-y-4">
+            <h4 className="text-sm font-semibold text-white">Gmail Integration</h4>
+            
+            {profileLoading ? (
+              <div className="h-28 rounded-xl bg-white/3 animate-pulse" />
+            ) : !gmailConnected ? (
+              <div className="p-4 rounded-xl bg-indigo-500/5 border border-indigo-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[9px] font-bold uppercase tracking-wider">Premium Feature</span>
+                  <p className="text-sm font-semibold text-white">Gmail Integration is not connected</p>
+                  <p className="text-xs text-white/40 leading-relaxed font-medium max-w-md">
+                    Authorize read-only access to search messages from recruiters. Gemini automatically extracts status updates and updates your pipeline.
+                  </p>
+                </div>
+                <Button variant="secondary" size="sm" onClick={connectGmail}>
+                  Connect Google Account
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="p-4 rounded-xl border flex flex-col gap-4 bg-emerald-500/5 border-emerald-500/10">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <p className="text-sm font-semibold text-emerald-400 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                        Connected to Gmail
+                      </p>
+                      <p className="text-xs text-white/35 font-medium">
+                        Last scanned: {lastGmailSync ? new Date(lastGmailSync).toLocaleString() : 'Never'}
+                      </p>
+                    </div>
+                    
                     <Button
                       variant="secondary"
                       size="sm"
                       loading={syncingGmail}
                       onClick={triggerSync}
+                      disabled={!isPremium && gmailScansUsed >= 2}
+                      className={!isPremium && gmailScansUsed >= 2 ? 'opacity-50 cursor-not-allowed' : ''}
                     >
-                      Sync Inbox Now
+                      {!isPremium && gmailScansUsed >= 2 ? '🔒 Locked (Requires Premium)' : 'Sync Inbox Now'}
                     </Button>
+                  </div>
+
+                  {!isPremium && (
+                    <div className="pt-2 flex items-center justify-between border-t border-white/5">
+                      <span className="text-xs font-semibold text-white/50">Free Tier Usage</span>
+                      <span className={`text-xs font-bold ${gmailScansUsed >= 2 ? 'text-red-400' : 'text-amber-400'}`}>
+                        {gmailScansUsed} / 2 Scans Used
+                      </span>
+                    </div>
                   )}
                 </div>
 
-                {!isPremium && (
-                  <div className="pt-2 flex items-center justify-between border-t border-white/5">
-                    <span className="text-xs font-semibold text-white/50">Free Tier Usage</span>
-                    <span className={`text-xs font-bold ${gmailScansUsed >= 2 ? 'text-red-400' : 'text-amber-400'}`}>
-                      {gmailScansUsed} / 2 Scans Used
-                    </span>
-                  </div>
-                )}
-              </div>
+                <div className="h-px bg-white/5" />
 
-              <div className="h-px bg-white/5" />
-
-              <SettingRow
-                label={<span className="flex items-center gap-2">Enable Automated Sync <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[8px] font-bold uppercase tracking-wider">Premium</span></span>}
-                description="Automatically parse incoming messages to update application cards dynamically."
-              >
-                <button
-                  onClick={() => {
-                    if (!isPremium) {
-                      toast.error('Automated Sync requires Premium.')
-                      return
-                    }
-                    toggleGmailSync(!gmailSyncEnabled)
-                  }}
-                  className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${gmailSyncEnabled ? 'bg-indigo-600' : 'bg-white/10'}`}
+                <SettingRow
+                  label={<span className="flex items-center gap-2">Enable Automated Sync <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[8px] font-bold uppercase tracking-wider">Premium</span></span>}
+                  description="Automatically parse incoming messages to update application cards dynamically."
                 >
-                  <span className={`w-4 h-4 rounded-full bg-white absolute top-1 left-1 transition-transform ${gmailSyncEnabled ? 'translate-x-5' : ''}`} />
-                </button>
-              </SettingRow>
-            </div>
-          )}
+                  <button
+                    onClick={() => {
+                      if (!isPremium) {
+                        toast.error('Automated Sync requires Premium.')
+                        return
+                      }
+                      toggleGmailSync(!gmailSyncEnabled)
+                    }}
+                    className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${gmailSyncEnabled ? 'bg-indigo-600' : 'bg-white/10'}`}
+                  >
+                    <span className={`w-4 h-4 rounded-full bg-white absolute top-1 left-1 transition-transform ${gmailSyncEnabled ? 'translate-x-5' : ''}`} />
+                  </button>
+                </SettingRow>
+              </div>
+            )}
+          </div>
         </Section>
 
         {/* Data & Export */}

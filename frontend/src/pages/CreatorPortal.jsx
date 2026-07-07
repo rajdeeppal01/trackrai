@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
-  Terminal, Users, Briefcase, Activity, Target, Lock
+  Terminal, Users, Briefcase, Activity, Target, Lock, Shield
 } from 'lucide-react'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
