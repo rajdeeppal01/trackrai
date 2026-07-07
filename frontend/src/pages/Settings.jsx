@@ -127,6 +127,9 @@ export default function Settings() {
       const res = await api.post('/gmail/sync')
       setLastGmailSync(res.data.last_gmail_sync || '')
       
+      // Console diagnostics for easy debugging
+      console.log('Gmail Scan Diagnostics:', res.data.scanned_emails)
+      
       const count = res.data.updated_applications?.length || 0
       if (count > 0) {
         toast.success(`Sync completed! Updated ${count} application status(es).`)
