@@ -130,3 +130,25 @@ def update_resume(
     db.commit()
     db.refresh(current_user)
     return current_user
+
+
+@router.get("/profile", response_model=schemas.UserProfileResponse)
+def get_profile(current_user: models.User = Depends(get_current_user)):
+    return current_user
+
+
+@router.put("/profile", response_model=schemas.UserProfileResponse)
+def update_profile(
+    profile_in: schemas.UserProfileUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    if profile_in.current_position is not None:
+        current_user.current_position = profile_in.current_position
+    if profile_in.current_company is not None:
+        current_user.current_company = profile_in.current_company
+    if profile_in.bio is not None:
+        current_user.bio = profile_in.bio
+    db.commit()
+    db.refresh(current_user)
+    return current_user

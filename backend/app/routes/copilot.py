@@ -207,7 +207,7 @@ def run_fallback_engine(applications: List[models.Application]) -> List[dict]:
 
 # ─── Gemini API Invoker ───────────────────────────────────────────
 
-async def generate_gemini_insights(applications: List[models.Application], resume_text: Optional[str] = None) -> List[dict]:
+async def generate_gemini_insights(applications: List[models.Application], user: models.User) -> List[dict]:
     if not GEMINI_API_KEY:
         # Fallback to local heuristic engine
         return run_fallback_engine(applications)
@@ -224,12 +224,22 @@ async def generate_gemini_insights(applications: List[models.Application], resum
         })
 
     resume_block = (
-        f"User's Resume:\n{resume_text}\n\n" if resume_text and resume_text.strip()
+        f"User's Resume:\n{user.resume_text}\n\n" if user.resume_text and user.resume_text.strip()
         else "User has not uploaded a resume yet. If relevant, gently suggest adding one in Settings for more tailored insights.\n\n"
     )
 
+    profile_parts = []
+    if user.current_position:
+        if user.current_company:
+            profile_parts.append(f"Current Position: {user.current_position} at {user.current_company}")
+        else:
+            profile_parts.append(f"Current Position: {user.current_position}")
+    if user.bio:
+        profile_parts.append(f"Bio Highlights: {user.bio}")
+    profile_block = "\n".join(profile_parts) if profile_parts else "No current job details specified."
+
     prompt = (
-        "You are an expert career coach and recruiter. Analyze the user's resume and job application pipeline and generate a JSON list of exactly 3 to 5 smart, highly personalized insights.\n"
+        "You are an expert career coach and recruiter. Analyze the user's current profile, resume, and job application pipeline and generate a JSON list of exactly 3 to 5 smart, highly personalized insights.\n"
         "Do not offer generic advice. Look at the specific roles, companies, status ratios, notes, and how well the resume matches each role.\n"
         "Your output must be a valid JSON array of objects. Do not wrap in markdown or blockticks.\n"
         "Each object in the array must contain:\n"
@@ -237,6 +247,7 @@ async def generate_gemini_insights(applications: List[models.Application], resum
         '- "icon": one relevant emoji representing the tip\n'
         '- "title": a short 3-6 word bold title\n'
         '- "body": a detailed, direct sentence offering analysis or concrete next action.\n\n'
+        f"User Profile:\n{profile_block}\n\n"
         f"{resume_block}"
         f"Applications Pipeline:\n{json.dumps(apps_data, indent=2)}"
     )
@@ -306,7 +317,7 @@ async def get_insights(
             pass
 
     # Cache is stale or empty, generate fresh insights
-    insights = await generate_gemini_insights(applications, current_user.resume_text)
+    insights = await generate_gemini_insights(applications, current_user)
     
     # Save cache
     current_user.cached_insights = json.dumps(insights)
@@ -340,11 +351,22 @@ async def copilot_chat(
         else "The user has not added a resume yet. If they ask for resume feedback, let them know they can paste it in Settings so you can give tailored advice, and offer general guidance in the meantime.\n\n"
     )
 
+    profile_parts = []
+    if current_user.current_position:
+        if current_user.current_company:
+            profile_parts.append(f"Current Position: {current_user.current_position} at {current_user.current_company}")
+        else:
+            profile_parts.append(f"Current Position: {current_user.current_position}")
+    if current_user.bio:
+        profile_parts.append(f"Profile Bio/Highlights: {current_user.bio}")
+    profile_str = "\n".join(profile_parts) if profile_parts else "No current job details specified."
+
     system_instruction = (
-        "You are TrackrAI, an expert AI job search copilot. You have access to the user's resume and job application pipeline. "
+        "You are TrackrAI, an expert AI job search copilot. You have access to the user's current position, resume, and job application pipeline. "
         "Your task is to answer user questions, help them prepare for interviews, give specific resume feedback tailored to each role, and suggest next actions. "
         "When asked how a resume looks for a specific company/role, actually compare the resume content against that role and give concrete, specific feedback — not generic tips. "
         "Keep your answers concise, structured, and action-oriented. Feel free to use markdown format.\n\n"
+        f"User's Current Profile:\n{profile_str}\n\n"
         f"{resume_block}"
         f"User's Current Applications:\n{apps_str}"
     )
@@ -417,7 +439,19 @@ async def draft_cold_email(
     company = req.company_name or extract_company_from_email(req.recipient_email) or "your company"
     recipient = req.recipient_name or "there"
     target = req.target_role or "a suitable role"
-    bio = req.user_bio or "a software professional eager to contribute value"
+    
+    user_context_parts = []
+    if current_user.current_position:
+        if current_user.current_company:
+            user_context_parts.append(f"Currently working as a {current_user.current_position} at {current_user.current_company}")
+        else:
+            user_context_parts.append(f"Currently working as a {current_user.current_position}")
+    if current_user.bio:
+        user_context_parts.append(f"Core highlights/bio: {current_user.bio}")
+    if req.user_bio:
+        user_context_parts.append(req.user_bio)
+
+    bio = "; ".join(user_context_parts) if user_context_parts else "a software professional eager to contribute value"
 
     prompt = (
         f"Draft a cold email from '{sender_name}' to a recipient at company '{company}'.\n\n"

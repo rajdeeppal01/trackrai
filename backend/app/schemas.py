@@ -53,6 +53,21 @@ class ResumeResponse(BaseModel):
         from_attributes = True
 
 
+class UserProfileUpdate(BaseModel):
+    current_position: Optional[str] = None
+    current_company: Optional[str] = None
+    bio: Optional[str] = None
+
+
+class UserProfileResponse(BaseModel):
+    current_position: Optional[str] = None
+    current_company: Optional[str] = None
+    bio: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
 # ─── Application Schemas ───────────────────────────────────────────
 
 class ApplicationBase(BaseModel):

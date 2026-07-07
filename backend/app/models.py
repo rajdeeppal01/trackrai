@@ -13,6 +13,9 @@ class User(Base):
     cached_insights = Column(Text, nullable=True)
     insights_updated_at = Column(DateTime(timezone=True), nullable=True)
     resume_text = Column(Text, nullable=True)
+    current_position = Column(String(200), nullable=True)
+    current_company = Column(String(200), nullable=True)
+    bio = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     applications = relationship("Application", back_populates="user", cascade="all, delete-orphan")

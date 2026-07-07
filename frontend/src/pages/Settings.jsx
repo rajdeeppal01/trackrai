@@ -50,6 +50,46 @@ export default function Settings() {
   const [confirmClear, setConfirmClear] = useState(false)
   const [clearing, setClearing] = useState(false)
 
+  // ── User Profile ──────────────────────────────────────────────
+  const [currentPosition, setCurrentPosition] = useState('')
+  const [currentCompany, setCurrentCompany] = useState('')
+  const [bio, setBio] = useState('')
+  const [profileLoading, setProfileLoading] = useState(true)
+  const [profileSaving, setProfileSaving] = useState(false)
+
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const res = await api.get('/auth/profile')
+        setCurrentPosition(res.data.current_position || '')
+        setCurrentCompany(res.data.current_company || '')
+        setBio(res.data.bio || '')
+      } catch (err) {
+        console.error('Failed to load profile', err)
+      } finally {
+        setProfileLoading(false)
+      }
+    }
+    fetchProfile()
+  }, [])
+
+  async function saveProfile() {
+    setProfileSaving(true)
+    try {
+      await api.put('/auth/profile', {
+        current_position: currentPosition,
+        current_company: currentCompany,
+        bio: bio
+      })
+      toast.success('Profile settings updated!')
+    } catch (err) {
+      console.error('Failed to save profile settings', err)
+      toast.error('Failed to save profile settings')
+    } finally {
+      setProfileSaving(false)
+    }
+  }
+
   // ── Resume ────────────────────────────────────────────────────
   const [resumeText, setResumeText] = useState('')
   const [resumeLoading, setResumeLoading] = useState(true)
@@ -146,7 +186,7 @@ export default function Settings() {
         </header>
 
         {/* Profile */}
-        <Section icon={User} title="Profile" description="Your account information">
+        <Section icon={User} title="Profile" description="Your account and job search profile details">
           <div className="flex items-center gap-4 p-4 rounded-xl bg-white/3">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xl shrink-0">
               RP
@@ -157,6 +197,50 @@ export default function Settings() {
               <p className="text-xs text-white/30 mt-0.5">{applications.length} application{applications.length !== 1 ? 's' : ''} tracked</p>
             </div>
           </div>
+          <div className="h-px bg-white/5 my-4" />
+          {profileLoading ? (
+            <div className="h-40 rounded-xl bg-white/3 animate-pulse" />
+          ) : (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs text-white/50 font-semibold uppercase tracking-wider">Current Position / Role</label>
+                  <input
+                    type="text"
+                    value={currentPosition}
+                    onChange={(e) => setCurrentPosition(e.target.value)}
+                    placeholder="e.g. SWE Intern, Student, Unemployed"
+                    className="w-full rounded-[6px] bg-white/3 border border-white/10 px-3.5 py-2 text-xs text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-white/50 font-semibold uppercase tracking-wider">Current Company / Organization</label>
+                  <input
+                    type="text"
+                    value={currentCompany}
+                    onChange={(e) => setCurrentCompany(e.target.value)}
+                    placeholder="e.g. Google, University of Utah"
+                    className="w-full rounded-[6px] bg-white/3 border border-white/10 px-3.5 py-2 text-xs text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-white/50 font-semibold uppercase tracking-wider">Bio & Pitch Highlights</label>
+                <textarea
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  placeholder="e.g. B.Tech CSE student specializing in threat detection, security automation, and AI-security integration."
+                  rows={3}
+                  className="w-full rounded-[6px] bg-white/3 border border-white/10 px-3.5 py-2 text-xs text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors resize-y"
+                />
+              </div>
+              <div className="flex justify-end">
+                <Button variant="primary" size="sm" icon={Save} onClick={saveProfile} loading={profileSaving}>
+                  Save Profile Settings
+                </Button>
+              </div>
+            </div>
+          )}
         </Section>
 
         {/* Resume */}

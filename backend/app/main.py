@@ -13,14 +13,17 @@ from app.routes.telemetry import router as telemetry_router
 
 models.Base.metadata.create_all(bind=engine)
 
-# ─── Self-healing migration: add resume_text column if it's missing ──
+# ─── Self-healing migration: add missing columns if they're missing ──
 # create_all() only creates brand-new tables, it never adds columns to
 # tables that already exist. This runs a lightweight check on startup
-# and adds the column if needed, so no manual DB shell access is required.
+# and adds the columns if needed, so no manual DB shell access is required.
 try:
     with engine.connect() as conn:
         if engine.dialect.name == "postgresql":
             conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS resume_text TEXT"))
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS current_position VARCHAR(200)"))
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS current_company VARCHAR(200)"))
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT"))
             conn.commit()
         else:
             # SQLite doesn't support "IF NOT EXISTS" for ADD COLUMN, so check first
@@ -28,9 +31,15 @@ try:
             existing_columns = [row[1] for row in result]
             if "resume_text" not in existing_columns:
                 conn.execute(text("ALTER TABLE users ADD COLUMN resume_text TEXT"))
-                conn.commit()
+            if "current_position" not in existing_columns:
+                conn.execute(text("ALTER TABLE users ADD COLUMN current_position VARCHAR(200)"))
+            if "current_company" not in existing_columns:
+                conn.execute(text("ALTER TABLE users ADD COLUMN current_company VARCHAR(200)"))
+            if "bio" not in existing_columns:
+                conn.execute(text("ALTER TABLE users ADD COLUMN bio TEXT"))
+            conn.commit()
 except Exception as e:
-    print(f"Migration check skipped/failed (safe to ignore if column already exists): {e}")
+    print(f"Migration check skipped/failed: {e}")
 
 app = FastAPI(
     title="TrackrAI API",
