@@ -18,6 +18,7 @@ const ColdEmailer  = lazy(() => import('./pages/ColdEmailer'))
 const Settings     = lazy(() => import('./pages/Settings'))
 const Login        = lazy(() => import('./pages/Login'))
 const CreatorPortal = lazy(() => import('./pages/CreatorPortal'))
+const PremiumFeatures = lazy(() => import('./pages/PremiumFeatures'))
 const Landing      = lazy(() => import('./pages/Landing'))
 const EmailTemplates = lazy(() => import('./pages/resources/EmailTemplates'))
 const ResumeGuide  = lazy(() => import('./pages/resources/ResumeGuide'))
@@ -88,6 +89,7 @@ function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
               <Route path="/copilot"                     element={<AICopilot    />} />
               <Route path="/cold-email"                  element={<ColdEmailer  />} />
               <Route path="/settings"                    element={<Settings     />} />
+              <Route path="/premium"                     element={<PremiumFeatures/>} />
               <Route path="/admin"                       element={<CreatorPortal/>} />
               <Route path="/resources/cold-email-templates" element={<EmailTemplates />} />
               <Route path="/resources/resume-guide"      element={<ResumeGuide />} />
