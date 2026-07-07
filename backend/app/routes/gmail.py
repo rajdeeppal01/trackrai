@@ -203,9 +203,15 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
         raise HTTPException(status_code=500, detail=f"Failed to fetch Gmail list: {str(e)}")
 
     if not messages:
-        return {"status": "success", "message": "No new job-related emails found.", "updated_applications": []}
+        return {
+            "status": "success",
+            "message": "No new job-related emails found.",
+            "updated_applications": [],
+            "scanned_emails": []
+        }
 
     updated_applications = []
+    scanned_emails = []
     
     # 3. Fetch details for each message
     async with httpx.AsyncClient(timeout=15.0) as client:
@@ -262,27 +268,46 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
             except Exception:
                 continue
 
-            if not analysis.get("is_job_related") or not analysis.get("company_name") or not analysis.get("status_update"):
-                continue
+            is_related = analysis.get("is_job_related", False)
+            company = (analysis.get("company_name") or "").strip()
+            new_status = (analysis.get("status_update") or "").strip()
 
-            company = analysis["company_name"].strip()
-            new_status = analysis["status_update"].strip()
+            matched = False
+            matched_app_info = None
 
-            # Find matching application in DB
-            # Use case-insensitive search
-            app = db.query(models.Application).filter(
-                models.Application.user_id == current_user.id,
-                func.lower(models.Application.company) == company.lower()
-            ).first()
+            if is_related and company and new_status:
+                # Fuzzy matching in Python
+                user_apps = db.query(models.Application).filter(models.Application.user_id == current_user.id).all()
+                app = None
+                for a in user_apps:
+                    c1 = a.company.lower().strip()
+                    c2 = company.lower().strip()
+                    # Match if exact, or if one contains the other
+                    if c1 == c2 or c1 in c2 or c2 in c1:
+                        app = a
+                        break
 
-            if app and app.status != new_status:
-                app.status = new_status
-                db.commit()
-                updated_applications.append({
-                    "company": app.company,
-                    "role": app.role,
-                    "new_status": new_status
-                })
+                if app:
+                    matched = True
+                    matched_app_info = f"{app.company} ({app.role})"
+                    if app.status != new_status:
+                        app.status = new_status
+                        db.commit()
+                        updated_applications.append({
+                            "company": app.company,
+                            "role": app.role,
+                            "new_status": new_status
+                        })
+
+            scanned_emails.append({
+                "subject": subject,
+                "sender": sender,
+                "is_job_related": is_related,
+                "extracted_company": company,
+                "extracted_status": new_status,
+                "matched": matched,
+                "matched_app": matched_app_info
+            })
 
     current_user.last_gmail_sync = datetime.now(timezone.utc)
     db.commit()
@@ -290,5 +315,6 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
     return {
         "status": "success",
         "last_gmail_sync": current_user.last_gmail_sync.isoformat(),
-        "updated_applications": updated_applications
+        "updated_applications": updated_applications,
+        "scanned_emails": scanned_emails
     }
