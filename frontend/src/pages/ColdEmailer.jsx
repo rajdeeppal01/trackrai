@@ -6,11 +6,8 @@ import {
 } from 'lucide-react'
 import api from '../api/applications'
 import toast from 'react-hot-toast'
-import { useAuth } from '../context/AuthContext'
 
 export default function ColdEmailer() {
-  const { user } = useAuth()
-  
   const [email, setEmail] = useState('')
   const [recipientName, setRecipientName] = useState('')
   const [recipientRole, setRecipientRole] = useState('Founder/CEO')
@@ -22,9 +19,6 @@ export default function ColdEmailer() {
   const [loading, setLoading] = useState(false)
   const [copiedSubject, setCopiedSubject] = useState(false)
   const [copiedBody, setCopiedBody] = useState(false)
-
-  // Sender email (pre-filled from registered account)
-  const [senderEmail, setSenderEmail] = useState('')
 
   // Editable draft states
   const [draftSubject, setDraftSubject] = useState('')
@@ -47,13 +41,6 @@ export default function ColdEmailer() {
       console.error('Failed to load email drafts history', e)
     }
   }, [])
-
-  // Sync senderEmail when user context loads
-  useEffect(() => {
-    if (user?.email && !senderEmail) {
-      setSenderEmail(user.email)
-    }
-  }, [user])
 
   // Sync draftSubject and draftBody when activeDraft changes
   useEffect(() => {
@@ -190,8 +177,7 @@ export default function ColdEmailer() {
     const to = encodeURIComponent(activeDraft.email)
     const subject = encodeURIComponent(draftSubject)
     const body = encodeURIComponent(draftBody)
-    const from = encodeURIComponent(senderEmail)
-    return `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${body}${from ? `&from=${from}` : ''}`
+    return `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${body}`
   }
 
   return (
@@ -357,16 +343,6 @@ export default function ColdEmailer() {
                 <div className="p-6 flex-1 flex flex-col space-y-5">
                   {/* Email Headers */}
                   <div className="space-y-2 pb-4 border-b border-white/5 text-sm">
-                    <div className="flex items-center">
-                      <span className="w-16 text-white/40 font-medium select-none">From:</span>
-                      <input
-                        type="email"
-                        value={senderEmail}
-                        onChange={(e) => setSenderEmail(e.target.value)}
-                        placeholder="your.email@domain.com"
-                        className="bg-transparent text-white/80 border-none focus:outline-none focus:ring-0 p-0 text-sm flex-1 font-light"
-                      />
-                    </div>
                     <div className="flex items-center">
                       <span className="w-16 text-white/40 font-medium select-none">To:</span>
                       <span className="text-white/80 font-light">{activeDraft.email}</span>
