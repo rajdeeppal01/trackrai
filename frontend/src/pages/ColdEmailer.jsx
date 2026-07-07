@@ -6,8 +6,11 @@ import {
 } from 'lucide-react'
 import api from '../api/applications'
 import toast from 'react-hot-toast'
+import { useAuth } from '../context/AuthContext'
 
 export default function ColdEmailer() {
+  const { user } = useAuth()
+  
   const [email, setEmail] = useState('')
   const [recipientName, setRecipientName] = useState('')
   const [recipientRole, setRecipientRole] = useState('Founder/CEO')
@@ -19,6 +22,13 @@ export default function ColdEmailer() {
   const [loading, setLoading] = useState(false)
   const [copiedSubject, setCopiedSubject] = useState(false)
   const [copiedBody, setCopiedBody] = useState(false)
+
+  // Sender email (pre-filled from registered account)
+  const [senderEmail, setSenderEmail] = useState('')
+
+  // Editable draft states
+  const [draftSubject, setDraftSubject] = useState('')
+  const [draftBody, setDraftBody] = useState('')
 
   // Current active draft
   const [activeDraft, setActiveDraft] = useState(null)
@@ -37,6 +47,24 @@ export default function ColdEmailer() {
       console.error('Failed to load email drafts history', e)
     }
   }, [])
+
+  // Sync senderEmail when user context loads
+  useEffect(() => {
+    if (user?.email && !senderEmail) {
+      setSenderEmail(user.email)
+    }
+  }, [user])
+
+  // Sync draftSubject and draftBody when activeDraft changes
+  useEffect(() => {
+    if (activeDraft) {
+      setDraftSubject(activeDraft.subject)
+      setDraftBody(activeDraft.body)
+    } else {
+      setDraftSubject('')
+      setDraftBody('')
+    }
+  }, [activeDraft])
 
   // Save history helper
   const saveHistory = (newHistory) => {
@@ -151,8 +179,8 @@ export default function ColdEmailer() {
   // Pre-fill mailto URL parameters safely
   const getMailtoLink = () => {
     if (!activeDraft) return '#'
-    const subjectEncoded = encodeURIComponent(activeDraft.subject)
-    const bodyEncoded = encodeURIComponent(activeDraft.body)
+    const subjectEncoded = encodeURIComponent(draftSubject)
+    const bodyEncoded = encodeURIComponent(draftBody)
     return `mailto:${activeDraft.email}?subject=${subjectEncoded}&body=${bodyEncoded}`
   }
 
@@ -160,9 +188,10 @@ export default function ColdEmailer() {
   const getGmailLink = () => {
     if (!activeDraft) return '#'
     const to = encodeURIComponent(activeDraft.email)
-    const subject = encodeURIComponent(activeDraft.subject)
-    const body = encodeURIComponent(activeDraft.body)
-    return `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${body}`
+    const subject = encodeURIComponent(draftSubject)
+    const body = encodeURIComponent(draftBody)
+    const from = encodeURIComponent(senderEmail)
+    return `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${body}${from ? `&from=${from}` : ''}`
   }
 
   return (
@@ -328,17 +357,32 @@ export default function ColdEmailer() {
                 <div className="p-6 flex-1 flex flex-col space-y-5">
                   {/* Email Headers */}
                   <div className="space-y-2 pb-4 border-b border-white/5 text-sm">
-                    <div className="flex">
-                      <span className="w-16 text-white/40 font-medium">To:</span>
-                      <span className="text-white/80">{activeDraft.email}</span>
+                    <div className="flex items-center">
+                      <span className="w-16 text-white/40 font-medium select-none">From:</span>
+                      <input
+                        type="email"
+                        value={senderEmail}
+                        onChange={(e) => setSenderEmail(e.target.value)}
+                        placeholder="your.email@domain.com"
+                        className="bg-transparent text-white/80 border-none focus:outline-none focus:ring-0 p-0 text-sm flex-1 font-light"
+                      />
+                    </div>
+                    <div className="flex items-center">
+                      <span className="w-16 text-white/40 font-medium select-none">To:</span>
+                      <span className="text-white/80 font-light">{activeDraft.email}</span>
                     </div>
                     <div className="flex items-center justify-between group">
-                      <div className="flex flex-1">
-                        <span className="w-16 text-white/40 font-medium">Subject:</span>
-                        <span className="text-white font-semibold flex-1">{activeDraft.subject}</span>
+                      <div className="flex flex-1 items-center">
+                        <span className="w-16 text-white/40 font-medium select-none">Subject:</span>
+                        <input
+                          type="text"
+                          value={draftSubject}
+                          onChange={(e) => setDraftSubject(e.target.value)}
+                          className="bg-transparent text-white font-semibold flex-1 border-none focus:outline-none focus:ring-0 p-0 text-sm"
+                        />
                       </div>
                       <button
-                        onClick={() => handleCopy(activeDraft.subject, 'subject')}
+                        onClick={() => handleCopy(draftSubject, 'subject')}
                         className="text-white/40 hover:text-white transition-colors p-1"
                         title="Copy Subject"
                       >
@@ -348,14 +392,19 @@ export default function ColdEmailer() {
                   </div>
 
                   {/* Email Body */}
-                  <div className="flex-1 text-sm leading-relaxed text-white/85 whitespace-pre-wrap font-light py-2">
-                    {activeDraft.body}
+                  <div className="flex-1 py-2">
+                    <textarea
+                      value={draftBody}
+                      onChange={(e) => setDraftBody(e.target.value)}
+                      rows={12}
+                      className="w-full bg-transparent text-white/85 text-sm leading-relaxed font-light border-none focus:outline-none focus:ring-0 p-0 resize-none h-full min-h-[250px] scrollbar-thin"
+                    />
                   </div>
 
                   {/* Actions footer */}
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/5 pt-4">
                     <button
-                      onClick={() => handleCopy(activeDraft.body, 'body')}
+                      onClick={() => handleCopy(draftBody, 'body')}
                       className="w-full sm:w-auto px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/85 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
                     >
                       {copiedBody ? <Check size={14} className="text-green-400" /> : <Copy size={14} />}
