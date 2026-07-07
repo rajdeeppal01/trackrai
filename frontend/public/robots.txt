@@ -10,4 +10,4 @@ Disallow: /copilot
 Disallow: /cold-email
 Disallow: /settings
 
-Sitemap: https://frontend-zeta-ebon-6g2mglih0o.vercel.app/sitemap.xml
+Sitemap: https://trackr-ai.vercel.app/sitemap.xml

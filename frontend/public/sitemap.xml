@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://frontend-zeta-ebon-6g2mglih0o.vercel.app/</loc>
+    <loc>https://trackr-ai.vercel.app/</loc>
     <lastmod>2026-07-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://frontend-zeta-ebon-6g2mglih0o.vercel.app/login</loc>
+    <loc>https://trackr-ai.vercel.app/login</loc>
     <lastmod>2026-07-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://frontend-zeta-ebon-6g2mglih0o.vercel.app/resources/cold-email-templates</loc>
+    <loc>https://trackr-ai.vercel.app/resources/cold-email-templates</loc>
     <lastmod>2026-07-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://frontend-zeta-ebon-6g2mglih0o.vercel.app/resources/resume-guide</loc>
+    <loc>https://trackr-ai.vercel.app/resources/resume-guide</loc>
     <lastmod>2026-07-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
