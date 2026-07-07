@@ -77,6 +77,7 @@ export default function AICopilot() {
   ])
   const [chatLoading, setChatLoading] = useState(false)
   const chatBottomRef = useRef(null)
+  const isFirstRender = useRef(true)
 
   // Load insights from backend `/copilot/insights`
   useEffect(() => {
@@ -107,9 +108,13 @@ export default function AICopilot() {
     }
   }, [applications])
 
-  // Scroll to bottom of chat
+  // Scroll to bottom of chat (skip on initial mount, and never scroll the whole page)
   useEffect(() => {
-    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [messages])
 
   // Chat message send handler
