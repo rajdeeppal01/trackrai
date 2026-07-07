@@ -72,17 +72,56 @@ def get_admin_stats(
     users_query = db.query(
         models.User.email,
         models.User.created_at,
+        models.User.current_position,
+        models.User.current_company,
         func.count(models.Application.id).label('apps_count')
     ).outerjoin(models.Application).group_by(
-        models.User.id, models.User.email, models.User.created_at
+        models.User.id, models.User.email, models.User.created_at,
+        models.User.current_position, models.User.current_company
     ).order_by(models.User.created_at.desc()).all()
 
     users_list = [
         {
             "email": r.email,
             "created_at": r.created_at.strftime('%Y-%m-%d %H:%M') if r.created_at else '',
-            "apps_count": r.apps_count
+            "apps_count": r.apps_count,
+            "current_position": r.current_position or '',
+            "current_company": r.current_company or ''
         } for r in users_query
+    ]
+
+    # Calculate user role classifications (Interns vs Employees)
+    intern_count = 0
+    employee_count = 0
+    for u in users_list:
+        pos = u["current_position"].strip().lower()
+        if not pos:
+            continue
+        if "intern" in pos:
+            intern_count += 1
+        elif "student" in pos or "unemployed" in pos:
+            continue
+        else:
+            employee_count += 1
+
+    # Group users by employer / organization distribution
+    company_stats_query = db.query(
+        models.User.current_company,
+        func.count(models.User.id).label('user_count')
+    ).filter(
+        models.User.current_company != None,
+        models.User.current_company != ""
+    ).group_by(
+        models.User.current_company
+    ).order_by(
+        func.count(models.User.id).desc()
+    ).all()
+
+    company_distribution = [
+        {
+            "company": r.current_company,
+            "user_count": r.user_count
+        } for r in company_stats_query
     ]
 
     # 6. Telemetry traffic totals
@@ -97,6 +136,9 @@ def get_admin_stats(
         "total_visits": total_visits,
         "unique_visitors": unique_visitors,
         "conversion_rate": conversion_rate,
+        "intern_count": intern_count,
+        "employee_count": employee_count,
+        "company_distribution": company_distribution,
         "traffic_and_signups": merged_timeline,
         "users_list": users_list
     }

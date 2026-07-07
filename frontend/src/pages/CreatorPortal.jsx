@@ -133,6 +133,49 @@ export default function CreatorPortal() {
               </div>
             </div>
 
+             {/* Demographics and Organization distributions */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              
+              {/* Classification Cards */}
+              <div className="glass rounded-3xl p-6 border border-white/5 flex flex-col justify-between h-44">
+                <div>
+                  <h3 className="text-sm font-bold text-white mb-0.5">Intern vs Employee Users</h3>
+                  <p className="text-[10px] text-white/30">User profile classifications</p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-3 rounded-2xl bg-indigo-500/5 border border-indigo-500/10">
+                    <p className="text-[10px] text-indigo-300 font-bold uppercase tracking-wider">Interns</p>
+                    <p className="text-2xl font-black text-white mt-1">{stats.intern_count || 0}</p>
+                  </div>
+                  <div className="p-3 rounded-2xl bg-purple-500/5 border border-purple-500/10">
+                    <p className="text-[10px] text-purple-300 font-bold uppercase tracking-wider">Employees</p>
+                    <p className="text-2xl font-black text-white mt-1">{stats.employee_count || 0}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Top Employers Organization List */}
+              <div className="glass rounded-3xl p-6 border border-white/5 md:col-span-2 flex flex-col justify-between min-h-[11rem]">
+                <div>
+                  <h3 className="text-sm font-bold text-white mb-0.5">Top User Organizations</h3>
+                  <p className="text-[10px] text-white/30 font-medium">Where your user base currently works/studies</p>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {stats.company_distribution?.length > 0 ? (
+                    stats.company_distribution.map((dist, idx) => (
+                      <div key={idx} className="px-3 py-1.5 rounded-xl bg-white/3 border border-white/5 flex items-center gap-2 text-xs">
+                        <span className="font-semibold text-white/80">{dist.company}</span>
+                        <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono font-bold text-[10px]">{dist.user_count}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-xs text-white/20 italic">No organization data logged yet</p>
+                  )}
+                </div>
+              </div>
+
+            </div>
+
             {/* Active Users Table */}
             <div className="glass rounded-3xl border border-white/5 overflow-hidden">
               <div className="px-6 py-4 border-b border-white/5">
@@ -144,6 +187,8 @@ export default function CreatorPortal() {
                   <thead>
                     <tr className="bg-white/2 text-white/40 font-semibold border-b border-white/5 uppercase tracking-wider text-[10px]">
                       <th className="px-6 py-3.5">User Email</th>
+                      <th className="px-6 py-3.5">Current Role</th>
+                      <th className="px-6 py-3.5">Company / Org</th>
                       <th className="px-6 py-3.5">Join Date</th>
                       <th className="px-6 py-3.5 text-right">Job Apps Tracked</th>
                     </tr>
@@ -152,6 +197,8 @@ export default function CreatorPortal() {
                     {stats.users_list?.map((u, i) => (
                       <tr key={i} className="hover:bg-white/2 transition-colors">
                         <td className="px-6 py-3.5 font-medium text-white/80">{u.email}</td>
+                        <td className="px-6 py-3.5 text-white/50">{u.current_position || <span className="text-white/20 italic">Not set</span>}</td>
+                        <td className="px-6 py-3.5 text-white/50">{u.current_company || <span className="text-white/20 italic">Not set</span>}</td>
                         <td className="px-6 py-3.5 text-white/40">{u.created_at}</td>
                         <td className="px-6 py-3.5 text-right font-mono font-bold text-indigo-400">{u.apps_count}</td>
                       </tr>
