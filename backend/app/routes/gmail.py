@@ -20,8 +20,9 @@ router = APIRouter(
 )
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
-GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "https://trackr-ai.vercel.app/settings?gmail_connected=true")
+GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "https://trackrai.in/settings?gmail_connected=true")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 
@@ -94,18 +95,18 @@ async def oauth_callback(code: str, state: str, request: Request):
     We decode the state to extract the nonce, and redirect back to the frontend.
     """
     if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
-        return RedirectResponse(url="https://trackr-ai.vercel.app/premium?error=MissingCredentials")
+        return RedirectResponse(url="https://trackrai.in/premium?error=MissingCredentials")
 
     import jwt as pyjwt_lib
     try:
         payload = pyjwt_lib.decode(state, SECRET_KEY, algorithms=[ALGORITHM])
         nonce = payload.get("nonce", "")
     except Exception:
-        return RedirectResponse(url="https://trackr-ai.vercel.app/premium?error=InvalidState")
+        return RedirectResponse(url="https://trackrai.in/premium?error=InvalidState")
 
     # Pass the code and nonce back to the frontend so it can verify the nonce against localStorage
     # and then POST the code to /gmail/connect
-    return RedirectResponse(url=f"https://trackr-ai.vercel.app/premium?code={code}&nonce={nonce}")
+    return RedirectResponse(url=f"https://trackrai.in/premium?code={code}&nonce={nonce}")
 
 
 class ConnectRequest(BaseModel):

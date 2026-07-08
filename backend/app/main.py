@@ -84,7 +84,8 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 allowed_origins = [
     "http://localhost:5173",
     "http://localhost:3000",
-    "https://trackr-ai.vercel.app",
+    "https://trackrai.in",
+    "https://www.trackrai.in",
     "https://frontend-zeta-ebon-6g2mglih0o.vercel.app",
 ]
 env_origins = os.getenv("ALLOWED_ORIGINS")
