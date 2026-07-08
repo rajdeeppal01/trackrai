@@ -209,10 +209,15 @@ async def process_gmail_sync_for_user(db: Session, current_user: models.User) ->
     except Exception:
         pass
 
-    # 2. Fetch recent messages list from Gmail API
-    # We retrieve the raw recent 15 emails directly (including Spam/Trash for test emails)
+    # We retrieve the recent 15 emails directly (including Spam/Trash)
+    # SECURITY: We use a strict Gmail query (q) to only fetch emails containing job-related keywords,
+    # and strictly exclude sensitive financial/personal keywords so they never reach our servers or Gemini.
     messages_url = "https://gmail.googleapis.com/gmail/v1/users/me/messages"
-    params = {"maxResults": 15, "includeSpamTrash": "true"}
+    params = {
+        "maxResults": 15, 
+        "includeSpamTrash": "true",
+        "q": '{"interview" "application" "offer" "rejection" "candidate" "recruiter" "status" "hr" "assessment" "hired"} -{"bank" "statement" "invoice" "receipt" "transaction" "payment" "alert" "password" "otp"}'
+    }
 
     messages = []
     try:
