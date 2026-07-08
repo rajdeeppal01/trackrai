@@ -290,7 +290,8 @@ async def process_gmail_sync_for_user(db: Session, current_user: models.User) ->
                 f"Subject: {subject}\n"
                 f"Body snippet:\n{body_text[:1500]}\n\n"
                 "Return a JSON object containing exactly three keys:\n"
-                '- "is_job_related": boolean (true if this is a job application, OA invite, interview invitation, offer, or rejection letter)\n'
+                '- "is_job_related": boolean (true if this is a job application, OA invite, interview invitation, offer, or rejection letter). '
+                'CRITICAL SECURITY RULE: You MUST cross-reference the "From" email domain with the extracted company name. If the domain is completely unrelated to the company AND is not a known Applicant Tracking System (e.g. greenhouse.io, lever.co, myworkday.com, icims.com, smartrecruiters.com, ashbyhq.com), you MUST set this to false to prevent spoofing or mismatched emails.\n'
                 '- "company_name": string (the exact company name offering the role, or null if not clear)\n'
                 '- "status_update": string (strictly one of: "OA", "Interview", "Offer", "Rejected", or null if not clear)\n\n'
                 "Output MUST be valid JSON. Do not include markdown wraps or ticks."
