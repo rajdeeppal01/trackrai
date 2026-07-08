@@ -327,8 +327,13 @@ async def get_insights(
     return insights
 
 
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from app.limiter import limiter
+
 @router.post("/chat")
+@limiter.limit("10/minute")
 async def copilot_chat(
+    request: Request,
     req: ChatRequest,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
@@ -412,13 +417,15 @@ async def copilot_chat(
                 reply = res_data["candidates"][0]["content"]["parts"][0]["text"]
                 return {"reply": reply}
             else:
-                return {"reply": f"Sorry, Gemini API returned error: {response.text}"}
-    except Exception as e:
-        return {"reply": f"Sorry, I encountered an error when communicating with Gemini: {str(e)}"}
+                return {"reply": "Sorry, I am currently unable to process your request. Please try again later."}
+    except Exception:
+        return {"reply": "Sorry, I am currently unable to process your request. Please try again later."}
 
 
 @router.post("/draft-cold-email")
+@limiter.limit("10/minute")
 async def draft_cold_email(
+    request: Request,
     req: ColdEmailRequest,
     current_user: models.User = Depends(get_current_user)
 ):

@@ -2,8 +2,9 @@ from datetime import datetime, timedelta, timezone
 import os
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
+from app.limiter import limiter
 import jwt as pyjwt_lib      # we will use pyjwt since it is standard
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
@@ -73,7 +74,8 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session 
 # ─── Routes ────────────────────────────────────────────────────────
 
 @router.post("/signup", response_model=schemas.UserResponse, status_code=status.HTTP_201_CREATED)
-def signup(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def signup(request: Request, user_in: schemas.UserCreate, db: Session = Depends(get_db)):
     # Check if user already exists
     existing_user = db.query(models.User).filter(models.User.email == user_in.email).first()
     if existing_user:
@@ -94,7 +96,8 @@ def signup(user_in: schemas.UserCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=schemas.Token)
-def login(user_in: schemas.UserLogin, db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def login(request: Request, user_in: schemas.UserLogin, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == user_in.email).first()
     if not user or not verify_password(user_in.password, user.hashed_password):
         raise HTTPException(

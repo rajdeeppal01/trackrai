@@ -66,12 +66,45 @@ export default function PremiumFeatures() {
       }
     }
     fetchProfile()
+    
+    // Check for OAuth Callback Parameters
+    const params = new URLSearchParams(window.location.search)
+    const code = params.get('code')
+    const nonce = params.get('nonce')
+    const error = params.get('error')
+
+    if (error) {
+      toast.error(`Google Connection Failed: ${error}`)
+      window.history.replaceState({}, document.title, window.location.pathname)
+    } else if (code && nonce) {
+      const savedNonce = localStorage.getItem('oauth_nonce')
+      if (nonce !== savedNonce) {
+        toast.error('Security verification failed (CSRF attempt detected). Please try again.')
+        window.history.replaceState({}, document.title, window.location.pathname)
+      } else {
+        localStorage.removeItem('oauth_nonce')
+        api.post('/gmail/connect', { code })
+          .then(() => {
+            toast.success('Successfully connected to Gmail!')
+            setGmailConnected(true)
+            setGmailSyncEnabled(true)
+            window.history.replaceState({}, document.title, window.location.pathname)
+          })
+          .catch(err => {
+            toast.error(err.response?.data?.detail || 'Failed to connect Google account.')
+            window.history.replaceState({}, document.title, window.location.pathname)
+          })
+      }
+    }
   }, [])
 
   async function connectGmail() {
     const localToken = localStorage.getItem('trackrai_token')
+    const nonce = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    localStorage.setItem('oauth_nonce', nonce)
+    
     try {
-      const res = await api.get(`/gmail/auth-url?token=${localToken}`)
+      const res = await api.get(`/gmail/auth-url?token=${localToken}&nonce=${nonce}`)
       window.location.href = res.data.auth_url
     } catch (err) {
       console.error('Failed to get Gmail OAuth URL', err)

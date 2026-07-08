@@ -1,7 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 import os
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from app.limiter import limiter
 
 from app.database import engine
 from app import models
@@ -72,6 +75,10 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan
 )
+
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Safe origins (No "*" wildcard when allow_credentials=True)
 allowed_origins = [
