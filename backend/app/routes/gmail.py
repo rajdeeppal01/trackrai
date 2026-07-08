@@ -149,15 +149,19 @@ def toggle_gmail_sync(enabled: bool, db: Session = Depends(get_db), current_user
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Please connect your Google account first."
         )
+    if not current_user.is_premium and enabled:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Auto-Sync is a Premium feature. Free users can only sync manually."
+        )
     current_user.gmail_sync_enabled = enabled
     db.commit()
     return {"gmail_sync_enabled": current_user.gmail_sync_enabled}
 
 
-@router.post("/sync")
-async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+async def process_gmail_sync_for_user(db: Session, current_user: models.User) -> dict:
     """
-    Manually trigger a Gmail sync and parse status changes with Gemini.
+    Core logic to sync a user's Gmail inbox. Used by both the manual /sync endpoint and the background scheduler.
     """
     if not current_user.google_refresh_token:
         raise HTTPException(
@@ -377,3 +381,10 @@ async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.U
         "updated_applications": updated_applications,
         "scanned_emails": scanned_emails
     }
+
+@router.post("/sync")
+async def sync_gmail_inbox(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    """
+    Manually trigger a Gmail sync and parse status changes with Gemini.
+    """
+    return await process_gmail_sync_for_user(db, current_user)

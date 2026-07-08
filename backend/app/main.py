@@ -57,10 +57,20 @@ try:
 except Exception as e:
     print(f"Migration check skipped/failed: {e}")
 
+from contextlib import asynccontextmanager
+from app.scheduler import start_scheduler, shutdown_scheduler
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    start_scheduler()
+    yield
+    shutdown_scheduler()
+
 app = FastAPI(
     title="TrackrAI API",
     description="AI-powered Job Application Tracker API",
     version="1.0.0",
+    lifespan=lifespan
 )
 
 # Safe origins (No "*" wildcard when allow_credentials=True)
