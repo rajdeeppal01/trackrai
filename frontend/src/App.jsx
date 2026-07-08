@@ -22,6 +22,8 @@ const PremiumFeatures = lazy(() => import('./pages/PremiumFeatures'))
 const Landing      = lazy(() => import('./pages/Landing'))
 const EmailTemplates = lazy(() => import('./pages/resources/EmailTemplates'))
 const ResumeGuide  = lazy(() => import('./pages/resources/ResumeGuide'))
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
+const TermsOfService = lazy(() => import('./pages/TermsOfService'))
 
 function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
   const { isAuthenticated, loading } = useAuth()
@@ -93,6 +95,8 @@ function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
               <Route path="/admin"                       element={<CreatorPortal/>} />
               <Route path="/resources/cold-email-templates" element={<EmailTemplates />} />
               <Route path="/resources/resume-guide"      element={<ResumeGuide />} />
+              <Route path="/privacy"                     element={<PrivacyPolicy />} />
+              <Route path="/terms"                       element={<TermsOfService />} />
               <Route path="*"                            element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>

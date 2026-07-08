@@ -239,7 +239,9 @@ export default function Landing() {
             <Link to="/resources/cold-email-templates" className="hover:text-white/60 transition-colors">Cold Email Templates</Link>
             <Link to="/resources/resume-guide" className="hover:text-white/60 transition-colors">ATS Resume Guide</Link>
             <Link to="/login" className="hover:text-white/60 transition-colors">Sign In</Link>
-            <a href="https://github.com/rajdeeppal01/trackrai" target="_blank" rel="noreferrer" className="hover:text-white/60 transition-colors">GitHub Code</a>
+            <a href="https://github.com/rajdeeppal01/trackrai" target="_blank" rel="noreferrer" className="hover:text-white/60 transition-colors">GitHub</a>
+            <Link to="/privacy" className="hover:text-white/60 transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-white/60 transition-colors">Terms of Service</Link>
           </div>
           <p>© 2026 TrackrAI. Deployed under MIT License.</p>
         </div>
