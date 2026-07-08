@@ -7,7 +7,10 @@ import {
 import useDocumentTitle from '../hooks/useDocumentTitle'
 
 export default function Landing() {
-  useDocumentTitle('TrackrAI — AI-Powered Job Tracker')
+  useDocumentTitle(
+    'TrackrAI — AI-Powered Job Tracker', 
+    'The ultimate AI job application tracker and copilot. Automate your job search with AI cold emails, smart pipeline tracking, and resume analysis.'
+  )
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -22,37 +25,37 @@ export default function Landing() {
   const features = [
     {
       icon: Briefcase,
-      title: 'Job Pipeline Board',
-      desc: 'Ditch the spreadsheets. Track status, interviews, and offers in a gorgeous Kanban board with instant drag-and-drop mechanics.',
+      title: 'Job Application Tracker',
+      desc: 'Ditch the spreadsheets. Track statuses, interviews, and offers in a gorgeous Kanban board with instant drag-and-drop mechanics.',
       color: 'text-indigo-400',
       bg: 'bg-indigo-500/10'
     },
     {
       icon: Cpu,
-      title: 'AI Copilot Review',
-      desc: 'Upload your resume and get immediate feedback, alignment scoring, and personalized optimization suggestions powered by Gemini.',
+      title: 'AI Resume Analyzer',
+      desc: 'Upload your resume and get immediate feedback, ATS alignment scoring, and personalized optimization suggestions powered by Gemini AI.',
       color: 'text-purple-400',
       bg: 'bg-purple-500/10'
     },
     {
       icon: Mail,
-      title: 'AI Cold Email Drafts',
-      desc: 'Enter any founder or hiring manager email to instantly write highly personalized outreach pitches aligned with your background.',
+      title: 'AI Cold Email Generator',
+      desc: 'Enter any founder or hiring manager email to instantly write highly personalized outreach pitches aligned with your professional background.',
       color: 'text-cyan-400',
       bg: 'bg-cyan-500/10'
     },
     {
       icon: BarChart2,
-      title: 'Visual Analytics',
-      desc: 'Watch your search performance grow. Monitor conversion rates, response metrics, and acquisition over time in real time.',
+      title: 'Job Search Analytics',
+      desc: 'Watch your search performance grow. Monitor conversion rates, interview response metrics, and acquisition over time in real time.',
       color: 'text-emerald-400',
       bg: 'bg-emerald-500/10'
     }
   ]
 
   const faqs = [
-    { q: 'Is TrackrAI completely free?', a: 'Yes! The core platform, including application tracking, pipeline updates, and metrics, is 100% free with no limits.' },
-    { q: 'How does the AI Cold Emailer work?', a: 'It analyzes the recipient\'s role and company along with your pitch highlights to draft a tailored outreach email, which you can edit and launch directly in your email client.' },
+    { q: 'Is TrackrAI a free job tracker?', a: 'Yes! The core platform, including application tracking, pipeline updates, and metrics, is 100% free with no limits.' },
+    { q: 'How does the AI Cold Email Generator work?', a: 'It analyzes the recipient\'s role and company along with your pitch highlights to draft a tailored outreach email, which you can edit and launch directly in your email client.' },
     { q: 'Is my data secure?', a: 'Absolutely. We encrypt all passwords, do not sell your personal data, and allow you to permanently export or purge your data at any time from your Settings panel.' }
   ]
 
@@ -107,12 +110,12 @@ export default function Landing() {
             Track your job hunt with <span className="gradient-text">Artificial Intelligence</span>
           </motion.h1>
 
-          <motion.p
+          <motion.h2
             variants={itemVariants}
             className="text-white/45 text-base md:text-lg max-w-xl mx-auto font-medium leading-relaxed"
           >
-            Ditch spreadsheets. Track applications, scoring match factors, draft personalized outreach, and watch your conversion metrics fly.
-          </motion.p>
+            Ditch spreadsheets. Use our free AI job application tracker to organize your pipeline, draft personalized cold emails, and watch your interview metrics fly.
+          </motion.h2>
 
           <motion.div
             variants={itemVariants}

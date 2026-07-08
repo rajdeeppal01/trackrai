@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom'
-import { FileText, ArrowLeft, ArrowRight, Shield, AlertCircle, CheckCircle } from 'lucide-react'
+import { FileText, CheckCircle, XCircle, ArrowLeft, Star, ArrowRight, Shield, AlertCircle } from 'lucide-react'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 
 export default function ResumeGuide() {
-  useDocumentTitle('ATS Resume Guide — Optimize for Application Parsers')
+  useDocumentTitle(
+    'ATS Resume Guide & Best Practices',
+    'Learn how to beat the ATS and get your resume read by human recruiters. Follow our step-by-step resume guide for job hunters.'
+  )
 
   const tips = [
     {

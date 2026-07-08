@@ -6,7 +6,10 @@ import useDocumentTitle from '../../hooks/useDocumentTitle'
 import toast from 'react-hot-toast'
 
 export default function EmailTemplates() {
-  useDocumentTitle('Free Cold Email Templates for Founders & Recruiters')
+  useDocumentTitle(
+    'Cold Email Templates for Job Seekers',
+    'Free AI-generated cold email templates to help you land interviews. Send the perfect message to hiring managers and recruiters.'
+  )
   const [copiedId, setCopiedId] = useState(null)
 
   const templates = [
