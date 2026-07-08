@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import { motion } from 'framer-motion'
-import { Zap, Mail, ChevronRight } from 'lucide-react'
+import { Zap, Mail } from 'lucide-react'
 import Button from '../components/ui/Button'
 import toast from 'react-hot-toast'
 import api from '../api/applications'
