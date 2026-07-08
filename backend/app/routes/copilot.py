@@ -463,10 +463,11 @@ async def draft_cold_email(
         f"- Tone: {req.tone}\n\n"
         f"Instructions:\n"
         f"1. Generate a short, compelling subject line (3-6 words).\n"
-        f"2. Keep the email body under 150 words. Focus on how the sender's bio/skills can bring value to the company.\n"
-        f"3. Include a very clear, low-friction call to action (e.g., 'Are you open to a brief chat next week?').\n"
-        f"4. Do NOT use placeholders. If some info is missing, write natural text. Make sure to sign off with '{sender_name}'.\n"
-        f"5. Output MUST be a valid JSON object with exactly two keys: 'subject' and 'body'. Do not include markdown wrapper blocks or code fence blocks in the response."
+        f"2. Adapt the structural format and writing style to perfectly match the industry standard of the sender's background (derived from the Sender Bio). For example, a Creative Director's email should be structured differently (e.g., portfolio-driven, conceptual) than a Tech Student's email (e.g., project-driven, eager to learn). Let the sender's role dictate the email's architecture.\n"
+        f"3. Keep the email body under 150 words. Focus on how the sender's unique skills bring value to the company.\n"
+        f"4. Include a very clear, low-friction call to action (e.g., 'Are you open to a brief chat next week?').\n"
+        f"5. Do NOT use placeholders. If some info is missing, write natural text. Make sure to sign off with '{sender_name}'.\n"
+        f"6. Output MUST be a valid JSON object with exactly two keys: 'subject' and 'body'. Do not include markdown wrapper blocks or code fence blocks in the response."
     )
 
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
