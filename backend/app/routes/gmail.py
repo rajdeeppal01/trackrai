@@ -210,7 +210,7 @@ async def process_gmail_sync_for_user(db: Session, current_user: models.User) ->
                     detail="Google Token Refresh failed. Please re-connect your account."
                 )
             access_token = res.json().get("access_token")
-    except Exception:
+    except httpx.RequestError:
         raise HTTPException(status_code=500, detail="Google connection failed due to an internal network error.")
 
     headers = {"Authorization": f"Bearer {access_token}"}
