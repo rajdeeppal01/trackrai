@@ -39,6 +39,13 @@ export default function Landing() {
     },
     {
       icon: Mail,
+      title: 'Gmail Integration (Copilot)',
+      desc: 'Securely connect your Gmail to automatically scan for interview invites, application status updates, and recruiter emails to keep your pipeline in sync without manual data entry.',
+      color: 'text-rose-400',
+      bg: 'bg-rose-500/10'
+    },
+    {
+      icon: Mail,
       title: 'AI Cold Email Generator',
       desc: 'Enter any founder or hiring manager email to instantly write highly personalized outreach pitches aligned with your professional background.',
       color: 'text-cyan-400',
@@ -54,6 +61,8 @@ export default function Landing() {
   ]
 
   const faqs = [
+    { q: 'What is the purpose of TrackrAI?', a: 'TrackrAI is a comprehensive job search management platform. Its main purpose is to help job seekers organize their job applications, track interview stages, and use Artificial Intelligence to optimize resumes and generate cold outreach emails.' },
+    { q: 'Why does TrackrAI request access to my Gmail?', a: 'TrackrAI requests read-only access to your Gmail to automatically detect emails related to your job applications (like interview invitations, offer letters, or rejection notices). This allows the AI Copilot to automatically update your application statuses on your dashboard without manual data entry. We strictly only process emails from job-related domains and NEVER read personal emails, share your data, or send emails on your behalf.' },
     { q: 'Is TrackrAI a free job tracker?', a: 'Yes! The core platform, including application tracking, pipeline updates, and metrics, is 100% free with no limits.' },
     { q: 'How does the AI Cold Email Generator work?', a: 'It analyzes the recipient\'s role and company along with your pitch highlights to draft a tailored outreach email, which you can edit and launch directly in your email client.' },
     { q: 'Is my data secure?', a: 'Absolutely. We encrypt all passwords, do not sell your personal data, and allow you to permanently export or purge your data at any time from your Settings panel.' }
