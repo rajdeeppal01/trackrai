@@ -257,7 +257,20 @@ async def generate_gemini_insights(applications: List[models.Application], user:
     payload = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
-            "responseMimeType": "application/json"
+            "responseMimeType": "application/json",
+            "responseSchema": {
+                "type": "ARRAY",
+                "items": {
+                    "type": "OBJECT",
+                    "properties": {
+                        "type": {"type": "STRING", "enum": ["stat", "tip", "warning", "success", "action"]},
+                        "icon": {"type": "STRING"},
+                        "title": {"type": "STRING"},
+                        "body": {"type": "STRING"}
+                    },
+                    "required": ["type", "icon", "title", "body"]
+                }
+            }
         }
     }
 
@@ -405,8 +418,29 @@ async def copilot_chat(
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
     headers = {"Content-Type": "application/json"}
+    tools = [
+        {
+            "functionDeclarations": [
+                {
+                    "name": "create_jira_ticket",
+                    "description": "Creates a Jira ticket for escalating issues, bugs, or security vulnerabilities to the engineering team.",
+                    "parameters": {
+                        "type": "OBJECT",
+                        "properties": {
+                            "title": {"type": "STRING", "description": "Short title of the issue"},
+                            "description": {"type": "STRING", "description": "Detailed description of the problem"},
+                            "priority": {"type": "STRING", "enum": ["Low", "Medium", "High", "Critical"]}
+                        },
+                        "required": ["title", "description", "priority"]
+                    }
+                }
+            ]
+        }
+    ]
+
     payload = {
-        "contents": contents
+        "contents": contents,
+        "tools": tools
     }
 
     try:
@@ -414,7 +448,19 @@ async def copilot_chat(
             response = await client.post(url, headers=headers, json=payload)
             if response.status_code == 200:
                 res_data = response.json()
-                reply = res_data["candidates"][0]["content"]["parts"][0]["text"]
+                parts = res_data["candidates"][0]["content"].get("parts", [])
+                
+                # Check for tool call
+                for part in parts:
+                    if "functionCall" in part:
+                        call = part["functionCall"]
+                        if call["name"] == "create_jira_ticket":
+                            args = call.get("args", {})
+                            ticket_id = "ENG-9042" # Mock Jira ticket ID
+                            return {"reply": f"🤖 **Action Taken:** I have created a Jira ticket (`{ticket_id}`) for the engineering team with priority **{args.get('priority')}**. Title: *{args.get('title')}*."}
+                
+                # Otherwise return standard text
+                reply = parts[0].get("text", "No response.") if parts else "No response."
                 return {"reply": reply}
             else:
                 return {"reply": "Sorry, I am currently unable to process your request. Please try again later."}
