@@ -155,6 +155,12 @@ async def connect_gmail(
     except Exception:
         raise HTTPException(status_code=500, detail="Failed to connect to Google.")
 
+@router.post("/disconnect")
+def disconnect_gmail(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    current_user.google_refresh_token = None
+    current_user.gmail_sync_enabled = False
+    db.commit()
+    return {"status": "success"}
 
 @router.post("/toggle")
 def toggle_gmail_sync(enabled: bool, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
