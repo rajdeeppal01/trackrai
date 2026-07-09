@@ -124,6 +124,18 @@ export default function PremiumFeatures() {
     }
   }
 
+  async function disconnectGmail() {
+    try {
+      await api.post('/gmail/disconnect')
+      setGmailConnected(false)
+      setGmailSyncEnabled(false)
+      toast.success('Gmail disconnected successfully.')
+    } catch (err) {
+      console.error('Failed to disconnect Gmail', err)
+      toast.error('Failed to disconnect Gmail.')
+    }
+  }
+
   async function triggerSync() {
     setSyncingGmail(true)
     try {
@@ -240,16 +252,26 @@ export default function PremiumFeatures() {
                       </p>
                     </div>
                     
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      loading={syncingGmail}
-                      onClick={triggerSync}
-                      disabled={!isPremium && gmailScansUsed >= 2}
-                      className={!isPremium && gmailScansUsed >= 2 ? 'opacity-50 cursor-not-allowed' : ''}
-                    >
-                      {!isPremium && gmailScansUsed >= 2 ? '🔒 Locked (Requires Premium)' : 'Sync Inbox Now'}
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={disconnectGmail}
+                        className="bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                      >
+                        Disconnect
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        loading={syncingGmail}
+                        onClick={triggerSync}
+                        disabled={!isPremium && gmailScansUsed >= 2}
+                        className={!isPremium && gmailScansUsed >= 2 ? 'opacity-50 cursor-not-allowed' : ''}
+                      >
+                        {syncingGmail ? 'Scanning Inbox...' : 'Scan Now'}
+                      </Button>
+                    </div>
                   </div>
 
                   {!isPremium && (
