@@ -13,7 +13,7 @@ const NAV_ITEMS = [
   { path: '/copilot',     label: 'AI Copilot',   icon: Cpu             },
   { path: '/cold-email',  label: 'Cold Emailer', icon: Mail            },
   { path: '/premium',     label: 'Premium',      icon: Zap             },
-  { path: 'https://blog.trackrai.in', label: 'Blog', icon: Pencil, isExternal: true },
+  { path: 'https://trackrai.hashnode.dev', label: 'Guides', icon: Pencil, isExternal: true },
   { path: '/settings',    label: 'Settings',     icon: Settings        },
 ]
 
