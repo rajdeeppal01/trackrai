@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { path: '/copilot',     label: 'AI Copilot',   icon: Cpu             },
   { path: '/cold-email',  label: 'Cold Emailer', icon: Mail            },
   { path: '/premium',     label: 'Premium',      icon: Zap             },
+  { path: 'https://blog.trackrai.in', label: 'Blog', icon: Pencil, isExternal: true },
   { path: '/settings',    label: 'Settings',     icon: Settings        },
 ]
 
@@ -48,30 +49,52 @@ export default function Sidebar({ mobileOpen, onClose }) {
         )}
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 px-3 space-y-1">
-        {visibleNavItems.map(({ path, label, icon: Icon }) => (
-          <NavLink
-            key={path}
-            to={path}
-            end={path === '/'}
-            onClick={onClose}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? 'bg-gradient-to-r from-indigo-600/80 to-purple-600/60 text-white shadow-lg shadow-indigo-900/30 border border-indigo-500/20'
-                  : 'text-white/40 hover:text-white hover:bg-white/6'
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <Icon size={18} className={isActive ? 'text-white' : 'text-white/40'} />
-                <span>{label}</span>
-              </>
-            )}
-          </NavLink>
-        ))}
+        {visibleNavItems.map(({ path, label, icon: Icon, isExternal }) => {
+          const content = (
+            <>
+              <Icon size={18} />
+              <span>{label}</span>
+            </>
+          );
+          
+          if (isExternal) {
+            return (
+              <a
+                key={path}
+                href={path}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-white/40 hover:text-white hover:bg-white/6"
+              >
+                {content}
+              </a>
+            );
+          }
+
+          return (
+            <NavLink
+              key={path}
+              to={path}
+              end={path === '/'}
+              onClick={onClose}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  isActive
+                    ? 'bg-gradient-to-r from-indigo-600/80 to-purple-600/60 text-white shadow-lg shadow-indigo-900/30 border border-indigo-500/20'
+                    : 'text-white/40 hover:text-white hover:bg-white/6'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <Icon size={18} className={isActive ? 'text-white' : 'text-white/40'} />
+                  <span>{label}</span>
+                </>
+              )}
+            </NavLink>
+          );
+        })}
       </nav>
 
       {/* User card */}
