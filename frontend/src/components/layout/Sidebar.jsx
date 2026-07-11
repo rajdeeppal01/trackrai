@@ -1,7 +1,7 @@
 import { NavLink, Link } from 'react-router-dom'
 import {
   LayoutDashboard, Briefcase, BarChart2, Cpu,
-  Settings, KanbanSquare, X, LogOut, Mail, Terminal, Zap
+  Settings, KanbanSquare, X, LogOut, Mail, Terminal, Zap, Pencil
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
