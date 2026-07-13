@@ -4,6 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Response
 from fastapi.security.utils import get_authorization_scheme_param
+from fastapi.security import OAuth2PasswordBearer
 from app.limiter import limiter
 import jwt as pyjwt_lib      # we will use pyjwt since it is standard
 from passlib.context import CryptContext

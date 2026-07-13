@@ -109,13 +109,14 @@ async def oauth_callback(code: str, state: str, request: Request):
     except Exception:
         return RedirectResponse(url="https://trackrai.in/premium?error=InvalidState")
 
-    # Pass the code and nonce back to the frontend so it can verify the nonce against localStorage
-    # and then POST the code to /gmail/connect
-    return RedirectResponse(url=f"https://trackrai.in/premium?code={code}&nonce={nonce}")
+    # Pass the code, nonce, and raw state back to the frontend
+    # The frontend must POST the code and state to /gmail/connect to prevent CSRF
+    return RedirectResponse(url=f"https://trackrai.in/premium?code={code}&nonce={nonce}&state={state}")
 
 
 class ConnectRequest(BaseModel):
     code: str
+    state: Optional[str] = None
 
 @router.post("/connect")
 async def connect_gmail(
@@ -125,8 +126,19 @@ async def connect_gmail(
     current_user: models.User = Depends(get_current_user)
 ):
     """
-    Exchange the authorization code for a refresh token.
+    Exchange the authorization code for a refresh token and verify CSRF state.
     """
+    if not req.state:
+        raise HTTPException(status_code=403, detail="OAuth state token is required to prevent CSRF.")
+        
+    import jwt as pyjwt_lib
+    try:
+        state_payload = pyjwt_lib.decode(req.state, SECRET_KEY, algorithms=[ALGORITHM])
+        if str(state_payload.get("sub")) != str(current_user.id):
+            raise HTTPException(status_code=403, detail="OAuth Binding CSRF detected: Account mismatch.")
+    except Exception:
+        raise HTTPException(status_code=403, detail="Invalid OAuth state token.")
+
     token_url = "https://oauth2.googleapis.com/token"
     scheme = "https" if "localhost" not in request.url.netloc else "http"
     redirect_uri = f"{scheme}://{request.url.netloc}/gmail/callback"
