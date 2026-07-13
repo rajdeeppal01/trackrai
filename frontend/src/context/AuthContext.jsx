@@ -52,6 +52,8 @@ export function AuthProvider({ children }) {
       toast.success('Welcome back!');
       return true;
     } catch (err) {
+      setIsAuthenticated(false);
+      setUser(null);
       const msg = err.response?.data?.detail || 'Invalid email or password';
       toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
       throw err;
