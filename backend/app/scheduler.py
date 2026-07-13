@@ -23,14 +23,19 @@ async def run_automated_sync():
 
         print(f"Found {len(eligible_users)} eligible premium users for auto-sync.")
 
-        for user in eligible_users:
-            try:
-                print(f"Syncing inbox for user {user.email}...")
-                await process_gmail_sync_for_user(db, user)
-                print(f"Successfully synced inbox for user {user.email}.")
-            except Exception as e:
-                # Catch exceptions (including HTTPExceptions raised by process_gmail_sync_for_user)
-                print(f"Failed to sync inbox for user {user.email}: {str(e)}")
+        sem = asyncio.Semaphore(10)
+
+        async def _sync_user(u):
+            async with sem:
+                try:
+                    print(f"Syncing inbox for user ID: {u.id}...")
+                    await process_gmail_sync_for_user(db, u)
+                    print(f"Successfully synced inbox for user ID: {u.id}.")
+                except Exception as e:
+                    print(f"Failed to sync inbox for user ID: {u.id} - {str(e)}")
+
+        tasks = [_sync_user(u) for u in eligible_users]
+        await asyncio.gather(*tasks)
                 
     except Exception as e:
         print(f"Error in background sync job: {str(e)}")

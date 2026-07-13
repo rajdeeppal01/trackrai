@@ -130,14 +130,14 @@ def login(request: Request, response: Response, user_in: schemas.UserLogin, db: 
         value=access_token,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="strict",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/logout")
 def logout(response: Response):
-    response.delete_cookie("access_token", httponly=True, secure=True, samesite="lax")
+    response.delete_cookie("access_token", httponly=True, secure=True, samesite="strict")
     return {"status": "success"}
 
 
