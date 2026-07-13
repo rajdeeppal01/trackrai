@@ -5,11 +5,12 @@ from app import models
 from app import schemas
 
 
-def get_all(db: Session, user_id: int):
+def get_all(db: Session, user_id: int, limit: int = 1000):
     return (
         db.query(models.Application)
         .filter(models.Application.user_id == user_id)
         .order_by(desc(models.Application.created_at))
+        .limit(limit)
         .all()
     )
 

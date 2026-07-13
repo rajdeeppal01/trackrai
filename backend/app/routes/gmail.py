@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from starlette.responses import RedirectResponse
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 
 from app import models, schemas
 from app.database import get_db
@@ -438,22 +439,25 @@ async def process_gmail_sync_for_user(db: Session, current_user: models.User) ->
                         })
                 else:
                     # Missing Creation Protocol: Automatically track new jobs!
-                    new_app = models.Application(
-                        user_id=current_user.id,
-                        company=company,
-                        role="Unknown Role (AI Extracted)",
-                        status=new_status
-                    )
-                    db.add(new_app)
-                    db.commit()
-                    db.refresh(new_app)
-                    matched = True
-                    matched_app_info = f"{new_app.company} (New Entry Created)"
-                    updated_applications.append({
-                        "company": new_app.company,
-                        "role": new_app.role,
-                        "new_status": new_status
-                    })
+                    # Storage Exhaustion Mitigation: Cap at 1000 applications
+                    app_count = db.query(func.count(models.Application.id)).filter(models.Application.user_id == current_user.id).scalar()
+                    if app_count < 1000:
+                        new_app = models.Application(
+                            user_id=current_user.id,
+                            company=company,
+                            role="Unknown Role (AI Extracted)",
+                            status=new_status
+                        )
+                        db.add(new_app)
+                        db.commit()
+                        matched_app_info = f"New AI Created: {new_app.company}"
+                        updated_applications.append({
+                            "company": new_app.company,
+                            "role": new_app.role,
+                            "new_status": new_status
+                        })
+                    else:
+                        matched_app_info = "Max Application Limit (1000) Reached. Ignoring new job."
 
             scanned_emails.append({
                 "subject": subject,
