@@ -75,14 +75,15 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> models.
     try:
         payload = pyjwt_lib.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id_str: str = payload.get("sub")
-        if user_id_str is None:
+        session_version = payload.get("version")
+        if user_id_str is None or session_version is None:
             raise credentials_exception
         user_id = int(user_id_str)
     except Exception:
         raise credentials_exception
 
     user = db.query(models.User).filter(models.User.id == user_id).first()
-    if user is None:
+    if user is None or user.session_version != session_version:
         raise credentials_exception
     return user
 
@@ -139,7 +140,8 @@ def login(request: Request, response: Response, user_in: schemas.UserLogin, db: 
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": str(user.id)}, expires_delta=access_token_expires
+        data={"sub": str(user.id), "version": user.session_version},
+        expires_delta=access_token_expires
     )
     
     response.set_cookie(
@@ -153,9 +155,12 @@ def login(request: Request, response: Response, user_in: schemas.UserLogin, db: 
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/logout")
-def logout(response: Response):
+def logout(response: Response, current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
+    # Increment session_version to globally invalidate all existing JWTs for this user
+    current_user.session_version += 1
+    db.commit()
     response.delete_cookie("access_token", httponly=True, secure=True, samesite="lax")
-    return {"status": "success"}
+    return {"message": "Successfully logged out. All existing sessions have been terminated."}
 
 
 @router.get("/me", response_model=schemas.UserResponse)

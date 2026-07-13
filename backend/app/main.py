@@ -34,6 +34,7 @@ try:
             conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS last_gmail_sync TIMESTAMP WITH TIME ZONE"))
             conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_premium BOOLEAN DEFAULT FALSE NOT NULL"))
             conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS gmail_scans_used INTEGER DEFAULT 0 NOT NULL"))
+            conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS session_version INTEGER DEFAULT 1 NOT NULL"))
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_users_gmail_sync_enabled ON users (gmail_sync_enabled)"))
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_users_is_premium ON users (is_premium)"))
             conn.commit()
@@ -59,6 +60,8 @@ try:
                 conn.execute(text("ALTER TABLE users ADD COLUMN is_premium BOOLEAN DEFAULT 0 NOT NULL"))
             if "gmail_scans_used" not in existing_columns:
                 conn.execute(text("ALTER TABLE users ADD COLUMN gmail_scans_used INTEGER DEFAULT 0 NOT NULL"))
+            if "session_version" not in existing_columns:
+                conn.execute(text("ALTER TABLE users ADD COLUMN session_version INTEGER DEFAULT 1 NOT NULL"))
             
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_users_gmail_sync_enabled ON users (gmail_sync_enabled)"))
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_users_is_premium ON users (is_premium)"))

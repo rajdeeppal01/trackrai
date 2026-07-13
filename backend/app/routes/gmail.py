@@ -209,11 +209,16 @@ async def process_gmail_sync_for_user(db: Session, current_user: models.User) ->
             detail="Google Account is not connected. Please authenticate first."
         )
 
-    if not current_user.is_premium and current_user.gmail_scans_used >= 2:
+    # TOCTOU Mitigation: Atomically lock the user row to prevent race conditions during free tier scans
+    user = db.query(models.User).filter(models.User.id == current_user.id).with_for_update().first()
+    if not user.is_premium and user.gmail_scans_used >= 2:
         raise HTTPException(
             status_code=status.HTTP_402_PAYMENT_REQUIRED,
             detail="Free scans exhausted. Please upgrade to Premium."
         )
+    # Atomically increment and commit before contacting external services
+    user.gmail_scans_used += 1
+    db.commit()
 
     decrypted_token = decrypt_token(current_user.google_refresh_token)
     if not decrypted_token:
@@ -460,14 +465,14 @@ async def process_gmail_sync_for_user(db: Session, current_user: models.User) ->
                 "matched_app": matched_app_info
             })
 
-    current_user.last_gmail_sync = datetime.now(timezone.utc)
-    current_user.gmail_scans_used += 1
+    user = db.query(models.User).filter(models.User.id == current_user.id).with_for_update().first()
+    user.last_gmail_sync = datetime.now(timezone.utc)
     db.commit()
 
     return {
         "status": "success",
         "connected_email": connected_email,
-        "last_gmail_sync": current_user.last_gmail_sync.isoformat(),
+        "last_gmail_sync": user.last_gmail_sync.isoformat(),
         "updated_applications": updated_applications,
         "scanned_emails": scanned_emails
     }

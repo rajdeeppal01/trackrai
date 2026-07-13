@@ -21,6 +21,7 @@ class User(Base):
     last_gmail_sync = Column(DateTime(timezone=True), nullable=True)
     is_premium = Column(Boolean, default=False, nullable=False, index=True)
     gmail_scans_used = Column(Integer, default=0, nullable=False)
+    session_version = Column(Integer, default=1, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     applications = relationship("Application", back_populates="user", cascade="all, delete-orphan")
