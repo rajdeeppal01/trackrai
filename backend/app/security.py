@@ -1,12 +1,20 @@
 import base64
 import hashlib
+import os
+import warnings
 from cryptography.fernet import Fernet
 from app.routes.auth import SECRET_KEY
 
-# Derive a 32-byte key from the SECRET_KEY for Fernet
-# Fernet requires a base64-encoded 32-byte key
-_key_hash = hashlib.sha256(SECRET_KEY.encode()).digest()
-FERNET_KEY = base64.urlsafe_b64encode(_key_hash)
+# Prefer a dedicated FERNET_KEY for encryption. Fallback to deriving from SECRET_KEY
+_env_key = os.getenv("FERNET_KEY")
+
+if _env_key:
+    FERNET_KEY = _env_key.encode("utf-8")
+else:
+    warnings.warn("FERNET_KEY environment variable not found. Deriving encryption key from SECRET_KEY. This is not recommended for production.")
+    _key_hash = hashlib.sha256(SECRET_KEY.encode()).digest()
+    FERNET_KEY = base64.urlsafe_b64encode(_key_hash)
+
 _cipher = Fernet(FERNET_KEY)
 
 def encrypt_token(token: str) -> str:

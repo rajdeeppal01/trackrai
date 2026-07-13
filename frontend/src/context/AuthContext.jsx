@@ -6,36 +6,27 @@ import toast from 'react-hot-toast';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => localStorage.getItem('trackrai_token'));
+  // We use `isAuthenticated` derived from whether we successfully loaded the profile, since the token is hidden in a cookie.
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Load user data if token is present
+  // Attempt to load user profile. If successful, cookie is present and valid.
   useEffect(() => {
     async function loadMe() {
-      if (!token) {
-        setLoading(false);
-        return;
-      }
       try {
         const res = await api.get('/auth/me');
         setUser(res.data);
+        setIsAuthenticated(true);
       } catch (err) {
-        console.error('Failed to load profile:', err.response?.status, err.response?.data || err.message);
-        
-        // Only log out if the token is explicitly rejected (401 or 403)
-        const status = err.response?.status;
-        if (status === 401 || status === 403) {
-          localStorage.removeItem('trackrai_token');
-          setToken(null);
-          setUser(null);
-        }
+        setIsAuthenticated(false);
+        setUser(null);
       } finally {
         setLoading(false);
       }
     }
     loadMe();
-  }, [token]);
+  }, []);
 
   // Sign up
   const signup = async (email, password) => {
@@ -53,10 +44,11 @@ export function AuthProvider({ children }) {
   // Login
   const login = async (email, password) => {
     try {
-      const res = await api.post('/auth/login', { email, password });
-      const accessToken = res.data.access_token;
-      localStorage.setItem('trackrai_token', accessToken);
-      setToken(accessToken);
+      await api.post('/auth/login', { email, password });
+      setIsAuthenticated(true);
+      // Re-fetch the user profile to populate user state
+      const res = await api.get('/auth/me');
+      setUser(res.data);
       toast.success('Welcome back!');
       return true;
     } catch (err) {
@@ -67,19 +59,22 @@ export function AuthProvider({ children }) {
   };
 
   // Logout
-  const logout = () => {
-    localStorage.removeItem('trackrai_token');
+  const logout = async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch (err) {
+      console.error('Logout failed on backend:', err);
+    }
     localStorage.removeItem('trackrai_activity'); // Reset local storage cache
-    setToken(null);
+    setIsAuthenticated(false);
     setUser(null);
     toast.success('Logged out successfully.');
   };
 
   const value = {
-    token,
     user,
     loading,
-    isAuthenticated: !!token,
+    isAuthenticated,
     signup,
     login,
     logout,

@@ -2,8 +2,8 @@ from datetime import datetime, timedelta, timezone
 import os
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Response
+from fastapi.security.utils import get_authorization_scheme_param
 from app.limiter import limiter
 import jwt as pyjwt_lib      # we will use pyjwt since it is standard
 from passlib.context import CryptContext
@@ -50,12 +50,21 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)) -> models.User:
+def get_current_user(request: Request, db: Session = Depends(get_db)) -> models.User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    
+    token = request.cookies.get("access_token")
+    if not token:
+        authorization = request.headers.get("Authorization")
+        scheme, param = get_authorization_scheme_param(authorization)
+        if not authorization or scheme.lower() != "bearer":
+            raise credentials_exception
+        token = param
+
     try:
         payload = pyjwt_lib.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id_str: str = payload.get("sub")
@@ -97,7 +106,7 @@ def signup(request: Request, user_in: schemas.UserCreate, db: Session = Depends(
 
 @router.post("/login", response_model=schemas.Token)
 @limiter.limit("10/minute")
-def login(request: Request, user_in: schemas.UserLogin, db: Session = Depends(get_db)):
+def login(request: Request, response: Response, user_in: schemas.UserLogin, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == user_in.email).first()
     if not user or not verify_password(user_in.password, user.hashed_password):
         raise HTTPException(
@@ -115,7 +124,21 @@ def login(request: Request, user_in: schemas.UserLogin, db: Session = Depends(ge
     access_token = create_access_token(
         data={"sub": str(user.id)}, expires_delta=access_token_expires
     )
+    
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
+    )
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.post("/logout")
+def logout(response: Response):
+    response.delete_cookie("access_token", httponly=True, secure=True, samesite="lax")
+    return {"status": "success"}
 
 
 @router.get("/me", response_model=schemas.UserResponse)

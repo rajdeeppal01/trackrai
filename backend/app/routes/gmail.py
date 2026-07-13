@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 import os
 import json
 import base64
+import html
 from typing import Optional
 from pydantic import BaseModel
 import httpx
@@ -356,6 +357,10 @@ async def process_gmail_sync_for_user(db: Session, current_user: models.User) ->
                     g_text = "\n".join(lines).strip()
                 
                 analysis = json.loads(g_text)
+                if analysis.get("company_name"):
+                    analysis["company_name"] = html.escape(str(analysis["company_name"]))
+                if analysis.get("status_update"):
+                    analysis["status_update"] = html.escape(str(analysis["status_update"]))
             except Exception as e:
                 scanned_emails.append({
                     "subject": subject,
