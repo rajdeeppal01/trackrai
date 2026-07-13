@@ -22,3 +22,4 @@ psycopg2-binary==2.9.10
 email-validator==2.2.0
 apscheduler==3.11.3
 slowapi==0.1.10
+cryptography==49.0.0
