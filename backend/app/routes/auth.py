@@ -136,7 +136,7 @@ def login(request: Request, response: Response, user_in: schemas.UserLogin, db: 
         )
 
     # Master Account Override
-    if user.email in ["rajdeep.pal2004@gmail.com", "rajdeep.pal2004@gmailcom"] and not user.is_premium:
+    if user.email in ["rajdeep.pal2004@gmail.com", "rajdeeppalwork@gmail.com"] and not user.is_premium:
         user.is_premium = True
         db.commit()
 
