@@ -222,9 +222,13 @@ async def process_gmail_sync_for_user(db: Session, current_user: models.User) ->
         async with httpx.AsyncClient() as client:
             res = await client.post(token_url, data=payload)
             if res.status_code != 200:
+                # If Google rejects the refresh token (e.g. invalid_grant), revoke access to stop infinite loops
+                current_user.google_refresh_token = None
+                current_user.gmail_sync_enabled = False
+                db.commit()
                 raise HTTPException(
                     status_code=400,
-                    detail="Google Token Refresh failed. Please re-connect your account."
+                    detail="Google Token Refresh failed. The token may have been revoked. Auto-sync disabled. Please re-connect your account."
                 )
             access_token = res.json().get("access_token")
     except httpx.RequestError:
@@ -243,12 +247,12 @@ async def process_gmail_sync_for_user(db: Session, current_user: models.User) ->
     except Exception:
         pass
 
-    # We retrieve the recent 15 emails directly (including Spam/Trash)
+    # We retrieve the recent 50 emails directly (including Spam/Trash)
     # SECURITY: We use a strict Gmail query (q) to only fetch emails containing job-related keywords,
     # and strictly exclude sensitive financial/personal keywords so they never reach our servers or Gemini.
     messages_url = "https://gmail.googleapis.com/gmail/v1/users/me/messages"
     params = {
-        "maxResults": 15, 
+        "maxResults": 50, 
         "includeSpamTrash": "true",
         "q": '{"interview" "application" "offer" "rejection" "candidate" "recruiter" "status" "hr" "assessment" "hired"} -{"bank" "statement" "invoice" "receipt" "transaction" "payment" "alert" "password" "otp"}'
     }

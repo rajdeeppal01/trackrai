@@ -17,9 +17,9 @@ class User(Base):
     current_company = Column(String(200), nullable=True)
     bio = Column(Text, nullable=True)
     google_refresh_token = Column(String(500), nullable=True)
-    gmail_sync_enabled = Column(Boolean, default=False, nullable=False)
+    gmail_sync_enabled = Column(Boolean, default=False, nullable=False, index=True)
     last_gmail_sync = Column(DateTime(timezone=True), nullable=True)
-    is_premium = Column(Boolean, default=False, nullable=False)
+    is_premium = Column(Boolean, default=False, nullable=False, index=True)
     gmail_scans_used = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
