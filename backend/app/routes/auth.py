@@ -96,6 +96,8 @@ def signup(request: Request, user_in: schemas.UserCreate, db: Session = Depends(
     # Check if user already exists
     existing_user = db.query(models.User).filter(models.User.email == user_in.email).first()
     if existing_user:
+        # Mitigate User Enumeration Timing Attack
+        verify_password(user_in.password, DUMMY_HASH)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered",

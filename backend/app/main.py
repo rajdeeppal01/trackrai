@@ -107,7 +107,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 app.include_router(auth_router)
 app.include_router(application_router)
