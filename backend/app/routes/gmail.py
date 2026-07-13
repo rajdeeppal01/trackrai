@@ -4,6 +4,7 @@ import json
 import base64
 import html
 import asyncio
+import difflib
 from typing import Optional
 from pydantic import BaseModel
 import httpx
@@ -384,21 +385,26 @@ async def process_gmail_sync_for_user(db: Session, current_user: models.User) ->
                 continue
 
             is_related = analysis.get("is_job_related", False)
-            company = (analysis.get("company_name") or "").strip()
-            new_status = (analysis.get("status_update") or "").strip()
+            
+            # Robust extraction handling if LLM returns a non-string type for company or status
+            raw_company = analysis.get("company_name")
+            raw_status = analysis.get("status_update")
+            company = str(raw_company).strip() if raw_company else ""
+            new_status = str(raw_status).strip() if raw_status else ""
 
             matched = False
             matched_app_info = None
 
             if is_related and company and new_status:
-                # Fuzzy matching in Python
+                # Robust AI Matching in Python
                 user_apps = db.query(models.Application).filter(models.Application.user_id == current_user.id).all()
                 app = None
                 for a in user_apps:
                     c1 = a.company.lower().strip()
                     c2 = company.lower().strip()
-                    # Match if exact, or if one contains the other
-                    if c1 == c2 or c1 in c2 or c2 in c1:
+                    # SequenceMatcher prevents substring catastrophe (e.g. "Apple" vs "Pineapple")
+                    similarity = difflib.SequenceMatcher(None, c1, c2).ratio()
+                    if similarity > 0.85 or c1 == c2:
                         app = a
                         break
 
@@ -413,6 +419,24 @@ async def process_gmail_sync_for_user(db: Session, current_user: models.User) ->
                             "role": app.role,
                             "new_status": new_status
                         })
+                else:
+                    # Missing Creation Protocol: Automatically track new jobs!
+                    new_app = models.Application(
+                        user_id=current_user.id,
+                        company=company,
+                        role="Unknown Role (AI Extracted)",
+                        status=new_status
+                    )
+                    db.add(new_app)
+                    db.commit()
+                    db.refresh(new_app)
+                    matched = True
+                    matched_app_info = f"{new_app.company} (New Entry Created)"
+                    updated_applications.append({
+                        "company": new_app.company,
+                        "role": new_app.role,
+                        "new_status": new_status
+                    })
 
             scanned_emails.append({
                 "subject": subject,

@@ -14,6 +14,8 @@ from app.database import get_db
 
 # Password hashing configuration
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# A static, valid bcrypt hash of "dummy_password" used to equalize response times
+DUMMY_HASH = "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW"
 
 # JWT configuration
 SECRET_KEY = os.getenv("SECRET_KEY", "trackrai-super-secret-development-key-123456")
@@ -108,7 +110,17 @@ def signup(request: Request, user_in: schemas.UserCreate, db: Session = Depends(
 @limiter.limit("10/minute")
 def login(request: Request, response: Response, user_in: schemas.UserLogin, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.email == user_in.email).first()
-    if not user or not verify_password(user_in.password, user.hashed_password):
+    
+    # Timing Attack Prevention: Always compute a hash regardless of whether the user exists
+    if not user:
+        verify_password(user_in.password, DUMMY_HASH)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    if not verify_password(user_in.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
