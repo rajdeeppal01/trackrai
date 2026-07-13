@@ -25,16 +25,21 @@ async def run_automated_sync():
 
         sem = asyncio.Semaphore(10)
 
-        async def _sync_user(u):
+        async def _sync_user(u_id):
             async with sem:
+                task_db = SessionLocal()
                 try:
-                    print(f"Syncing inbox for user ID: {u.id}...")
-                    await process_gmail_sync_for_user(db, u)
-                    print(f"Successfully synced inbox for user ID: {u.id}.")
+                    print(f"Syncing inbox for user ID: {u_id}...")
+                    user_in_session = task_db.query(User).filter(User.id == u_id).first()
+                    if user_in_session:
+                        await process_gmail_sync_for_user(task_db, user_in_session)
+                        print(f"Successfully synced inbox for user ID: {u_id}.")
                 except Exception as e:
-                    print(f"Failed to sync inbox for user ID: {u.id} - {str(e)}")
+                    print(f"Failed to sync inbox for user ID: {u_id} - {str(e)}")
+                finally:
+                    task_db.close()
 
-        tasks = [_sync_user(u) for u in eligible_users]
+        tasks = [_sync_user(u.id) for u in eligible_users]
         await asyncio.gather(*tasks)
                 
     except Exception as e:

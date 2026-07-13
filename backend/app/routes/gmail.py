@@ -3,6 +3,7 @@ import os
 import json
 import base64
 import html
+import asyncio
 from typing import Optional
 from pydantic import BaseModel
 import httpx
@@ -334,6 +335,11 @@ async def process_gmail_sync_for_user(db: Session, current_user: models.User) ->
             g_payload = {
                 "contents": [{"parts": [{"text": prompt}]}]
             }
+            
+            # Anti-Spam API Pacing: Wait 1 second before sending request to Gemini
+            # to prevent hitting the 15 RPM Free Tier rate limit.
+            await asyncio.sleep(1)
+            
             g_res = await client.post(gemini_url, json=g_payload, headers={"Content-Type": "application/json"})
             if g_res.status_code != 200:
                 scanned_emails.append({
