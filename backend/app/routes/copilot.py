@@ -2,7 +2,7 @@ from datetime import datetime, timezone, date
 import os
 import json
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import httpx
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -22,18 +22,18 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 
 class ChatRequest(BaseModel):
-    message: str
+    message: str = Field(..., max_length=2000)
     history: Optional[List[dict]] = []
 
 
 class ColdEmailRequest(BaseModel):
-    recipient_email: str
-    recipient_name: Optional[str] = ""
-    recipient_role: Optional[str] = "Founder/CEO"
-    company_name: Optional[str] = ""
-    target_role: Optional[str] = ""
-    user_bio: Optional[str] = ""
-    tone: Optional[str] = "Professional"
+    recipient_email: str = Field(..., max_length=255)
+    recipient_name: Optional[str] = Field("", max_length=100)
+    recipient_role: Optional[str] = Field("Founder/CEO", max_length=100)
+    company_name: Optional[str] = Field("", max_length=100)
+    target_role: Optional[str] = Field("", max_length=100)
+    user_bio: Optional[str] = Field("", max_length=2000)
+    tone: Optional[str] = Field("Professional", max_length=50)
 
 
 def extract_company_from_email(email: str) -> str:
