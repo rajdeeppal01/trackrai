@@ -13,6 +13,7 @@ export function AuthProvider({ children }) {
   // Attempt to load user profile. If successful, cookie is present and valid.
   useEffect(() => {
     async function loadMe() {
+      try {
         const token = localStorage.getItem('access_token');
         if (!token) throw new Error('No token');
         // Attach token to default headers so api.get works
