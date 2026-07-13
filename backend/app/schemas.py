@@ -16,6 +16,8 @@ class UserCreate(BaseModel):
     def password_length(cls, v: str) -> str:
         if len(v) < 6:
             raise ValueError("Password must be at least 6 characters long")
+        if len(v) > 72:
+            raise ValueError("Password cannot exceed 72 characters")
         return v
 
 

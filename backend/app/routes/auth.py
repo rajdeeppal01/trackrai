@@ -23,6 +23,10 @@ SECRET_KEY = os.getenv("SECRET_KEY", "trackrai-super-secret-development-key-1234
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440")) # 24 hours
 
+# Fail-Closed Cryptographic Bootloader Lock
+if os.getenv("RENDER") == "true" and SECRET_KEY == "trackrai-super-secret-development-key-123456":
+    raise RuntimeError("CRITICAL SECURITY FAILURE: Attempting to boot in a production environment (Render) using the public, hardcoded development SECRET_KEY. You must configure SECRET_KEY and FERNET_KEY in your Render environment variables to prevent database decryption and JWT forgery. Boot aborted.")
+
 router = APIRouter(
     prefix="/auth",
     tags=["Auth"],
