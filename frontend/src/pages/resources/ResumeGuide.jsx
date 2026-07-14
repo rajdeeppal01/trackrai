@@ -1,12 +1,9 @@
 import { Link } from 'react-router-dom'
 import { FileText, CheckCircle, XCircle, ArrowLeft, Star, ArrowRight, Shield, AlertCircle } from 'lucide-react'
-import useDocumentTitle from '../../hooks/useDocumentTitle'
+import { Helmet } from 'react-helmet-async'
 
 export default function ResumeGuide() {
-  useDocumentTitle(
-    'ATS Resume Guide & Best Practices',
-    'Learn how to beat the ATS and get your resume read by human recruiters. Follow our step-by-step resume guide for job hunters.'
-  )
+
 
   const tips = [
     {
@@ -29,6 +26,12 @@ export default function ResumeGuide() {
 
   return (
     <div className="min-h-screen bg-[#050510] text-white font-sans py-12 relative overflow-hidden">
+      <Helmet>
+        <title>ATS Resume Guide & Best Practices | TrackrAI</title>
+        <meta name="description" content="Learn how to beat the ATS and get your resume read by human recruiters. Follow our step-by-step resume guide for job hunters." />
+        <meta property="og:title" content="ATS Resume Guide & Best Practices | TrackrAI" />
+        <meta property="og:description" content="Learn how to beat the ATS and get your resume read by human recruiters. Follow our step-by-step resume guide for job hunters." />
+      </Helmet>
       
       {/* Background glow */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-500/5 blur-[120px] rounded-full pointer-events-none" />

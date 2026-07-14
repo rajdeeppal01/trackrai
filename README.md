@@ -2,6 +2,8 @@
 
 > **AI-powered job application tracking dashboard** — track every application, visualize your pipeline, and get smart insights about your job search.
 
+**Live at:** [https://trackrai.in/](https://trackrai.in/)
+
 ![TrackrAI Dashboard](https://img.shields.io/badge/Status-Active-brightgreen) ![React](https://img.shields.io/badge/React-19-61dafb) ![FastAPI](https://img.shields.io/badge/FastAPI-0.139-009688) ![TailwindCSS](https://img.shields.io/badge/Tailwind-v4-38bdf8)
 
 ---

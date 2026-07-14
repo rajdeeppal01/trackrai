@@ -4,13 +4,10 @@ import {
   Sparkles, Briefcase, Cpu, BarChart2, Mail, Check,
   ArrowRight, Users, Play, HelpCircle, Shield
 } from 'lucide-react'
-import useDocumentTitle from '../hooks/useDocumentTitle'
+import { Helmet } from 'react-helmet-async'
 
 export default function Landing() {
-  useDocumentTitle(
-    'TrackrAI — AI-Powered Job Tracker', 
-    'The ultimate AI job application tracker and copilot. Automate your job search with AI cold emails, smart pipeline tracking, and resume analysis.'
-  )
+
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -70,6 +67,14 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-[#050510] text-white font-sans overflow-x-hidden relative">
+      <Helmet>
+        <title>TrackrAI — AI-Powered Job Tracker</title>
+        <meta name="description" content="The ultimate AI job application tracker and copilot. Automate your job search with AI cold emails, smart pipeline tracking, and resume analysis." />
+        <meta property="og:title" content="TrackrAI — AI-Powered Job Tracker" />
+        <meta property="og:description" content="The ultimate AI job application tracker and copilot. Automate your job search with AI cold emails, smart pipeline tracking, and resume analysis." />
+        <meta property="twitter:title" content="TrackrAI — AI-Powered Job Tracker" />
+        <meta property="twitter:description" content="The ultimate AI job application tracker and copilot. Automate your job search with AI cold emails, smart pipeline tracking, and resume analysis." />
+      </Helmet>
       
       {/* Glow Effects */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-gradient-to-br from-indigo-500/10 to-transparent blur-[120px] rounded-full pointer-events-none" />

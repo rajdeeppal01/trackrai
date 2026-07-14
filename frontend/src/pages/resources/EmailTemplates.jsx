@@ -2,14 +2,11 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Mail, Copy, Check, Sparkles, ArrowRight, ArrowLeft } from 'lucide-react'
-import useDocumentTitle from '../../hooks/useDocumentTitle'
+import { Helmet } from 'react-helmet-async'
 import toast from 'react-hot-toast'
 
 export default function EmailTemplates() {
-  useDocumentTitle(
-    'Cold Email Templates for Job Seekers',
-    'Free AI-generated cold email templates to help you land interviews. Send the perfect message to hiring managers and recruiters.'
-  )
+
   const [copiedId, setCopiedId] = useState(null)
 
   const templates = [
@@ -78,6 +75,12 @@ Warmly,
 
   return (
     <div className="min-h-screen bg-[#050510] text-white font-sans py-12 relative overflow-hidden">
+      <Helmet>
+        <title>Cold Email Templates for Job Seekers | TrackrAI</title>
+        <meta name="description" content="Free AI-generated cold email templates to help you land interviews. Send the perfect message to hiring managers and recruiters." />
+        <meta property="og:title" content="Cold Email Templates for Job Seekers | TrackrAI" />
+        <meta property="og:description" content="Free AI-generated cold email templates to help you land interviews. Send the perfect message to hiring managers and recruiters." />
+      </Helmet>
       
       {/* Background glow */}
       <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
