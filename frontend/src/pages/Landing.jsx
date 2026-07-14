@@ -29,15 +29,23 @@ export default function Landing() {
         <meta property="og:type" content="website" />
       </Helmet>
       
-      {/* Refined Ambient Glow & Graphic Patterns */}
-      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-indigo-900/10 via-[#020205] to-[#020205] pointer-events-none" />
-      <div className="absolute top-[-20%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[150px] rounded-full pointer-events-none" />
-      
-      {/* Subtle Dot Pattern Overlay */}
-      <div 
-        className="absolute inset-0 pointer-events-none opacity-[0.03]" 
-        style={{ backgroundImage: 'radial-gradient(circle at center, white 1px, transparent 1px)', backgroundSize: '32px 32px' }} 
-      />
+      {/* Dynamic Grid Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none bg-[#020205]">
+        {/* Perspective Grid */}
+        <div 
+          className="absolute inset-0 opacity-[0.15]" 
+          style={{ 
+            backgroundImage: `linear-gradient(to right, #6366f1 1px, transparent 1px), linear-gradient(to bottom, #6366f1 1px, transparent 1px)`,
+            backgroundSize: '4rem 4rem',
+            maskImage: 'radial-gradient(ellipse 80% 60% at 50% -20%, #000 50%, transparent 100%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% -20%, #000 50%, transparent 100%)'
+          }} 
+        />
+        {/* Vibrant Glow Orbs */}
+        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[120%] md:w-[60%] h-[600px] bg-indigo-600/20 blur-[140px] rounded-[100%] mix-blend-screen" />
+        <div className="absolute top-[20%] -left-20 w-[400px] h-[400px] bg-purple-600/15 blur-[120px] rounded-full mix-blend-screen" />
+        <div className="absolute top-[30%] -right-20 w-[400px] h-[400px] bg-cyan-600/10 blur-[120px] rounded-full mix-blend-screen" />
+      </div>
 
       {/* Navigation */}
       <nav className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between relative z-10 border-b border-white/5">
