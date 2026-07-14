@@ -172,37 +172,83 @@ export default function Landing() {
           <p className="text-white/50 text-base max-w-xl">A complete operating system for your career progression, designed to keep you focused on interviews, not data entry.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[280px]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[340px]">
           
           {/* Bento 1: Large - Gmail Sync */}
           <div className="md:col-span-2 rounded-3xl bg-[#0a0a0f] border border-white/5 p-8 flex flex-col justify-between group hover:border-indigo-500/30 transition-colors overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[80px] rounded-full group-hover:bg-indigo-500/10 transition-colors" />
-            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-6">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/5 blur-[80px] rounded-full group-hover:bg-indigo-500/10 transition-colors" />
+            
+            {/* Visual Element */}
+            <div className="absolute -right-4 top-8 w-64 h-48 bg-gradient-to-br from-indigo-900/40 to-transparent rounded-l-2xl border-y border-l border-indigo-500/20 p-4 hidden md:flex flex-col gap-3 shadow-2xl opacity-80 group-hover:opacity-100 transition-opacity transform group-hover:-translate-x-2">
+              <div className="h-2 w-1/3 bg-indigo-400/20 rounded-full" />
+              <div className="h-12 w-full bg-indigo-500/10 border border-indigo-500/20 rounded-lg flex items-center px-3 gap-3">
+                 <div className="w-6 h-6 rounded-full bg-indigo-400/20 flex items-center justify-center">
+                    <Mail size={12} className="text-indigo-400" />
+                 </div>
+                 <div className="flex-1 space-y-1.5">
+                    <div className="h-1.5 w-3/4 bg-indigo-400/40 rounded-full" />
+                    <div className="h-1.5 w-1/2 bg-indigo-400/20 rounded-full" />
+                 </div>
+              </div>
+              <div className="h-12 w-full bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center px-3 gap-3 mt-2 translate-x-4">
+                 <div className="w-6 h-6 rounded-full bg-emerald-400/20 flex items-center justify-center">
+                    <Check size={12} className="text-emerald-400" />
+                 </div>
+                 <div className="flex-1 space-y-1.5">
+                    <div className="h-1.5 w-1/2 bg-emerald-400/40 rounded-full" />
+                    <div className="h-1.5 w-1/3 bg-emerald-400/20 rounded-full" />
+                 </div>
+              </div>
+            </div>
+
+            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-6 relative z-10">
               <Mail size={24} className="text-indigo-400" />
             </div>
             <div className="relative z-10">
               <h3 className="text-2xl font-bold mb-2">Automated Inbox Parsing</h3>
-              <p className="text-sm text-white/50 max-w-md leading-relaxed">Connect your Gmail securely. Our AI scans for recruiter emails and automatically updates your pipeline stages without lifting a finger.</p>
+              <p className="text-sm text-white/50 max-w-sm leading-relaxed">Connect your Gmail securely. Our AI scans for recruiter emails and automatically updates your pipeline stages without lifting a finger.</p>
             </div>
           </div>
 
           {/* Bento 2: Standard - Cold Email */}
-          <div className="rounded-3xl bg-[#0a0a0f] border border-white/5 p-8 flex flex-col justify-between group hover:border-cyan-500/30 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center mb-6">
+          <div className="rounded-3xl bg-[#0a0a0f] border border-white/5 p-8 flex flex-col justify-between group hover:border-cyan-500/30 transition-colors relative overflow-hidden">
+            {/* Visual Element */}
+            <div className="absolute right-0 top-0 w-32 h-32 bg-cyan-500/5 blur-[50px] rounded-full group-hover:bg-cyan-500/10 transition-colors" />
+            <div className="absolute top-6 right-6 opacity-40 group-hover:opacity-100 transition-opacity">
+              <div className="w-20 h-20 border border-cyan-500/20 rounded-lg bg-cyan-900/10 flex flex-col items-center justify-center gap-2 transform rotate-12 group-hover:rotate-6 transition-transform">
+                <div className="h-1 w-10 bg-cyan-400/30 rounded-full" />
+                <div className="h-1 w-14 bg-cyan-400/30 rounded-full" />
+                <div className="h-1 w-8 bg-cyan-400/30 rounded-full" />
+                <div className="mt-2 w-12 h-4 bg-cyan-500/20 rounded flex items-center justify-center">
+                   <Zap size={8} className="text-cyan-400" />
+                </div>
+              </div>
+            </div>
+
+            <div className="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center mb-6 relative z-10">
               <Zap size={24} className="text-cyan-400" />
             </div>
-            <div>
+            <div className="relative z-10">
               <h3 className="text-xl font-bold mb-2">AI Cold Emails</h3>
               <p className="text-sm text-white/50 leading-relaxed">Draft highly personalized outreach messages in seconds using your resume context.</p>
             </div>
           </div>
 
           {/* Bento 3: Standard - Analytics */}
-          <div className="rounded-3xl bg-[#0a0a0f] border border-white/5 p-8 flex flex-col justify-between group hover:border-emerald-500/30 transition-colors">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-6">
+          <div className="rounded-3xl bg-[#0a0a0f] border border-white/5 p-8 flex flex-col justify-between group hover:border-emerald-500/30 transition-colors relative overflow-hidden">
+             {/* Visual Element */}
+             <div className="absolute right-0 bottom-0 w-32 h-32 bg-emerald-500/5 blur-[50px] rounded-full group-hover:bg-emerald-500/10 transition-colors" />
+             <div className="absolute top-10 right-6 opacity-40 group-hover:opacity-100 transition-opacity flex items-end gap-1.5 h-16">
+                <div className="w-3 bg-emerald-500/20 rounded-t h-4 group-hover:h-6 transition-all duration-500" />
+                <div className="w-3 bg-emerald-500/40 rounded-t h-8 group-hover:h-10 transition-all duration-500 delay-75" />
+                <div className="w-3 bg-emerald-500/60 rounded-t h-6 group-hover:h-8 transition-all duration-500 delay-100" />
+                <div className="w-3 bg-emerald-400 rounded-t h-12 group-hover:h-16 transition-all duration-500 delay-150 shadow-[0_0_10px_rgba(52,211,153,0.5)]" />
+             </div>
+
+            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-6 relative z-10">
               <BarChart2 size={24} className="text-emerald-400" />
             </div>
-            <div>
+            <div className="relative z-10">
               <h3 className="text-xl font-bold mb-2">Search Analytics</h3>
               <p className="text-sm text-white/50 leading-relaxed">Visualize your conversion rates from application to offer in real-time.</p>
             </div>
@@ -210,13 +256,30 @@ export default function Landing() {
 
           {/* Bento 4: Large - Kanban */}
           <div className="md:col-span-2 rounded-3xl bg-[#0a0a0f] border border-white/5 p-8 flex flex-col justify-between group hover:border-purple-500/30 transition-colors relative overflow-hidden">
-             <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/5 blur-[80px] rounded-full group-hover:bg-purple-500/10 transition-colors" />
-            <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mb-6">
+             <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/5 blur-[80px] rounded-full group-hover:bg-purple-500/10 transition-colors" />
+            
+             {/* Visual Element */}
+             <div className="absolute -right-10 bottom-6 w-72 h-40 bg-gradient-to-t from-[#0a0a0f] to-transparent z-10 hidden md:block" />
+             <div className="absolute right-4 bottom-4 w-72 h-48 border border-white/10 rounded-xl bg-white/5 hidden md:flex gap-2 p-3 opacity-60 group-hover:opacity-100 transition-opacity transform group-hover:-translate-y-2">
+                <div className="flex-1 rounded bg-white/5 border border-white/5 p-2 space-y-2">
+                   <div className="w-full h-8 rounded bg-white/10" />
+                   <div className="w-full h-12 rounded bg-white/5" />
+                </div>
+                <div className="flex-1 rounded bg-purple-500/10 border border-purple-500/20 p-2 space-y-2">
+                   <div className="w-full h-12 rounded bg-purple-500/20 border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.2)]" />
+                   <div className="w-full h-8 rounded bg-white/5" />
+                </div>
+                <div className="flex-1 rounded bg-white/5 border border-white/5 p-2 space-y-2">
+                   <div className="w-full h-8 rounded bg-white/10" />
+                </div>
+             </div>
+
+            <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mb-6 relative z-10">
               <Briefcase size={24} className="text-purple-400" />
             </div>
             <div className="relative z-10">
               <h3 className="text-2xl font-bold mb-2">Visual Pipeline Board</h3>
-              <p className="text-sm text-white/50 max-w-md leading-relaxed">Drag and drop applications across customizable stages. Keep track of upcoming interviews, salaries, and specific job links in one unified view.</p>
+              <p className="text-sm text-white/50 max-w-sm leading-relaxed">Drag and drop applications across customizable stages. Keep track of upcoming interviews, salaries, and specific job links in one unified view.</p>
             </div>
           </div>
 
