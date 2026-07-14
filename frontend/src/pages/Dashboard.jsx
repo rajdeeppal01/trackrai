@@ -89,7 +89,7 @@ export default function Dashboard() {
         </div>
 
         {/* Applications Grid + Activity Feed */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
           <div className="lg:col-span-3">
             <ApplicationGrid
               applications={applications}

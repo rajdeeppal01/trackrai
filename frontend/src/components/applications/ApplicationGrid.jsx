@@ -142,6 +142,7 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.2, layout: { duration: 0.25 } }}
+                className="h-full"
               >
                 <ApplicationCard
                   application={app}

@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Building2, Calendar, ExternalLink, FileText, Pencil, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
 import StatusBadge from '../ui/StatusBadge'
@@ -22,11 +22,11 @@ export default function ApplicationCard({ application, onEdit, onDelete, deletin
       exit={{ opacity: 0, y: -8, scale: 0.97 }}
       whileHover={{ y: -2 }}
       transition={{ duration: 0.25, layout: { duration: 0.3 } }}
-      className="glass rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-black/20 hover:border-white/15 transition-all duration-300"
+      className="h-full flex flex-col glass rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-black/20 hover:border-white/15 transition-all duration-300"
     >
       <div className={`h-0.5 w-full ${isRejected ? 'bg-gradient-to-r from-red-500/50 to-red-400/50' : status === 'Offer' ? 'bg-gradient-to-r from-emerald-500/60 to-teal-400/60' : 'bg-gradient-to-r from-brand-500/40 to-purple-500/40'}`} />
 
-      <div className="p-5">
+      <div className="p-5 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-0.5">
@@ -104,7 +104,7 @@ export default function ApplicationCard({ application, onEdit, onDelete, deletin
           )}
         </AnimatePresence>
 
-        <div className="flex gap-2 mt-4 pt-4 border-t border-white/5">
+        <div className="flex gap-2 mt-auto pt-4 border-t border-white/5">
           <Button variant="secondary" size="sm" icon={Pencil} disabled={disabled} onClick={() => onEdit(application)} className="flex-1">Edit</Button>
           <Button variant="danger" size="sm" icon={Trash2} loading={deleting === id} disabled={disabled || deleting === id} onClick={() => onDelete(id)} className="flex-1">Delete</Button>
         </div>
