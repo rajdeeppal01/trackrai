@@ -44,8 +44,8 @@ const LinePath = ({ scrollYProgress, className }) => {
 };
 
 export default function Landing() {
-  const containerRef = useRef(null)
-  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] })
+  // Use global window scroll tracking instead of attaching to a specific element ref
+  const { scrollYProgress } = useScroll()
   
   // Parallax transform for the mock UI
   const mockY = useTransform(scrollYProgress, [0, 1], [0, 300])
@@ -74,7 +74,7 @@ export default function Landing() {
   }
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-[#020205] text-white font-sans overflow-x-hidden relative selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-[#020205] text-white font-sans overflow-x-hidden relative selection:bg-indigo-500/30">
       <Helmet>
         <title>TrackrAI — AI-Powered Job Search & Application Tracker</title>
         <meta name="description" content="Ditch spreadsheets. TrackrAI automatically syncs with your inbox, organizes your job applications, and drafts personalized cold outreach using AI." />
