@@ -2,12 +2,11 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Sparkles, Briefcase, Cpu, BarChart2, Mail, Check,
-  ArrowRight, Users, Play, HelpCircle, Shield
+  ArrowRight, Play, HelpCircle, Shield, ArrowUpRight, Zap
 } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
 
 export default function Landing() {
-
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -19,245 +18,225 @@ export default function Landing() {
     visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100 } }
   }
 
-  const features = [
-    {
-      icon: Briefcase,
-      title: 'Job Application Tracker',
-      desc: 'Ditch the spreadsheets. Track statuses, interviews, and offers in a gorgeous Kanban board with instant drag-and-drop mechanics.',
-      color: 'text-indigo-400',
-      bg: 'bg-indigo-500/10'
-    },
-    {
-      icon: Cpu,
-      title: 'AI Resume Analyzer',
-      desc: 'Upload your resume and get immediate feedback, ATS alignment scoring, and personalized optimization suggestions powered by Gemini AI.',
-      color: 'text-purple-400',
-      bg: 'bg-purple-500/10'
-    },
-    {
-      icon: Mail,
-      title: 'Gmail Integration (Copilot)',
-      desc: 'Securely connect your Gmail to automatically scan for interview invites, application status updates, and recruiter emails to keep your pipeline in sync without manual data entry.',
-      color: 'text-rose-400',
-      bg: 'bg-rose-500/10'
-    },
-    {
-      icon: Mail,
-      title: 'AI Cold Email Generator',
-      desc: 'Enter any founder or hiring manager email to instantly write highly personalized outreach pitches aligned with your professional background.',
-      color: 'text-cyan-400',
-      bg: 'bg-cyan-500/10'
-    },
-    {
-      icon: BarChart2,
-      title: 'Job Search Analytics',
-      desc: 'Watch your search performance grow. Monitor conversion rates, interview response metrics, and acquisition over time in real time.',
-      color: 'text-emerald-400',
-      bg: 'bg-emerald-500/10'
-    }
-  ]
-
-  const faqs = [
-    { q: 'What is the purpose of TrackrAI?', a: 'TrackrAI is a comprehensive job search management platform. Its main purpose is to help job seekers organize their job applications, track interview stages, and use Artificial Intelligence to optimize resumes and generate cold outreach emails.' },
-    { q: 'Why does TrackrAI request access to my Gmail?', a: 'TrackrAI requests read-only access to your Gmail to automatically detect emails related to your job applications (like interview invitations, offer letters, or rejection notices). This allows the AI Copilot to automatically update your application statuses on your dashboard without manual data entry. We strictly only process emails from job-related domains and NEVER read personal emails, share your data, or send emails on your behalf.' },
-    { q: 'Is TrackrAI a free job tracker?', a: 'Yes! The core platform, including application tracking, pipeline updates, and metrics, is 100% free with no limits.' },
-    { q: 'How does the AI Cold Email Generator work?', a: 'It analyzes the recipient\'s role and company along with your pitch highlights to draft a tailored outreach email, which you can edit and launch directly in your email client.' },
-    { q: 'Is my data secure?', a: 'Absolutely. We encrypt all passwords, do not sell your personal data, and allow you to permanently export or purge your data at any time from your Settings panel.' }
-  ]
-
   return (
-    <div className="min-h-screen bg-[#050510] text-white font-sans overflow-x-hidden relative">
+    <div className="min-h-screen bg-[#020205] text-white font-sans overflow-x-hidden relative selection:bg-indigo-500/30">
       <Helmet>
-        <title>TrackrAI — AI-Powered Job Tracker</title>
-        <meta name="description" content="The ultimate AI job application tracker and copilot. Automate your job search with AI cold emails, smart pipeline tracking, and resume analysis." />
-        <meta property="og:title" content="TrackrAI — AI-Powered Job Tracker" />
-        <meta property="og:description" content="The ultimate AI job application tracker and copilot. Automate your job search with AI cold emails, smart pipeline tracking, and resume analysis." />
-        <meta property="twitter:title" content="TrackrAI — AI-Powered Job Tracker" />
-        <meta property="twitter:description" content="The ultimate AI job application tracker and copilot. Automate your job search with AI cold emails, smart pipeline tracking, and resume analysis." />
+        <title>TrackrAI — Intelligent Job Search Platform</title>
       </Helmet>
       
-      {/* Glow Effects */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-gradient-to-br from-indigo-500/10 to-transparent blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute top-[20%] right-[-10%] w-[50%] h-[50%] bg-gradient-to-br from-purple-500/10 to-transparent blur-[120px] rounded-full pointer-events-none" />
+      {/* Refined Ambient Glow - Less "generic blob", more subtle edge lighting */}
+      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-indigo-900/10 via-[#020205] to-[#020205] pointer-events-none" />
+      <div className="absolute top-[-20%] left-[-10%] w-[40%] h-[40%] bg-indigo-600/10 blur-[150px] rounded-full pointer-events-none" />
 
       {/* Navigation */}
-      <nav className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between relative z-10">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-950">
+      <nav className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between relative z-10 border-b border-white/5">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-lg shadow-indigo-900/50">
             <Sparkles size={16} className="text-white" />
           </div>
-          <span className="font-bold text-lg tracking-tight">Trackr<span className="text-indigo-400">AI</span></span>
+          <span className="font-extrabold text-lg tracking-tight">Trackr<span className="text-indigo-400">AI</span></span>
         </div>
-        <div className="flex items-center gap-4">
-          <Link to="/resources/cold-email-templates" className="text-xs font-semibold text-white/50 hover:text-white transition-colors">
+        <div className="flex items-center gap-6">
+          <Link to="/resources/cold-email-templates" className="text-xs font-medium text-white/50 hover:text-white transition-colors hidden sm:block">
             Templates
           </Link>
-          <Link to="/resources/resume-guide" className="text-xs font-semibold text-white/50 hover:text-white transition-colors mr-2">
+          <Link to="/resources/resume-guide" className="text-xs font-medium text-white/50 hover:text-white transition-colors hidden sm:block">
             Guides
           </Link>
-          <Link to="/login" className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-semibold hover:bg-white/10 hover:text-white transition-all">
+          <Link to="/login" className="px-5 py-2 rounded-full bg-white text-black hover:bg-white/90 text-xs font-bold transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
             Sign In
           </Link>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 pt-20 pb-24 text-center relative z-10">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="max-w-3xl mx-auto space-y-6"
-        >
+      {/* Hero Section - Split Layout */}
+      <section className="max-w-7xl mx-auto px-6 pt-16 pb-24 md:pt-32 md:pb-40 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          
           <motion.div
-            variants={itemVariants}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-8"
           >
-            <Sparkles size={12} className="animate-pulse" />
-            <span>The Smart Way to Manage Your Job Search</span>
-          </motion.div>
+            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/70 text-xs font-semibold backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              Next-Gen Job Tracking
+            </motion.div>
 
-          <motion.h1
-            variants={itemVariants}
-            className="text-4xl md:text-6xl font-black tracking-tight leading-[1.1] text-white"
-          >
-            Track your job hunt with <span className="gradient-text">Artificial Intelligence</span>
-          </motion.h1>
+            <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.05] text-white">
+              The <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">intelligent</span> way to land your next role.
+            </motion.h1>
 
-          <motion.h2
-            variants={itemVariants}
-            className="text-white/45 text-base md:text-lg max-w-xl mx-auto font-medium leading-relaxed"
-          >
-            Ditch spreadsheets. Use our free AI job application tracker to organize your pipeline, draft personalized cold emails, and watch your interview metrics fly.
-          </motion.h2>
+            <motion.p variants={itemVariants} className="text-white/50 text-base md:text-lg max-w-lg font-medium leading-relaxed">
+              Ditch the spreadsheets. TrackrAI automatically syncs with your inbox to parse recruiter emails, update your kanban board, and draft personalized cold outreach.
+            </motion.p>
 
-          <motion.div
-            variants={itemVariants}
-            className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Link
-              to="/login"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-lg shadow-indigo-950/40 hover:scale-[1.02]"
-            >
-              <span>Get Started for Free</span>
-              <ArrowRight size={14} />
-            </Link>
-            <a
-              href="#features"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white/3 border border-white/10 hover:bg-white/6 text-white/70 hover:text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all"
-            >
-              <Play size={12} className="text-indigo-400 fill-indigo-400/20" />
-              <span>Explore Features</span>
-            </a>
-          </motion.div>
-        </motion.div>
-      </section>
-
-      {/* Feature Showcase Grid */}
-      <section id="features" className="max-w-7xl mx-auto px-6 py-20 relative z-10 border-t border-white/5">
-        <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Everything you need to land your next role</h2>
-          <p className="text-white/40 text-sm">Automate the boring parts of the job search so you can focus on acing your interview.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {features.map((feat, idx) => {
-            const Icon = feat.icon;
-            return (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: idx * 0.1 }}
-                className="glass rounded-2xl p-6 border border-white/5 space-y-4 hover:border-white/15 transition-all"
+            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-4 pt-4">
+              <Link
+                to="/login"
+                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white text-black hover:bg-gray-100 text-sm font-bold flex items-center justify-center gap-2 transition-transform hover:scale-105"
               >
-                <div className={`w-10 h-10 rounded-xl ${feat.bg} ${feat.color} flex items-center justify-center`}>
-                  <Icon size={18} />
+                <span>Get Started — Free</span>
+                <ArrowRight size={16} />
+              </Link>
+              <a
+                href="#features"
+                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-bold flex items-center justify-center gap-2 transition-colors"
+              >
+                <Play size={14} className="fill-current" />
+                <span>See how it works</span>
+              </a>
+            </motion.div>
+          </motion.div>
+
+          {/* Interactive Floating Mockup */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="relative lg:h-[500px] flex items-center justify-center mt-12 lg:mt-0"
+          >
+            <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-cyan-500/10 blur-[100px] rounded-full" />
+            
+            <div className="relative w-full max-w-md p-6 rounded-2xl bg-[#0a0a0f]/80 backdrop-blur-xl border border-white/10 shadow-2xl">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
+                <div className="w-3 h-3 rounded-full bg-amber-500/20 border border-amber-500/50" />
+                <div className="w-3 h-3 rounded-full bg-emerald-500/20 border border-emerald-500/50" />
+              </div>
+              
+              <div className="space-y-4">
+                {/* Mock Email Card */}
+                <motion.div 
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 1, duration: 0.5 }}
+                  className="p-4 rounded-xl bg-white/5 border border-white/5"
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <Mail size={16} className="text-white/40" />
+                    <span className="text-xs font-bold text-white/70">Incoming Email</span>
+                  </div>
+                  <p className="text-sm font-semibold">"Invitation to Interview: Software Engineer"</p>
+                  <p className="text-xs text-white/40 mt-1">From: Stripe Recruiting</p>
+                </motion.div>
+
+                {/* Animated Connection */}
+                <div className="flex justify-center">
+                  <motion.div
+                    animate={{ height: [0, 40], opacity: [0, 1, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="w-0.5 bg-gradient-to-b from-indigo-500 to-transparent"
+                  />
                 </div>
-                <h3 className="font-bold text-white text-base">{feat.title}</h3>
-                <p className="text-xs text-white/40 leading-relaxed font-medium">{feat.desc}</p>
-              </motion.div>
-            )
-          })}
+
+                {/* Mock Kanban Card */}
+                <motion.div 
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 2, duration: 0.5 }}
+                  className="p-4 rounded-xl bg-gradient-to-br from-indigo-600/20 to-purple-600/10 border border-indigo-500/30"
+                >
+                   <div className="flex justify-between items-start mb-4">
+                     <span className="text-[10px] font-bold px-2 py-1 rounded bg-indigo-500/20 text-indigo-300 uppercase tracking-wider">Interviewing</span>
+                     <Sparkles size={14} className="text-indigo-400" />
+                   </div>
+                   <h3 className="font-bold text-lg">Stripe</h3>
+                   <p className="text-xs text-white/50 mt-1">Software Engineer</p>
+                   <div className="mt-4 text-[10px] text-white/40 flex items-center gap-1 font-medium">
+                     <Check size={12} className="text-emerald-400" /> Automatically updated via Gmail Sync
+                   </div>
+                </motion.div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Pricing / CTA Section */}
-      <section className="max-w-5xl mx-auto px-6 py-20 relative z-10">
-        <div className="glass rounded-3xl p-8 md:p-12 border border-white/10 bg-gradient-to-r from-indigo-950/20 via-purple-950/10 to-[#080820] flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="space-y-4 max-w-lg">
-            <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider inline-block">
-              Free Access
+      {/* Bento Box Feature Grid */}
+      <section id="features" className="max-w-7xl mx-auto px-6 py-24 relative z-10">
+        <div className="mb-16">
+          <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4">Everything you need. <br className="hidden md:block"/>Nothing you don't.</h2>
+          <p className="text-white/50 text-base max-w-xl">A complete operating system for your career progression, designed to keep you focused on interviews, not data entry.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[280px]">
+          
+          {/* Bento 1: Large - Gmail Sync */}
+          <div className="md:col-span-2 rounded-3xl bg-[#0a0a0f] border border-white/5 p-8 flex flex-col justify-between group hover:border-indigo-500/30 transition-colors overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[80px] rounded-full group-hover:bg-indigo-500/10 transition-colors" />
+            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-6">
+              <Mail size={24} className="text-indigo-400" />
             </div>
-            <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">Focus on your craft, not tracking.</h2>
-            <p className="text-xs text-white/40 leading-relaxed font-medium">
-              Join thousands of job hunters organizing their workflows. Take control of your interview funnels today.
-            </p>
-            <div className="space-y-2 pt-2">
-              {['Unlimited Application Tracking', 'Instant AI Cold Email Templates', 'Sleek Interactive Analytics'].map((item) => (
-                <div key={item} className="flex items-center gap-2 text-xs text-white/60">
-                  <Check size={12} className="text-emerald-400" />
-                  <span>{item}</span>
-                </div>
-              ))}
+            <div className="relative z-10">
+              <h3 className="text-2xl font-bold mb-2">Automated Inbox Parsing</h3>
+              <p className="text-sm text-white/50 max-w-md leading-relaxed">Connect your Gmail securely. Our AI scans for recruiter emails and automatically updates your pipeline stages without lifting a finger.</p>
             </div>
           </div>
-          <div className="shrink-0 flex flex-col items-center justify-center p-6 rounded-2xl bg-white/3 border border-white/5 text-center w-full md:w-80 space-y-4">
-            <span className="text-xs font-semibold text-white/50">TrackrAI Standard Plan</span>
-            <div className="flex items-baseline justify-center gap-1">
-              <span className="text-4xl font-black text-white">$0</span>
-              <span className="text-xs text-white/30">/ month</span>
+
+          {/* Bento 2: Standard - Cold Email */}
+          <div className="rounded-3xl bg-[#0a0a0f] border border-white/5 p-8 flex flex-col justify-between group hover:border-cyan-500/30 transition-colors">
+            <div className="w-12 h-12 rounded-xl bg-cyan-500/10 flex items-center justify-center mb-6">
+              <Zap size={24} className="text-cyan-400" />
             </div>
-            <p className="text-[10px] text-white/40">Free forever. No credit card required.</p>
-            <Link
-              to="/login"
-              className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-all shadow-md shadow-indigo-950/25 block"
-            >
-              Sign Up Now
-            </Link>
+            <div>
+              <h3 className="text-xl font-bold mb-2">AI Cold Emails</h3>
+              <p className="text-sm text-white/50 leading-relaxed">Draft highly personalized outreach messages in seconds using your resume context.</p>
+            </div>
           </div>
+
+          {/* Bento 3: Standard - Analytics */}
+          <div className="rounded-3xl bg-[#0a0a0f] border border-white/5 p-8 flex flex-col justify-between group hover:border-emerald-500/30 transition-colors">
+            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-6">
+              <BarChart2 size={24} className="text-emerald-400" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold mb-2">Search Analytics</h3>
+              <p className="text-sm text-white/50 leading-relaxed">Visualize your conversion rates from application to offer in real-time.</p>
+            </div>
+          </div>
+
+          {/* Bento 4: Large - Kanban */}
+          <div className="md:col-span-2 rounded-3xl bg-[#0a0a0f] border border-white/5 p-8 flex flex-col justify-between group hover:border-purple-500/30 transition-colors relative overflow-hidden">
+             <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/5 blur-[80px] rounded-full group-hover:bg-purple-500/10 transition-colors" />
+            <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mb-6">
+              <Briefcase size={24} className="text-purple-400" />
+            </div>
+            <div className="relative z-10">
+              <h3 className="text-2xl font-bold mb-2">Visual Pipeline Board</h3>
+              <p className="text-sm text-white/50 max-w-md leading-relaxed">Drag and drop applications across customizable stages. Keep track of upcoming interviews, salaries, and specific job links in one unified view.</p>
+            </div>
+          </div>
+
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="max-w-4xl mx-auto px-6 py-20 relative z-10 border-t border-white/5">
-        <div className="text-center max-w-2xl mx-auto space-y-3 mb-12">
-          <HelpCircle size={32} className="text-indigo-400 mx-auto opacity-70" />
-          <h2 className="text-2xl font-bold tracking-tight">Frequently Asked Questions</h2>
-        </div>
-
-        <div className="space-y-4">
-          {faqs.map((faq, idx) => (
-            <div key={idx} className="glass rounded-xl p-5 border border-white/5 space-y-2">
-              <h3 className="font-bold text-white text-sm flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                {faq.q}
-              </h3>
-              <p className="text-xs text-white/40 leading-relaxed font-medium pl-3.5">{faq.a}</p>
-            </div>
-          ))}
-        </div>
+      {/* Minimalist CTA */}
+      <section className="max-w-4xl mx-auto px-6 py-32 text-center relative z-10">
+        <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6">Ready to get organized?</h2>
+        <p className="text-white/50 text-base mb-10 max-w-xl mx-auto">Join the job seekers who are treating their career search like a serious sales pipeline.</p>
+        <Link
+          to="/login"
+          className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black hover:bg-gray-200 text-sm font-bold transition-transform hover:scale-105 shadow-xl shadow-white/5"
+        >
+          <span>Create Free Account</span>
+          <ArrowUpRight size={16} />
+        </Link>
       </section>
 
       {/* Footer */}
-      <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-white/5 relative z-10 text-xs text-white/30">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+      <footer className="border-t border-white/5 bg-[#020205] relative z-10">
+        <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-white/40">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-indigo-600/20 border border-indigo-500/20 flex items-center justify-center">
-              <Sparkles size={12} className="text-indigo-400" />
-            </div>
-            <span className="font-bold text-white/50">TrackrAI</span>
+            <Sparkles size={16} className="text-indigo-400" />
+            <span className="font-bold text-white/70">TrackrAI</span>
           </div>
-          <div className="flex flex-wrap justify-center gap-6">
-            <Link to="/resources/cold-email-templates" className="hover:text-white/60 transition-colors">Cold Email Templates</Link>
-            <Link to="/resources/resume-guide" className="hover:text-white/60 transition-colors">ATS Resume Guide</Link>
-            <Link to="/login" className="hover:text-white/60 transition-colors">Sign In</Link>
-            <a href="https://github.com/rajdeeppal01/trackrai" target="_blank" rel="noreferrer" className="hover:text-white/60 transition-colors">GitHub</a>
-            <Link to="/privacy" className="hover:text-white/60 transition-colors">Privacy Policy</Link>
-            <Link to="/terms" className="hover:text-white/60 transition-colors">Terms of Service</Link>
+          <div className="flex flex-wrap justify-center md:justify-end items-center gap-6">
+            <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
+            <a href="https://github.com/rajdeeppal01/trackrai" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">GitHub</a>
           </div>
-          <p>© 2026 TrackrAI. Deployed under MIT License.</p>
         </div>
       </footer>
       
