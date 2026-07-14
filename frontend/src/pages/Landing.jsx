@@ -7,81 +7,36 @@ import {
 import { Helmet } from 'react-helmet-async'
 import { useEffect, useRef } from 'react'
 
-// 3D Tilt Card Component
-function TiltCard({ children, className }) {
-  const ref = useRef(null)
-  
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
+// Removed TiltCard as requested
 
-  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 })
-  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 })
-
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"])
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"])
-
-  const handleMouseMove = (e) => {
-    if (!ref.current) return
-    const rect = ref.current.getBoundingClientRect()
-    
-    const width = rect.width
-    const height = rect.height
-    
-    const mouseX = e.clientX - rect.left
-    const mouseY = e.clientY - rect.top
-    
-    const xPct = mouseX / width - 0.5
-    const yPct = mouseY / height - 0.5
-    
-    x.set(xPct)
-    y.set(yPct)
-  }
-
-  const handleMouseLeave = () => {
-    x.set(0)
-    y.set(0)
-  }
-
-  return (
-    <motion.div
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        rotateX,
-        rotateY,
-        transformStyle: "preserve-3d",
-      }}
-      className={`relative h-full w-full ${className}`}
-    >
-      <div style={{ transform: "translateZ(30px)" }} className="h-full w-full">
-        {children}
-      </div>
-    </motion.div>
-  )
-}
 
 const LinePath = ({ scrollYProgress, className }) => {
   const pathLength = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   return (
     <svg
-      width="1278"
-      height="2319"
-      viewBox="0 0 1278 2319"
+      width="1440"
+      height="2500"
+      viewBox="0 0 1440 2500"
       fill="none"
       overflow="visible"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
       <motion.path
-        d="M876.605 394.131C788.982 335.917 696.198 358.139 691.836 416.303C685.453 501.424 853.722 498.43 941.95 409.714C1016.1 335.156 1008.64 186.907 906.167 142.846C807.014 100.212 712.699 198.494 789.049 245.127C889.053 306.207 986.062 116.979 840.548 43.3233C743.932 -5.58141 678.027 57.1682 672.279 112.188C666.53 167.208 712.538 172.943 736.353 163.088C760.167 153.234 764.14 120.924 746.651 93.3868C717.461 47.4252 638.894 77.8642 601.018 116.979C568.164 150.908 557 201.079 576.467 246.924C593.342 286.664 630.24 310.55 671.68 302.614C756.114 286.446 729.747 206.546 681.86 186.442C630.54 164.898 492 209.318 495.026 287.644C496.837 334.494 518.402 366.466 582.455 367.287C680.013 368.538 771.538 299.456 898.634 292.434C1007.02 286.446 1192.67 309.384 1242.36 382.258C1266.99 418.39 1273.65 443.108 1247.75 474.477C1217.32 511.33 1149.4 511.259 1096.84 466.093C1044.29 420.928 1029.14 380.576 1033.97 324.172C1038.31 273.428 1069.55 228.986 1117.2 216.384C1152.2 207.128 1186.29 213.629 1194.45 245.127C1201.49 281.062 1132.22 280.104 1100.44 272.673C1065.32 264.464 1044.22 234.837 1032.77 201.413C1019.29 162.061 1029.71 131.126 1056.44 100.965C1086.19 67.4032 1143.96 54.5526 1175.78 86.1513C1207.02 117.17 1186.81 143.379 1156.22 166.691C1112.57 199.959 1052.57 186.238 999.784 155.164C957.312 130.164 899.171 63.7054 931.284 26.3214C952.068 2.12513 996.288 3.87363 1007.22 43.58C1018.15 83.2749 1003.56 122.644 975.969 163.376C948.377 204.107 907.272 255.122 913.558 321.045C919.727 385.734 990.968 497.068 1063.84 503.35C1111.46 507.456 1166.79 511.984 1175.68 464.527C1191.52 379.956 1101.26 334.985 1030.29 377.017C971.109 412.064 956.297 483.647 953.797 561.655C947.587 755.413 1197.56 941.828 936.039 1140.66C745.771 1285.32 321.926 950.737 134.536 1202.19C-6.68295 1391.68 -53.4837 1655.38 131.935 1760.5C478.381 1956.91 1124.19 1515 1201.28 1997.83C1273.66 2451.23 100.805 1864.7 303.794 2668.89"
+        d="M 1100 350 
+           C 1100 600, 500 700, 500 1000 
+           C 500 1100, 1100 1000, 1100 1150 
+           C 1100 1300, 300 1300, 300 1500 
+           C 300 1600, 1000 1500, 1000 1600 
+           C 1000 1800, 720 1800, 720 2200"
         stroke="#4f46e5"
         strokeWidth="12"
+        strokeLinecap="round"
         style={{
           pathLength,
           strokeDashoffset: useTransform(pathLength, (value) => 1 - value),
-          opacity: 0.2
+          opacity: 0.4
         }}
       />
     </svg>
@@ -146,7 +101,9 @@ export default function Landing() {
       {/* Dynamic Grid Background with Animated Scroll Stroke */}
       <div className="fixed inset-0 z-0 pointer-events-none bg-[#020205] overflow-hidden">
         {/* Scroll-Driven Stroke Animation */}
-        <LinePath scrollYProgress={scrollYProgress} className="absolute -right-[20%] top-0 z-0 mix-blend-screen w-[80%] h-auto opacity-50" />
+        <div className="absolute inset-x-0 top-0 w-full flex justify-center z-0 opacity-70">
+           <LinePath scrollYProgress={scrollYProgress} className="mix-blend-screen max-w-none w-[1440px] pointer-events-none" />
+        </div>
         
         <div 
           className="absolute inset-0 opacity-[0.15]" 
@@ -229,59 +186,57 @@ export default function Landing() {
           >
             <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-cyan-500/10 blur-[100px] rounded-full" />
             
-            <TiltCard>
-              <div className="relative w-full max-w-md p-6 rounded-2xl bg-[#0a0a0f]/60 backdrop-blur-2xl border border-white/10 shadow-2xl">
-                <div className="flex items-center gap-2 mb-6">
-                  <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
-                  <div className="w-3 h-3 rounded-full bg-amber-500/20 border border-amber-500/50" />
-                  <div className="w-3 h-3 rounded-full bg-emerald-500/20 border border-emerald-500/50" />
-                </div>
-                
-                <div className="space-y-4">
-                  {/* Mock Email Card */}
-                  <motion.div 
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 1, duration: 0.5 }}
-                    className="p-4 rounded-xl bg-white/5 border border-white/5"
-                  >
-                    <div className="flex items-center gap-3 mb-2">
-                      <Mail size={16} className="text-white/40" />
-                      <span className="text-xs font-bold text-white/70">Incoming Email</span>
-                    </div>
-                    <p className="text-sm font-semibold">"Invitation to Interview: Software Engineer"</p>
-                    <p className="text-xs text-white/40 mt-1">From: Stripe Recruiting</p>
-                  </motion.div>
-
-                  {/* Animated Connection */}
-                  <div className="flex justify-center">
-                    <motion.div
-                      animate={{ height: [0, 40], opacity: [0, 1, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                      className="w-0.5 bg-gradient-to-b from-indigo-500 to-transparent"
-                    />
-                  </div>
-
-                  {/* Mock Kanban Card */}
-                  <motion.div 
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 2, duration: 0.5 }}
-                    className="p-4 rounded-xl bg-gradient-to-br from-indigo-600/20 to-purple-600/10 border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.2)]"
-                  >
-                     <div className="flex justify-between items-start mb-4">
-                       <span className="text-[10px] font-bold px-2 py-1 rounded bg-indigo-500/20 text-indigo-300 uppercase tracking-wider">Interviewing</span>
-                       <Sparkles size={14} className="text-indigo-400" />
-                     </div>
-                     <h3 className="font-bold text-lg">Stripe</h3>
-                     <p className="text-xs text-white/50 mt-1">Software Engineer</p>
-                     <div className="mt-4 text-[10px] text-white/40 flex items-center gap-1 font-medium">
-                       <Check size={12} className="text-emerald-400" /> Automatically updated via Gmail Sync
-                     </div>
-                  </motion.div>
-                </div>
+            <div className="relative w-full max-w-md p-6 rounded-2xl bg-[#0a0a0f]/60 backdrop-blur-2xl border border-white/10 shadow-2xl">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
+                <div className="w-3 h-3 rounded-full bg-amber-500/20 border border-amber-500/50" />
+                <div className="w-3 h-3 rounded-full bg-emerald-500/20 border border-emerald-500/50" />
               </div>
-            </TiltCard>
+              
+              <div className="space-y-4">
+                {/* Mock Email Card */}
+                <motion.div 
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 1, duration: 0.5 }}
+                  className="p-4 rounded-xl bg-white/5 border border-white/5"
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <Mail size={16} className="text-white/40" />
+                    <span className="text-xs font-bold text-white/70">Incoming Email</span>
+                  </div>
+                  <p className="text-sm font-semibold">"Invitation to Interview: Software Engineer"</p>
+                  <p className="text-xs text-white/40 mt-1">From: Stripe Recruiting</p>
+                </motion.div>
+
+                {/* Animated Connection */}
+                <div className="flex justify-center">
+                  <motion.div
+                    animate={{ height: [0, 40], opacity: [0, 1, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="w-0.5 bg-gradient-to-b from-indigo-500 to-transparent"
+                  />
+                </div>
+
+                {/* Mock Kanban Card */}
+                <motion.div 
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 2, duration: 0.5 }}
+                  className="p-4 rounded-xl bg-gradient-to-br from-indigo-600/20 to-purple-600/10 border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.2)]"
+                >
+                   <div className="flex justify-between items-start mb-4">
+                     <span className="text-[10px] font-bold px-2 py-1 rounded bg-indigo-500/20 text-indigo-300 uppercase tracking-wider">Interviewing</span>
+                     <Sparkles size={14} className="text-indigo-400" />
+                   </div>
+                   <h3 className="font-bold text-lg">Stripe</h3>
+                   <p className="text-xs text-white/50 mt-1">Software Engineer</p>
+                   <div className="mt-4 text-[10px] text-white/40 flex items-center gap-1 font-medium">
+                     <Check size={12} className="text-emerald-400" /> Automatically updated via Gmail Sync
+                   </div>
+                </motion.div>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -295,7 +250,7 @@ export default function Landing() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[340px]">
           
-          <TiltCard className="md:col-span-2">
+          <div className="md:col-span-2">
             <div className="h-full rounded-3xl bg-[#0a0a0f]/80 backdrop-blur border border-white/5 p-8 flex flex-col justify-between group hover:border-indigo-500/30 transition-colors overflow-hidden relative shadow-2xl">
               <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/5 blur-[80px] rounded-full group-hover:bg-indigo-500/20 transition-colors" />
               
@@ -329,9 +284,9 @@ export default function Landing() {
                 <p className="text-sm text-white/50 max-w-sm leading-relaxed">Connect your Gmail securely. Our AI scans for recruiter emails and automatically updates your pipeline stages without lifting a finger.</p>
               </div>
             </div>
-          </TiltCard>
+          </div>
 
-          <TiltCard>
+          <div>
             <div className="h-full rounded-3xl bg-[#0a0a0f]/80 backdrop-blur border border-white/5 p-8 flex flex-col justify-between group hover:border-cyan-500/30 transition-colors relative overflow-hidden shadow-2xl">
               <div className="absolute right-0 top-0 w-32 h-32 bg-cyan-500/5 blur-[50px] rounded-full group-hover:bg-cyan-500/20 transition-colors" />
               <div className="absolute top-6 right-6 opacity-40 group-hover:opacity-100 transition-opacity">
@@ -353,9 +308,9 @@ export default function Landing() {
                 <p className="text-sm text-white/50 leading-relaxed">Draft highly personalized outreach messages in seconds using your resume context.</p>
               </div>
             </div>
-          </TiltCard>
+          </div>
 
-          <TiltCard>
+          <div>
             <div className="h-full rounded-3xl bg-[#0a0a0f]/80 backdrop-blur border border-white/5 p-8 flex flex-col justify-between group hover:border-emerald-500/30 transition-colors relative overflow-hidden shadow-2xl">
                <div className="absolute right-0 bottom-0 w-32 h-32 bg-emerald-500/5 blur-[50px] rounded-full group-hover:bg-emerald-500/20 transition-colors" />
                <div className="absolute top-10 right-6 opacity-40 group-hover:opacity-100 transition-opacity flex items-end gap-1.5 h-16">
@@ -373,9 +328,9 @@ export default function Landing() {
                 <p className="text-sm text-white/50 leading-relaxed">Visualize your conversion rates from application to offer in real-time.</p>
               </div>
             </div>
-          </TiltCard>
+          </div>
 
-          <TiltCard className="md:col-span-2">
+          <div className="md:col-span-2">
             <div className="h-full rounded-3xl bg-[#0a0a0f]/80 backdrop-blur border border-white/5 p-8 flex flex-col justify-between group hover:border-purple-500/30 transition-colors relative overflow-hidden shadow-2xl">
                <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/5 blur-[80px] rounded-full group-hover:bg-purple-500/20 transition-colors" />
               
@@ -402,7 +357,7 @@ export default function Landing() {
                 <p className="text-sm text-white/50 max-w-sm leading-relaxed">Drag and drop applications across customizable stages. Keep track of upcoming interviews, salaries, and specific job links in one unified view.</p>
               </div>
             </div>
-          </TiltCard>
+          </div>
 
         </div>
       </section>
