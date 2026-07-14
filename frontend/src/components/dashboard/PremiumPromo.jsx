@@ -8,7 +8,7 @@ export default function PremiumPromo() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="relative glass rounded-2xl overflow-hidden border border-indigo-500/20 group"
+      className="relative glass flex-1 flex flex-col justify-center rounded-2xl overflow-hidden border border-indigo-500/20 group"
     >
       {/* Background Gradients & Glows */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none group-hover:bg-indigo-500/20 transition-colors duration-700" />
@@ -23,7 +23,7 @@ export default function PremiumPromo() {
         <div className="flex-1 space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[10px] font-bold uppercase tracking-wider">
             <Sparkles size={12} className="animate-pulse" />
-            Premium Feature Sneak Peek
+            Premium
           </div>
           
           <h3 className="text-2xl font-bold text-white leading-tight">
