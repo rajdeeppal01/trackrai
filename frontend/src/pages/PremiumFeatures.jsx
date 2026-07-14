@@ -71,19 +71,20 @@ export default function PremiumFeatures() {
     const params = new URLSearchParams(window.location.search)
     const code = params.get('code')
     const nonce = params.get('nonce')
+    const state = params.get('state')
     const error = params.get('error')
 
     if (error) {
       toast.error(`Google Connection Failed: ${error}`)
       window.history.replaceState({}, document.title, window.location.pathname)
-    } else if (code && nonce) {
+    } else if (code && nonce && state) {
       const savedNonce = localStorage.getItem('oauth_nonce')
       if (nonce !== savedNonce) {
         toast.error('Security verification failed (CSRF attempt detected). Please try again.')
         window.history.replaceState({}, document.title, window.location.pathname)
       } else {
         localStorage.removeItem('oauth_nonce')
-        api.post('/gmail/connect', { code })
+        api.post('/gmail/connect', { code, state })
           .then(() => {
             toast.success('Successfully connected to Gmail!')
             setGmailConnected(true)
