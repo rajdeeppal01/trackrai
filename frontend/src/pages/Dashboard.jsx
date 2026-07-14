@@ -6,6 +6,7 @@ import ApplicationChart from '../components/dashboard/ApplicationChart';
 import AIInsights from '../components/dashboard/AIInsights';
 import UpcomingSection from '../components/dashboard/UpcomingSection';
 import ActivityFeed from '../components/dashboard/ActivityFeed';
+import PremiumPromo from '../components/dashboard/PremiumPromo';
 import ApplicationGrid from '../components/applications/ApplicationGrid';
 import ApplicationForm from '../components/applications/ApplicationForm';
 import Modal from '../components/ui/Modal';
@@ -74,8 +75,9 @@ export default function Dashboard() {
 
         {/* Chart + AI Insights + Upcoming */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 flex flex-col gap-6">
             <ApplicationChart applications={applications} />
+            <PremiumPromo />
           </div>
           <div className="space-y-6">
             <AIInsights applications={applications} loading={loading} />
