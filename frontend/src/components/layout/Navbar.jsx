@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { formatDistanceToNow, parseISO, isValid } from 'date-fns'
 import { motion, AnimatePresence } from 'framer-motion'
 import ThemeToggle from '../ui/ThemeToggle'
+import { useApplicationsContext } from '../../context/ApplicationsContext'
 
 const PAGE_TITLES = {
   '/':             'Dashboard',
@@ -29,21 +30,15 @@ function timeAgo(isoStr) {
   }
 }
 
-function loadActivity() {
-  try {
-    return JSON.parse(localStorage.getItem('trackrai_activity') || '[]')
-  } catch {
-    return []
-  }
-}
+
 
 export default function Navbar({ onMenuOpen }) {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const title = PAGE_TITLES[pathname] || 'TrackrAI'
 
+  const { activity = [], clearActivity } = useApplicationsContext() || {}
   const [notifOpen, setNotifOpen] = useState(false)
-  const [activity, setActivity] = useState([])
   const notifRef = useRef(null)
 
   // Close on outside click
@@ -67,16 +62,11 @@ export default function Navbar({ onMenuOpen }) {
   }, [notifOpen])
 
   function toggleNotifications() {
-    setNotifOpen((v) => {
-      const next = !v
-      if (next) setActivity(loadActivity())
-      return next
-    })
+    setNotifOpen((v) => !v)
   }
 
   function clearNotifications() {
-    localStorage.removeItem('trackrai_activity')
-    setActivity([])
+    if (clearActivity) clearActivity()
   }
 
   const unreadCount = Math.min(activity.length, 9)

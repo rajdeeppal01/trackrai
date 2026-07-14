@@ -182,6 +182,11 @@ export function ApplicationsProvider({ children }) {
     }
   }, []);
 
+  const clearActivity = useCallback(() => {
+    localStorage.removeItem(ACTIVITY_KEY);
+    setActivity([]);
+  }, []);
+
   const value = {
     applications,
     loading,
@@ -193,6 +198,7 @@ export function ApplicationsProvider({ children }) {
     editApplication,
     removeApplication,
     clearApplications,
+    clearActivity,
   };
 
   return (
