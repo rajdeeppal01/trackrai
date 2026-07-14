@@ -11,8 +11,6 @@ import { useEffect, useRef } from 'react'
 
 
 const LinePath = ({ scrollYProgress, className }) => {
-  const pathLength = useTransform(scrollYProgress, [0, 1], [0, 1]);
-
   return (
     <svg
       width="1440"
@@ -25,18 +23,18 @@ const LinePath = ({ scrollYProgress, className }) => {
     >
       <motion.path
         d="M 1100 350 
-           C 1100 600, 500 700, 500 1000 
-           C 500 1100, 1100 1000, 1100 1150 
-           C 1100 1300, 300 1300, 300 1500 
-           C 300 1600, 1000 1500, 1000 1600 
-           C 1000 1800, 720 1800, 720 2200"
-        stroke="#4f46e5"
-        strokeWidth="12"
+           C 1100 750, 400 750, 400 1100 
+           C 400 1300, 1100 1300, 1100 1100 
+           C 1100 900, 350 1200, 350 1500 
+           C 350 1700, 1050 1700, 1050 1500 
+           C 1050 1300, 720 1300, 720 1900"
+        stroke="#6366f1"
+        strokeWidth="10"
         strokeLinecap="round"
+        pathLength={scrollYProgress}
         style={{
-          pathLength,
-          strokeDashoffset: useTransform(pathLength, (value) => 1 - value),
-          opacity: 0.4
+          opacity: 0.5,
+          filter: "drop-shadow(0 0 10px rgba(99,102,241,0.5))"
         }}
       />
     </svg>
@@ -98,13 +96,8 @@ export default function Landing() {
         }}
       />
 
-      {/* Dynamic Grid Background with Animated Scroll Stroke */}
+      {/* Dynamic Grid Background */}
       <div className="fixed inset-0 z-0 pointer-events-none bg-[#020205] overflow-hidden">
-        {/* Scroll-Driven Stroke Animation */}
-        <div className="absolute inset-x-0 top-0 w-full flex justify-center z-0 opacity-70">
-           <LinePath scrollYProgress={scrollYProgress} className="mix-blend-screen max-w-none w-[1440px] pointer-events-none" />
-        </div>
-        
         <div 
           className="absolute inset-0 opacity-[0.15]" 
           style={{ 
@@ -117,6 +110,11 @@ export default function Landing() {
         <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[120%] md:w-[60%] h-[600px] bg-indigo-600/20 blur-[140px] rounded-[100%] mix-blend-screen" />
         <div className="absolute top-[20%] -left-20 w-[400px] h-[400px] bg-purple-600/15 blur-[120px] rounded-full mix-blend-screen" />
         <div className="absolute top-[30%] -right-20 w-[400px] h-[400px] bg-cyan-600/10 blur-[120px] rounded-full mix-blend-screen" />
+      </div>
+
+      {/* Scroll-Driven Stroke Animation - Scrolls with the page */}
+      <div className="absolute inset-x-0 top-0 w-full h-[2500px] flex justify-center z-0 opacity-70 pointer-events-none hidden lg:flex">
+         <LinePath scrollYProgress={scrollYProgress} className="mix-blend-screen max-w-none w-[1440px] h-[2500px] pointer-events-none" />
       </div>
 
       {/* Navigation */}
