@@ -73,9 +73,8 @@ export default function Dashboard() {
         <StatsRow applications={applications} loading={loading} />
 
         {/* Chart + AI Insights + Upcoming */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 glass rounded-2xl p-6">
-            <h2 className="text-lg font-semibold mb-4">Application Activity</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+          <div className="lg:col-span-2">
             <ApplicationChart applications={applications} />
           </div>
           <div className="space-y-6">
