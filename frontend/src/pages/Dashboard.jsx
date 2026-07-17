@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useApplications } from '../hooks/useApplications';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import StatsRow from '../components/dashboard/StatsRow';
@@ -8,10 +8,11 @@ import UpcomingSection from '../components/dashboard/UpcomingSection';
 import ActivityFeed from '../components/dashboard/ActivityFeed';
 import PremiumPromo from '../components/dashboard/PremiumPromo';
 import ApplicationGrid from '../components/applications/ApplicationGrid';
+import ApplicationTable from '../components/dashboard/ApplicationTable';
 import ApplicationForm from '../components/applications/ApplicationForm';
 import Modal from '../components/ui/Modal';
 import Button from '../components/ui/Button';
-import { Plus } from 'lucide-react';
+import { Plus, LayoutGrid, List } from 'lucide-react';
 
 export default function Dashboard() {
   useDocumentTitle('Dashboard');
@@ -27,6 +28,14 @@ export default function Dashboard() {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState(null); // application object or null
+  const [viewMode, setViewMode] = useState('kanban'); // 'kanban' | 'table'
+
+  // ── Global Command Palette Listener ──────────────────────────
+  useEffect(() => {
+    const handleOpenModal = () => setIsAddModalOpen(true);
+    window.addEventListener('open-new-application', handleOpenModal);
+    return () => window.removeEventListener('open-new-application', handleOpenModal);
+  }, []);
 
   // ── Handlers ────────────────────────────────────────────────
   async function handleAdd(data) {
@@ -89,16 +98,43 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Applications Grid + Activity Feed */}
+        {/* Applications Grid/Table + Activity Feed */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-          <div className="lg:col-span-3">
-            <ApplicationGrid
-              applications={applications}
-              loading={loading}
-              submitting={submitting}
-              onEdit={openEdit}
-              onDelete={removeApplication}
-            />
+          <div className="lg:col-span-3 space-y-4">
+            {/* View Toggle */}
+            <div className="flex justify-end gap-2">
+              <div className="bg-white/5 border border-white/10 rounded-lg p-1 flex gap-1">
+                <button
+                  onClick={() => setViewMode('kanban')}
+                  className={`p-1.5 rounded-md transition-colors ${viewMode === 'kanban' ? 'bg-indigo-500/20 text-indigo-400' : 'text-white/40 hover:text-white/80'}`}
+                  title="Kanban View"
+                >
+                  <LayoutGrid size={16} />
+                </button>
+                <button
+                  onClick={() => setViewMode('table')}
+                  className={`p-1.5 rounded-md transition-colors ${viewMode === 'table' ? 'bg-indigo-500/20 text-indigo-400' : 'text-white/40 hover:text-white/80'}`}
+                  title="Table View"
+                >
+                  <List size={16} />
+                </button>
+              </div>
+            </div>
+
+            {viewMode === 'kanban' ? (
+              <ApplicationGrid
+                applications={applications}
+                loading={loading}
+                submitting={submitting}
+                onEdit={openEdit}
+                onDelete={removeApplication}
+              />
+            ) : (
+              <ApplicationTable 
+                applications={applications} 
+                onEdit={openEdit} 
+              />
+            )}
           </div>
           <div className="lg:col-span-1">
             <ActivityFeed activity={activity} />

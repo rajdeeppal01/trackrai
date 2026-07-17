@@ -2,10 +2,11 @@ import { useState } from 'react'
 import { useApplications } from '../hooks/useApplications'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import ApplicationGrid from '../components/applications/ApplicationGrid'
+import ApplicationTable from '../components/dashboard/ApplicationTable'
 import ApplicationForm from '../components/applications/ApplicationForm'
 import Modal from '../components/ui/Modal'
 import Button from '../components/ui/Button'
-import { Briefcase, Plus } from 'lucide-react'
+import { Briefcase, Plus, LayoutGrid, List } from 'lucide-react'
 
 export default function Applications() {
   useDocumentTitle('Applications')
@@ -20,6 +21,7 @@ export default function Applications() {
 
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [editTarget, setEditTarget] = useState(null)
+  const [viewMode, setViewMode] = useState('kanban') // 'kanban' | 'table'
 
   async function handleAdd(data) {
     await addApplication(data)
@@ -60,13 +62,41 @@ export default function Applications() {
           </Button>
         </header>
 
-        <ApplicationGrid
-          applications={applications}
-          loading={loading}
-          submitting={submitting}
-          onEdit={setEditTarget}
-          onDelete={removeApplication}
-        />
+        <div className="space-y-4">
+          <div className="flex justify-end gap-2">
+            <div className="bg-white/5 border border-white/10 rounded-lg p-1 flex gap-1">
+              <button
+                onClick={() => setViewMode('kanban')}
+                className={`p-1.5 rounded-md transition-colors ${viewMode === 'kanban' ? 'bg-indigo-500/20 text-indigo-400' : 'text-white/40 hover:text-white/80'}`}
+                title="Kanban View"
+              >
+                <LayoutGrid size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={`p-1.5 rounded-md transition-colors ${viewMode === 'table' ? 'bg-indigo-500/20 text-indigo-400' : 'text-white/40 hover:text-white/80'}`}
+                title="Table View"
+              >
+                <List size={16} />
+              </button>
+            </div>
+          </div>
+
+          {viewMode === 'kanban' ? (
+            <ApplicationGrid
+              applications={applications}
+              loading={loading}
+              submitting={submitting}
+              onEdit={setEditTarget}
+              onDelete={removeApplication}
+            />
+          ) : (
+            <ApplicationTable 
+              applications={applications} 
+              onEdit={setEditTarget} 
+            />
+          )}
+        </div>
 
         <Modal open={isAddOpen} onClose={() => setIsAddOpen(false)} title="Add New Application">
           <ApplicationForm onSubmit={handleAdd} submitting={submitting} onCancel={() => setIsAddOpen(false)} />

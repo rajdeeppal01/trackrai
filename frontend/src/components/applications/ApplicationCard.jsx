@@ -14,6 +14,12 @@ export default function ApplicationCard({ application, onEdit, onDelete, deletin
   const pipelineProgress = isRejected ? 0 : stageIdx >= 0 ? stageIdx + 1 : 1
   const pipelinePercent = isRejected ? 100 : (pipelineProgress / PIPELINE_STAGES.length) * 100
 
+  const getNotePreview = (htmlString) => {
+    if (!htmlString) return '';
+    const doc = new DOMParser().parseFromString(htmlString, 'text/html');
+    return doc.body.textContent || "";
+  };
+
   return (
     <motion.div
       layout
@@ -97,8 +103,8 @@ export default function ApplicationCard({ application, onEdit, onDelete, deletin
               transition={{ duration: 0.25 }}
               className="overflow-hidden"
             >
-              <div className="mt-3 p-3 rounded-xl bg-white/3 border border-white/5">
-                <p className="text-xs text-white/50 leading-relaxed whitespace-pre-wrap">{notes}</p>
+              <div className="mt-3 p-3 rounded-xl bg-white/3 border border-white/5 max-h-32 overflow-y-auto">
+                <p className="text-xs text-white/50 leading-relaxed whitespace-pre-wrap">{getNotePreview(notes)}</p>
               </div>
             </motion.div>
           )}

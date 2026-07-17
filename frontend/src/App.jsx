@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import { ApplicationsProvider } from './context/ApplicationsContext'
 import Sidebar from './components/layout/Sidebar'
 import Navbar from './components/layout/Navbar'
+import CmdKMenu from './components/ui/CmdKMenu'
 import api from './api/applications'
 
 const Dashboard    = lazy(() => import('./pages/Dashboard'))
@@ -192,6 +193,9 @@ export default function App() {
                 error:   { iconTheme: { primary: '#f87171', secondary: '#fff' } },
               }}
             />
+
+            {/* ── Global Command Palette ───────────────────────────── */}
+            <CmdKMenu />
           </BrowserRouter>
         </ApplicationsProvider>
       </AuthProvider>

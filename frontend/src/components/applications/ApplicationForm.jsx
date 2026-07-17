@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { ALL_STATUSES, getStatusConfig } from '../../utils/statusConfig'
 import Button from '../ui/Button'
+import WarRoomEditor from './WarRoomEditor'
 
 const FIELD_CLASS = [
   'w-full rounded-xl px-4 py-3 text-sm text-white',
@@ -17,6 +18,8 @@ export default function ApplicationForm({ onSubmit, initialData, submitting, onC
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: initialData || {
@@ -28,6 +31,10 @@ export default function ApplicationForm({ onSubmit, initialData, submitting, onC
       notes: '',
     },
   })
+
+  const notes = watch('notes')
+
+  const [activeTab, setActiveTab] = useState('details') // 'details' | 'warroom'
 
   useEffect(() => {
     if (initialData) {
@@ -43,7 +50,39 @@ export default function ApplicationForm({ onSubmit, initialData, submitting, onC
   }, [initialData, reset])
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+    <div className="flex flex-col h-full max-h-[80vh]">
+      {/* Tab Navigation */}
+      <div className="flex border-b border-white/10 mb-5">
+        <button
+          type="button"
+          onClick={() => setActiveTab('details')}
+          className={`px-4 py-2 text-sm font-medium transition-colors ${
+            activeTab === 'details'
+              ? 'text-indigo-400 border-b-2 border-indigo-500'
+              : 'text-white/40 hover:text-white/80'
+          }`}
+        >
+          Application Details
+        </button>
+        {initialData && (
+          <button
+            type="button"
+            onClick={() => setActiveTab('warroom')}
+            className={`px-4 py-2 text-sm font-medium transition-colors flex items-center gap-2 ${
+              activeTab === 'warroom'
+                ? 'text-indigo-400 border-b-2 border-indigo-500'
+                : 'text-white/40 hover:text-white/80'
+            }`}
+          >
+            <span>Interview War Room</span>
+            <span className="bg-indigo-500/20 text-indigo-300 text-[10px] px-1.5 py-0.5 rounded">AI</span>
+          </button>
+        )}
+      </div>
+
+      <div className="overflow-y-auto flex-1 pr-2">
+        <form id="app-form" onSubmit={handleSubmit(onSubmit)} className="space-y-5 h-full" noValidate>
+          <div className={activeTab === 'details' ? 'block space-y-5' : 'hidden'}>
 
       {/* Company */}
       <div>
@@ -112,20 +151,22 @@ export default function ApplicationForm({ onSubmit, initialData, submitting, onC
         />
       </div>
 
-      {/* Notes */}
-      <div>
-        <label className={LABEL_CLASS}>Notes</label>
-        <textarea
-          id="form-notes"
-          {...register('notes')}
-          placeholder="Interview rounds, contacts, important details..."
-          rows={3}
-          className={`${FIELD_CLASS} resize-none`}
-        />
+      {/* Hidden Notes Field for Tiptap integration */}
+      <input type="hidden" {...register('notes')} />
+
+          </div>
+          <div className={activeTab === 'warroom' ? 'block' : 'hidden'}>
+            <WarRoomEditor 
+              application={initialData} 
+              content={notes}
+              onChange={(html) => setValue('notes', html)} 
+            />
+          </div>
+        </form>
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 pt-2">
+      <div className="flex gap-3 pt-4 border-t border-white/10 mt-4">
         {onCancel && (
           <Button
             type="button"
@@ -139,6 +180,7 @@ export default function ApplicationForm({ onSubmit, initialData, submitting, onC
         )}
         <Button
           type="submit"
+          form="app-form"
           variant="primary"
           loading={submitting}
           disabled={submitting}
@@ -147,7 +189,6 @@ export default function ApplicationForm({ onSubmit, initialData, submitting, onC
           {initialData ? 'Save Changes' : 'Add Application'}
         </Button>
       </div>
-
-    </form>
+    </div>
   )
 }
