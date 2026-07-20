@@ -36,7 +36,7 @@ MarkupSafe==3.0.3
 packaging==26.2
 passlib==1.7.4
 proto-plus==1.28.1
-protobuf==5.29.6
+protobuf>=5.29.6
 psycopg2-binary==2.9.12
 pyasn1==0.6.3
 pyasn1_modules==0.4.2
