@@ -12,4 +12,6 @@ services:
         generateValue: true
       - key: ALGORITHM
         value: HS256
+      - key: PYTHON_VERSION
+        value: 3.12.0
     healthCheckPath: /health
