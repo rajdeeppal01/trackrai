@@ -13,11 +13,20 @@ class UserCreate(BaseModel):
 
     @field_validator("password")
     @classmethod
-    def password_length(cls, v: str) -> str:
-        if len(v) < 6:
-            raise ValueError("Password must be at least 6 characters long")
+    def password_complexity(cls, v: str) -> str:
+        if len(v) < 8:
+            raise ValueError("Password must be at least 8 characters long")
         if len(v) > 72:
             raise ValueError("Password cannot exceed 72 characters")
+        if not any(char.isdigit() for char in v):
+            raise ValueError("Password must contain at least one digit")
+        if not any(char.isupper() for char in v):
+            raise ValueError("Password must contain at least one uppercase letter")
+        if not any(char.islower() for char in v):
+            raise ValueError("Password must contain at least one lowercase letter")
+        special_characters = "!@#$%^&*()-+?_=,<>/\"'~`"
+        if not any(char in special_characters for char in v):
+            raise ValueError("Password must contain at least one special character")
         return v
 
 

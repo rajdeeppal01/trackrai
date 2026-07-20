@@ -2,6 +2,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
+import DOMPurify from 'dompurify';
 import './WarRoomEditor.css';
 import { Sparkles, Save, Code, List, Heading2 } from 'lucide-react';
 import Button from '../ui/Button';
@@ -55,7 +56,11 @@ export default function WarRoomEditor({ application, content, onChange }) {
         company: application?.company || 'Company',
         role: application?.role || 'Software Engineer'
       });
-      const newContent = response.data.html;
+      // Sanitize the HTML payload from the AI to prevent XSS
+      const newContent = DOMPurify.sanitize(response.data.html, {
+        ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'ul', 'ol', 'li', 'strong', 'em', 'code', 'pre', 'hr', 'br'],
+        ALLOWED_ATTR: [] // Disallow all attributes (href, src, onerror, class) to strictly lock it down
+      });
       if (editor) {
         editor.commands.setContent(newContent);
         if (onChange) onChange(newContent);

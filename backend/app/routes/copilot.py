@@ -40,6 +40,15 @@ class IntelRequest(BaseModel):
     company: str
     role: str
 
+import re
+
+def sanitize_prompt_input(text: str) -> str:
+    """Strips out arbitrary non-alphanumeric characters to prevent prompt injection."""
+    if not text:
+        return ""
+    # Allow alphanumeric, spaces, periods, commas, and hyphens. Strip everything else.
+    return re.sub(r'[^a-zA-Z0-9\s.,-]', '', text)
+
 
 def extract_company_from_email(email: str) -> str:
     if not email or "@" not in email:
@@ -494,9 +503,9 @@ async def draft_cold_email(
             sender_name=sender_name
         )
 
-    company = req.company_name or extract_company_from_email(req.recipient_email) or "your company"
-    recipient = req.recipient_name or "there"
-    target = req.target_role or "a suitable role"
+    company = sanitize_prompt_input(req.company_name or extract_company_from_email(req.recipient_email) or "your company")
+    recipient = sanitize_prompt_input(req.recipient_name or "there")
+    target = sanitize_prompt_input(req.target_role or "a suitable role")
     
     user_context_parts = []
     if current_user.current_position:
@@ -580,8 +589,11 @@ async def generate_intel(
     if not GEMINI_API_KEY:
         raise HTTPException(status_code=503, detail="Gemini API Key not set.")
 
+    safe_role = sanitize_prompt_input(req.role)
+    safe_company = sanitize_prompt_input(req.company)
+    
     prompt = (
-        f"Generate a rich-text HTML interview prep guide for a {req.role} position at {req.company}. "
+        f"Generate a rich-text HTML interview prep guide for a {safe_role} position at {safe_company}. "
         "Include a brief company overview, recent news if any, company culture, and 3 specific technical/behavioral interview questions. "
         "Return ONLY the HTML output. Do not include markdown blocks or HTML wrappers like <html><body>."
     )
