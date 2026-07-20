@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import './WarRoomEditor.css';
 import { Sparkles, Save, Code, List, Heading2 } from 'lucide-react';
 import Button from '../ui/Button';
+import api from '../../api/applications';
 
 export default function WarRoomEditor({ application, content, onChange }) {
   // Generate dummy AI prep data based on the company/role
@@ -47,31 +48,52 @@ export default function WarRoomEditor({ application, content, onChange }) {
     },
   });
 
-  const handleRegenerate = () => {
-    const randomUpdate = Math.floor(Math.random() * 100);
-    const newContent = `
-      <h2>Interview War Room: ${application?.company || 'Company'}</h2>
-      <p><strong>Role:</strong> ${application?.role || 'Software Engineer'}</p>
-      <hr />
-      <h3>🧠 AI Company Intel (Update #${randomUpdate})</h3>
-      <p><em>Just in:</em> The CEO announced a major push into Generative AI workflows during yesterday's earnings call. They are actively hiring engineers with LLM experience.</p>
-      <ul>
-        <li><strong>Culture:</strong> Highly autonomous, fast-paced shipping cycles.</li>
-        <li><strong>Tech Stack (Updated):</strong> React, Node.js, Python, LangChain, PostgreSQL.</li>
-      </ul>
-      <h3>💡 Alternative Interview Questions</h3>
-      <ol>
-        <li>How do you handle rate-limiting for a third-party API integration?</li>
-        <li>Explain the difference between a process and a thread in Node.js.</li>
-      </ol>
-      <hr />
-      <h3>📝 Your Notes & Leetcode Prep</h3>
-      <p><em>Type your notes here...</em></p>
-    `;
-    if (editor) {
-      editor.commands.setContent(newContent);
-      if (onChange) onChange(newContent);
-      toast.success('AI Intel regenerated successfully!');
+  const handleRegenerate = async () => {
+    const toastId = toast.loading('Consulting Gemini AI...');
+    try {
+      const response = await api.post('/copilot/generate-intel', {
+        company: application?.company || 'Company',
+        role: application?.role || 'Software Engineer'
+      });
+      const newContent = response.data.html;
+      if (editor) {
+        editor.commands.setContent(newContent);
+        if (onChange) onChange(newContent);
+        toast.success('AI Intel injected successfully!', { id: toastId });
+      }
+    } catch (error) {
+      if (error.response?.status === 429 || error.response?.status === 402 || error.response?.status === 503) {
+        toast.error('AI Quota exhausted. Generating standard preparation template...', { id: toastId, duration: 4000 });
+        
+        // Fallback Template
+        const fallbackContent = `
+          <h2>Interview War Room: ${application?.company || 'Company'}</h2>
+          <p><strong>Role:</strong> ${application?.role || 'Software Engineer'}</p>
+          <hr />
+          <h3>🧠 Standard Company Intel</h3>
+          <p><em>Notice:</em> Gemini AI is currently unavailable or quota exhausted. Please research the following manually:</p>
+          <ul>
+            <li><strong>Recent News:</strong> Search Google News for ${application?.company || 'this company'}.</li>
+            <li><strong>Culture:</strong> Check Glassdoor reviews.</li>
+            <li><strong>Tech Stack:</strong> Review the job description requirements.</li>
+          </ul>
+          <h3>💡 Standard Interview Questions</h3>
+          <ol>
+            <li>How do you handle rate-limiting for a third-party API integration?</li>
+            <li>Explain the difference between a process and a thread.</li>
+            <li>Tell me about a time you had to resolve a severe production bug.</li>
+          </ol>
+          <hr />
+          <h3>📝 Your Notes & Leetcode Prep</h3>
+          <p><em>Type your notes here...</em></p>
+        `;
+        if (editor) {
+          editor.commands.setContent(fallbackContent);
+          if (onChange) onChange(fallbackContent);
+        }
+      } else {
+        toast.error('Failed to generate AI Intel. Please try again.', { id: toastId });
+      }
     }
   };
 

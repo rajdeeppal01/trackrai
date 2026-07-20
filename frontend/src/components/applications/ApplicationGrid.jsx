@@ -1,40 +1,90 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { DndContext, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import ApplicationCard from './ApplicationCard';
+import KanbanColumn from './KanbanColumn';
 import { ApplicationCardSkeleton } from '../ui/Skeletons';
 import ConfirmDialog from '../ui/ConfirmDialog';
 import { STATUS_CONFIG } from '../../utils/statusConfig';
 import { Search, Plus, Inbox } from 'lucide-react';
+import { useApplications } from '../../hooks/useApplications';
+import toast from 'react-hot-toast';
 
 export default function ApplicationGrid({ applications = [], loading, onEdit, onDelete, submitting }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('All');
   const [deletingId, setDeletingId] = useState(null);
   const [confirmTarget, setConfirmTarget] = useState(null); // { id, company, role }
+  const [activeDragId, setActiveDragId] = useState(null);
+
+  const { editApplication } = useApplications();
 
   const statuses = useMemo(() => Object.values(STATUS_CONFIG), []);
 
-  // Dynamic counts for filter buttons
-  const counts = useMemo(() => {
-    const cnt = { All: applications.length };
-    statuses.forEach(({ label }) => {
-      cnt[label] = applications.filter(app => app.status === label).length;
-    });
-    return cnt;
-  }, [applications, statuses]);
-
-  // Filtered + sorted applications
+  // Filtered applications
   const filteredApps = useMemo(() => {
-    return applications
-      .filter(app => {
-        const matchesSearch =
-          (app.company || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (app.role || '').toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = filterStatus === 'All' || app.status === filterStatus;
-        return matchesSearch && matchesStatus;
-      })
-      .sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at));
-  }, [applications, searchTerm, filterStatus]);
+    return applications.filter(app => {
+      return (app.company || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+             (app.role || '').toLowerCase().includes(searchTerm.toLowerCase());
+    }).sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at));
+  }, [applications, searchTerm]);
+
+  // Group into columns
+  const columns = useMemo(() => {
+    const cols = {};
+    statuses.forEach(({ label }) => { cols[label] = []; });
+    filteredApps.forEach(app => {
+      if (cols[app.status]) {
+        cols[app.status].push(app);
+      }
+    });
+    return cols;
+  }, [filteredApps, statuses]);
+
+  // Setup Dnd Sensors (distinguish clicks from drags)
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    })
+  );
+
+  // ── Drag Handlers ──────────────────────────────────────────────
+  const handleDragStart = (event) => {
+    setActiveDragId(event.active.id);
+  };
+
+  const handleDragEnd = async (event) => {
+    setActiveDragId(null);
+    const { active, over } = event;
+    if (!over) return;
+    
+    const activeApp = applications.find(a => a.id.toString() === active.id.toString());
+    if (!activeApp) return;
+
+    const overId = over.id.toString();
+    
+    // Determine the target status
+    let newStatus = overId;
+    
+    // If over a card (not a column directly), find the card's status
+    if (!statuses.some(s => s.label === overId)) {
+        const overApp = applications.find(a => a.id.toString() === overId);
+        if (overApp) {
+          newStatus = overApp.status;
+        }
+    }
+    
+    // Ensure it's a valid status
+    if (statuses.some(s => s.label === newStatus) && activeApp.status !== newStatus) {
+        try {
+          // The useApplications context will do an optimistic update if editApplication supports it
+          await editApplication(activeApp.id, { status: newStatus });
+          toast.success(`Moved to ${newStatus}`);
+        } catch (error) {
+          toast.error('Failed to move application');
+        }
+    }
+  };
 
   // ── Delete flow ──────────────────────────────────────────────
   function requestDelete(app) {
@@ -56,14 +106,15 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="flex flex-col xl:flex-row gap-4 justify-between">
-          <div className="skeleton h-10 w-full max-w-md rounded-xl" />
-          <div className="flex gap-2">
-            {[1, 2, 3, 4].map(i => <div key={i} className="skeleton h-10 w-24 rounded-xl" />)}
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map(i => <ApplicationCardSkeleton key={i} />)}
+        <div className="skeleton h-10 w-full max-w-md rounded-xl" />
+        <div className="flex gap-4 overflow-x-hidden">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="w-80 flex-shrink-0 space-y-4">
+               <div className="skeleton h-8 w-24 rounded-lg" />
+               <ApplicationCardSkeleton />
+               <ApplicationCardSkeleton />
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -88,11 +139,13 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
     );
   }
 
+  const activeAppDrag = activeDragId ? applications.find(a => a.id.toString() === activeDragId.toString()) : null;
+
   return (
-    <div className="space-y-6">
-      {/* Search + Filters */}
-      <div className="flex flex-col xl:flex-row gap-4 justify-between">
-        <div className="relative flex-1 max-w-md">
+    <div className="flex flex-col h-full min-h-[70vh]">
+      {/* Search Bar */}
+      <div className="mb-6 flex-shrink-0">
+        <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={16} />
           <input
             type="text"
@@ -102,76 +155,37 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
             className="w-full pl-9 pr-4 py-2.5 glass rounded-xl text-sm text-white placeholder-white/25 focus:outline-none focus:border-indigo-500 transition-all duration-200"
           />
         </div>
+      </div>
 
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setFilterStatus('All')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
-              filterStatus === 'All'
-                ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
-                : 'glass text-white/50 hover:text-white hover:bg-white/8'
-            }`}
-          >
-            All <span className="opacity-60 ml-0.5">({counts['All'] || 0})</span>
-          </button>
+      {/* Kanban Board */}
+      <DndContext 
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex-1 flex gap-4 overflow-x-auto pb-4 snap-x">
           {statuses.map(({ label }) => (
-            <button
+            <KanbanColumn
               key={label}
-              onClick={() => setFilterStatus(label)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
-                filterStatus === label
-                  ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
-                  : 'glass text-white/50 hover:text-white hover:bg-white/8'
-              }`}
-            >
-              {label} <span className="opacity-60 ml-0.5">({counts[label] || 0})</span>
-            </button>
+              statusLabel={label}
+              applications={columns[label] || []}
+              onEdit={onEdit}
+              onDelete={requestDelete}
+              deletingId={deletingId}
+              submitting={submitting}
+            />
           ))}
         </div>
-      </div>
-
-      {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        <AnimatePresence>
-          {filteredApps.length > 0 ? (
-            filteredApps.map(app => (
-              <motion.div
-                key={app.id}
-                layout
-                initial={{ opacity: 0, scale: 0.95, y: 12 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.2, layout: { duration: 0.25 } }}
-                className="h-full"
-              >
-                <ApplicationCard
-                  application={app}
-                  onEdit={onEdit}
-                  onDelete={requestDelete}
-                  deleting={deletingId === app.id}
-                  disabled={submitting}
-                />
-              </motion.div>
-            ))
-          ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="col-span-full py-16 text-center glass rounded-2xl"
-            >
-              <Search size={32} className="text-white/15 mx-auto mb-3" />
-              <p className="text-white/40 text-sm">No applications match your search.</p>
-              <button
-                onClick={() => { setSearchTerm(''); setFilterStatus('All'); }}
-                className="mt-3 text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
-              >
-                Clear filters
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+        
+        <DragOverlay>
+          {activeAppDrag ? (
+            <div className="w-80 cursor-grabbing rotate-2 shadow-2xl opacity-90">
+              <ApplicationCard application={activeAppDrag} />
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
 
       {/* Delete Confirmation */}
       <ConfirmDialog

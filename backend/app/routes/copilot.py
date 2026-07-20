@@ -36,6 +36,11 @@ class ColdEmailRequest(BaseModel):
     tone: Optional[str] = Field("Professional", max_length=50)
 
 
+class IntelRequest(BaseModel):
+    company: str
+    role: str
+
+
 def extract_company_from_email(email: str) -> str:
     if not email or "@" not in email:
         return ""
@@ -563,4 +568,46 @@ async def draft_cold_email(
             tone=req.tone,
             sender_name=sender_name
         )
+
+
+@router.post("/generate-intel")
+@limiter.limit("10/minute")
+async def generate_intel(
+    request: Request,
+    req: IntelRequest,
+    current_user: models.User = Depends(get_current_user)
+):
+    if not GEMINI_API_KEY:
+        raise HTTPException(status_code=503, detail="Gemini API Key not set.")
+
+    prompt = (
+        f"Generate a rich-text HTML interview prep guide for a {req.role} position at {req.company}. "
+        "Include a brief company overview, recent news if any, company culture, and 3 specific technical/behavioral interview questions. "
+        "Return ONLY the HTML output. Do not include markdown blocks or HTML wrappers like <html><body>."
+    )
+
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "contents": [{"parts": [{"text": prompt}]}]
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.post(url, headers=headers, json=payload)
+            if response.status_code == 200:
+                res_data = response.json()
+                text_response = res_data["candidates"][0]["content"]["parts"][0]["text"]
+                # Remove markdown code blocks if the API added them
+                if text_response.startswith("```html"):
+                    text_response = text_response[7:-3]
+                elif text_response.startswith("```"):
+                    text_response = text_response[3:-3]
+                return {"html": text_response.strip()}
+            elif response.status_code == 429 or response.status_code == 402:
+                raise HTTPException(status_code=429, detail="AI Quota Exhausted")
+            else:
+                raise HTTPException(status_code=response.status_code, detail="AI Generation Failed")
+    except httpx.HTTPError:
+        raise HTTPException(status_code=503, detail="AI Generation Failed")
 
