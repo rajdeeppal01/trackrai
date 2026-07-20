@@ -8,7 +8,6 @@ import { useAuth } from '../../context/AuthContext'
 const NAV_ITEMS = [
   { path: '/',            label: 'Dashboard',    icon: LayoutDashboard },
   { path: '/applications',label: 'Applications', icon: Briefcase       },
-  { path: '/pipeline',    label: 'Pipeline',     icon: KanbanSquare    },
   { path: '/analytics',   label: 'Analytics',    icon: BarChart2       },
   { path: '/copilot',     label: 'AI Copilot',   icon: Cpu             },
   { path: '/cold-email',  label: 'Cold Emailer', icon: Mail            },

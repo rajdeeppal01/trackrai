@@ -12,7 +12,6 @@ import api from './api/applications'
 
 const Dashboard    = lazy(() => import('./pages/Dashboard'))
 const Applications = lazy(() => import('./pages/Applications'))
-const Pipeline     = lazy(() => import('./pages/Pipeline'))
 const Analytics    = lazy(() => import('./pages/Analytics'))
 const AICopilot    = lazy(() => import('./pages/AICopilot'))
 const ColdEmailer  = lazy(() => import('./pages/ColdEmailer'))
@@ -87,7 +86,6 @@ function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
             <Routes>
               <Route path="/"                            element={<Dashboard    />} />
               <Route path="/applications"                element={<Applications />} />
-              <Route path="/pipeline"                    element={<Pipeline     />} />
               <Route path="/analytics"                   element={<Analytics    />} />
               <Route path="/copilot"                     element={<AICopilot    />} />
               <Route path="/cold-email"                  element={<ColdEmailer  />} />
