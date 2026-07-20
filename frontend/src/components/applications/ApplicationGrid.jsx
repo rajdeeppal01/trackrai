@@ -8,6 +8,7 @@ import { STATUS_CONFIG } from '../../utils/statusConfig';
 import { Search, Plus, Inbox } from 'lucide-react';
 import { useApplications } from '../../hooks/useApplications';
 import toast from 'react-hot-toast';
+import confetti from 'canvas-confetti';
 
 export default function ApplicationGrid({ applications = [], loading, onEdit, onDelete, submitting }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -77,9 +78,23 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
     // Ensure it's a valid status
     if (statusKeys.includes(newStatus) && activeApp.status !== newStatus) {
         try {
+          // Fire confetti to celebrate progress
+          if (['OA', 'Interview', 'HR', 'Offer'].includes(newStatus)) {
+            const isOffer = newStatus === 'Offer';
+            confetti({
+              particleCount: isOffer ? 150 : 60,
+              spread: isOffer ? 100 : 70,
+              origin: { y: 0.6 },
+              colors: isOffer ? ['#10b981', '#34d399', '#fbbf24'] : ['#818cf8', '#c084fc', '#f472b6'],
+              gravity: isOffer ? 1 : 1.2,
+            });
+          }
+
           // The useApplications context will do an optimistic update if editApplication supports it
           await editApplication(activeApp.id, { status: newStatus });
-          toast.success(`Moved to ${newStatus}`);
+          toast.success(`Moved to ${STATUS_CONFIG[newStatus].label}`, {
+            icon: newStatus === 'Offer' ? '🎉' : '🚀'
+          });
         } catch (error) {
           toast.error('Failed to move application');
         }
