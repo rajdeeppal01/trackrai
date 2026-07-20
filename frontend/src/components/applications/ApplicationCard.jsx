@@ -6,7 +6,7 @@ import Button from '../ui/Button'
 import { PIPELINE_STAGES } from '../../utils/statusConfig'
 import { formatDate } from '../../utils/formatters'
 
-export default function ApplicationCard({ application, onEdit, onDelete, deleting, disabled }) {
+export default function ApplicationCard({ application, onEdit, onDelete, deleting, disabled, disableLayout = false }) {
   const [expanded, setExpanded] = useState(false)
   const { id, company, role, status, applied_date, link, notes } = application
   const stageIdx = PIPELINE_STAGES.indexOf(status)
@@ -22,7 +22,7 @@ export default function ApplicationCard({ application, onEdit, onDelete, deletin
 
   return (
     <motion.div
-      layout
+      layout={disableLayout ? false : true}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8, scale: 0.97 }}

@@ -13,7 +13,7 @@ export default function SortableApplicationCard({ id, application, onEdit, onDel
   } = useSortable({ id: id, data: { application } });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
     opacity: isDragging ? 0.4 : 1,
     zIndex: isDragging ? 50 : 1,
@@ -27,6 +27,7 @@ export default function SortableApplicationCard({ id, application, onEdit, onDel
         onDelete={onDelete}
         deleting={deleting}
         disabled={disabled}
+        disableLayout={true}
       />
     </div>
   );

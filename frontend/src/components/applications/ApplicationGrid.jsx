@@ -181,7 +181,7 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
         <DragOverlay>
           {activeAppDrag ? (
             <div className="w-80 cursor-grabbing rotate-2 shadow-2xl opacity-90">
-              <ApplicationCard application={activeAppDrag} />
+              <ApplicationCard application={activeAppDrag} disableLayout={true} />
             </div>
           ) : null}
         </DragOverlay>
