@@ -17,7 +17,7 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
 
   const { editApplication } = useApplications();
 
-  const statuses = useMemo(() => Object.values(STATUS_CONFIG), []);
+  const statusKeys = useMemo(() => Object.keys(STATUS_CONFIG), []);
 
   // Filtered applications
   const filteredApps = useMemo(() => {
@@ -30,14 +30,14 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
   // Group into columns
   const columns = useMemo(() => {
     const cols = {};
-    statuses.forEach(({ label }) => { cols[label] = []; });
+    statusKeys.forEach((key) => { cols[key] = []; });
     filteredApps.forEach(app => {
       if (cols[app.status]) {
         cols[app.status].push(app);
       }
     });
     return cols;
-  }, [filteredApps, statuses]);
+  }, [filteredApps, statusKeys]);
 
   // Setup Dnd Sensors (distinguish clicks from drags)
   const sensors = useSensors(
@@ -67,7 +67,7 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
     let newStatus = overId;
     
     // If over a card (not a column directly), find the card's status
-    if (!statuses.some(s => s.label === overId)) {
+    if (!statusKeys.includes(overId)) {
         const overApp = applications.find(a => a.id.toString() === overId);
         if (overApp) {
           newStatus = overApp.status;
@@ -75,7 +75,7 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
     }
     
     // Ensure it's a valid status
-    if (statuses.some(s => s.label === newStatus) && activeApp.status !== newStatus) {
+    if (statusKeys.includes(newStatus) && activeApp.status !== newStatus) {
         try {
           // The useApplications context will do an optimistic update if editApplication supports it
           await editApplication(activeApp.id, { status: newStatus });
@@ -165,11 +165,11 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
         onDragEnd={handleDragEnd}
       >
         <div className="flex-1 flex gap-4 overflow-x-auto pb-4 snap-x">
-          {statuses.map(({ label }) => (
+          {statusKeys.map((key) => (
             <KanbanColumn
-              key={label}
-              statusLabel={label}
-              applications={columns[label] || []}
+              key={key}
+              statusKey={key}
+              applications={columns[key] || []}
               onEdit={onEdit}
               onDelete={requestDelete}
               deletingId={deletingId}
