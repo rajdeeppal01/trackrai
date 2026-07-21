@@ -40,6 +40,11 @@ class IntelRequest(BaseModel):
     company: str
     role: str
 
+
+class ATSRequest(BaseModel):
+    job_description: str = Field(..., max_length=15000)
+    resume_text: str = Field(..., max_length=15000)
+
 import re
 
 def sanitize_prompt_input(text: str) -> str:
@@ -622,4 +627,68 @@ async def generate_intel(
                 raise HTTPException(status_code=response.status_code, detail="AI Generation Failed")
     except httpx.HTTPError:
         raise HTTPException(status_code=503, detail="AI Generation Failed")
+
+
+@router.post("/ats-match")
+@limiter.limit("10/minute")
+async def ats_match(
+    request: Request,
+    req: ATSRequest,
+    current_user: models.User = Depends(get_current_user)
+):
+    if not GEMINI_API_KEY:
+        raise HTTPException(status_code=503, detail="Gemini API Key not set.")
+
+    prompt = (
+        "You are an expert ATS (Applicant Tracking System) parser and technical recruiter.\n"
+        "Analyze the provided Resume against the provided Job Description.\n"
+        "Return a JSON object strictly matching this schema:\n"
+        '{\n'
+        '  "match_score": integer (0-100),\n'
+        '  "missing_keywords": [string, string, ...],\n'
+        '  "improvement_tips": [string, string, ...]\n'
+        '}\n\n'
+        f"Job Description:\n{req.job_description}\n\n"
+        f"Resume:\n{req.resume_text}\n"
+    )
+
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "responseMimeType": "application/json",
+            "responseSchema": {
+                "type": "OBJECT",
+                "properties": {
+                    "match_score": {"type": "INTEGER"},
+                    "missing_keywords": {
+                        "type": "ARRAY",
+                        "items": {"type": "STRING"}
+                    },
+                    "improvement_tips": {
+                        "type": "ARRAY",
+                        "items": {"type": "STRING"}
+                    }
+                },
+                "required": ["match_score", "missing_keywords", "improvement_tips"]
+            }
+        }
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=25.0) as client:
+            response = await client.post(url, headers=headers, json=payload)
+            if response.status_code == 200:
+                res_data = response.json()
+                text_response = res_data["candidates"][0]["content"]["parts"][0]["text"]
+                return json.loads(text_response.strip())
+            elif response.status_code == 429 or response.status_code == 402:
+                raise HTTPException(status_code=429, detail="AI Quota Exhausted")
+            else:
+                raise HTTPException(status_code=response.status_code, detail="AI Analysis Failed")
+    except httpx.HTTPError:
+        raise HTTPException(status_code=503, detail="AI Analysis Failed")
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Failed to parse AI response")
 

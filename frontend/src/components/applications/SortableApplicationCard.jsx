@@ -2,7 +2,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import ApplicationCard from './ApplicationCard';
 
-export default function SortableApplicationCard({ id, application, onEdit, onDelete, deleting, disabled }) {
+export default function SortableApplicationCard({ id, application, onEdit, onDelete, deleting, disabled, isRecentlyMoved }) {
   const {
     attributes,
     listeners,
@@ -20,7 +20,7 @@ export default function SortableApplicationCard({ id, application, onEdit, onDel
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="mb-4 touch-none cursor-grab active:cursor-grabbing">
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className={`mb-4 touch-none cursor-grab active:cursor-grabbing rounded-2xl ${isRecentlyMoved ? 'animate-glow-pulse' : ''}`}>
       <ApplicationCard
         application={application}
         onEdit={onEdit}

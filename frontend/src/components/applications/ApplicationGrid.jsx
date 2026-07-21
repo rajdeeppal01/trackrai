@@ -15,6 +15,7 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
   const [deletingId, setDeletingId] = useState(null);
   const [confirmTarget, setConfirmTarget] = useState(null); // { id, company, role }
   const [activeDragId, setActiveDragId] = useState(null);
+  const [recentlyMovedId, setRecentlyMovedId] = useState(null);
 
   const { editApplication } = useApplications();
 
@@ -92,6 +93,13 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
 
           // The useApplications context will do an optimistic update if editApplication supports it
           await editApplication(activeApp.id, { status: newStatus });
+          
+          // Trigger Gamification Glow
+          setRecentlyMovedId(activeApp.id);
+          setTimeout(() => {
+            setRecentlyMovedId(current => current === activeApp.id ? null : current);
+          }, 1500);
+
           toast.success(`Moved to ${STATUS_CONFIG[newStatus].label}`, {
             icon: newStatus === 'Offer' ? '🎉' : '🚀'
           });
@@ -189,6 +197,7 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
               onDelete={requestDelete}
               deletingId={deletingId}
               submitting={submitting}
+              recentlyMovedId={recentlyMovedId}
             />
           ))}
         </div>

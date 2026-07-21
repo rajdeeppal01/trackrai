@@ -14,6 +14,7 @@ const Dashboard    = lazy(() => import('./pages/Dashboard'))
 const Applications = lazy(() => import('./pages/Applications'))
 const Analytics    = lazy(() => import('./pages/Analytics'))
 const AICopilot    = lazy(() => import('./pages/AICopilot'))
+const ATSMatcher   = lazy(() => import('./pages/ATSMatcher'))
 const ColdEmailer  = lazy(() => import('./pages/ColdEmailer'))
 const Settings     = lazy(() => import('./pages/Settings'))
 const Login        = lazy(() => import('./pages/Login'))
@@ -88,6 +89,7 @@ function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
               <Route path="/applications"                element={<Applications />} />
               <Route path="/analytics"                   element={<Analytics    />} />
               <Route path="/copilot"                     element={<AICopilot    />} />
+              <Route path="/ats-matcher"                 element={<ATSMatcher   />} />
               <Route path="/cold-email"                  element={<ColdEmailer  />} />
               <Route path="/settings"                    element={<Settings     />} />
               <Route path="/premium"                     element={<PremiumFeatures/>} />
