@@ -74,11 +74,11 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-[#020205] text-white font-sans overflow-x-hidden relative selection:bg-indigo-500/30">
       <Helmet>
-        <title>TrackrAI — AI-Powered Job Search & Application Tracker</title>
-        <meta name="description" content="Ditch spreadsheets. TrackrAI automatically syncs with your inbox, organizes your job applications, and drafts personalized cold outreach using AI." />
-        <meta name="keywords" content="job tracker, AI job search, application tracker, resume AI, cold email generator, kanban job board" />
-        <meta property="og:title" content="TrackrAI — AI-Powered Job Search & Application Tracker" />
-        <meta property="og:description" content="Ditch spreadsheets. TrackrAI automatically syncs with your inbox, organizes your job applications, and drafts personalized cold outreach using AI." />
+        <title>TrackrAI (Track AI) — AI-Powered Job Search & Application Tracker</title>
+        <meta name="description" content="The ultimate rai tracker to track AI jobs and standard roles. TrackrAI automatically syncs with your inbox and drafts personalized cold outreach." />
+        <meta name="keywords" content="job tracker, AI job search, application tracker, resume AI, cold email generator, trak ai, track ai, rai tracker, trackrai" />
+        <meta property="og:title" content="TrackrAI (Track AI) — AI-Powered Job Search & Application Tracker" />
+        <meta property="og:description" content="The ultimate rai tracker to track AI jobs and standard roles. TrackrAI automatically syncs with your inbox and drafts personalized cold outreach." />
         <meta property="og:type" content="website" />
       </Helmet>
       
@@ -153,7 +153,7 @@ export default function Landing() {
             </motion.h1>
 
             <motion.p variants={itemVariants} className="text-white/50 text-base md:text-lg max-w-lg font-medium leading-relaxed">
-              Ditch the spreadsheets. TrackrAI automatically syncs with your inbox to parse recruiter emails, update your kanban board, and draft personalized cold outreach.
+              Ditch the spreadsheets. TrackrAI (often called Trak AI) automatically syncs with your inbox to parse recruiter emails, update your kanban board, and draft personalized cold outreach. The ultimate tool to track AI roles or any modern job.
             </motion.p>
 
             <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-4 pt-4">
@@ -380,6 +380,11 @@ export default function Landing() {
             <Sparkles size={16} className="text-indigo-400" />
             <span className="font-bold text-white/70">TrackrAI</span>
           </div>
+          
+          <div className="hidden lg:block text-xs text-white/20 italic">
+            Whether you call us Trak AI, Track AI, or a Rai Tracker, we're here to help you get hired.
+          </div>
+
           <div className="flex flex-wrap justify-center md:justify-end items-center gap-6">
             <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
             <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
