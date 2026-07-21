@@ -72,6 +72,14 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> models.
             raise credentials_exception
         token = param
 
+    # Check if this is an extension token (API Key)
+    if token.startswith("ext_"):
+        user = db.query(models.User).filter(models.User.extension_token == token).first()
+        if not user:
+            raise credentials_exception
+        return user
+
+    # Standard JWT Validation
     try:
         payload = pyjwt_lib.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id_str: str = payload.get("sub")
@@ -168,6 +176,25 @@ def logout(response: Response, current_user: models.User = Depends(get_current_u
 @router.get("/me", response_model=schemas.UserResponse)
 def get_me(current_user: models.User = Depends(get_current_user)):
     return current_user
+
+import secrets
+
+@router.post("/extension-token")
+def generate_extension_token(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    """Generates a new long-lived API token for the Chrome Extension."""
+    token = f"ext_{secrets.token_urlsafe(32)}"
+    current_user.extension_token = token
+    db.commit()
+    db.refresh(current_user)
+    return {"extension_token": token}
+
+@router.get("/extension-token")
+def get_extension_token(current_user: models.User = Depends(get_current_user)):
+    """Retrieves the current Chrome Extension API token."""
+    return {"extension_token": current_user.extension_token}
 
 
 @router.get("/resume", response_model=schemas.ResumeResponse)

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>TrackrAI</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <h1>TrackrAI</h1>
+      </div>
+      <button id="settings-btn" title="Settings">⚙️</button>
+    </header>
+
+    <div id="main-view">
+      <div class="job-card">
+        <h2 id="job-title">Scanning page...</h2>
+        <p id="job-company">Please open a LinkedIn or Indeed job posting.</p>
+      </div>
+
+      <button id="save-btn" disabled>Save to TrackrAI</button>
+      <p id="status-msg"></p>
+    </div>
+
+    <div id="settings-view" class="hidden">
+      <h3>Settings</h3>
+      <p>Paste your Extension Token from the TrackrAI Settings page:</p>
+      <input type="password" id="token-input" placeholder="ext_..." />
+      
+      <p>API URL (Default: prod):</p>
+      <input type="text" id="api-url-input" placeholder="http://localhost:8000" value="http://localhost:8000" />
+      
+      <button id="save-settings-btn">Save Settings</button>
+      <button id="back-btn" class="secondary">Back</button>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

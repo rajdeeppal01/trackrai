@@ -8,7 +8,7 @@ import {
 } from 'recharts'
 import { groupByMonth } from '../utils/formatters'
 import { ALL_STATUSES } from '../utils/statusConfig'
-import { TrendingUp, Target, Trophy, XCircle, BarChart2, Zap } from 'lucide-react'
+import { TrendingUp, Target, Trophy, XCircle, BarChart2, Zap, ArrowRight } from 'lucide-react'
 import { differenceInDays, parseISO, isValid, format, subDays } from 'date-fns'
 import { StatCardSkeleton } from '../components/ui/Skeletons'
 
@@ -212,6 +212,58 @@ export default function Analytics() {
             ) : (
               <div className="flex items-center justify-center h-48 text-white/25 text-sm">No data yet</div>
             )}
+          </div>
+        </div>
+
+        {/* Custom Sankey Funnel Diagram */}
+        <div className="glass rounded-2xl p-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+            <Target size={120} />
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2">Job Search Funnel</h2>
+          <p className="text-sm text-white/40 mb-8">Conversion rates across your application pipeline.</p>
+          
+          <div className="flex flex-col md:flex-row items-stretch justify-between gap-4 md:gap-2 w-full mt-4">
+            {funnelData.map((stage, i) => {
+              const nextStage = funnelData[i + 1]
+              const dropOff = nextStage ? ((nextStage.count / stage.count) * 100).toFixed(0) : null
+              const hasData = stage.count > 0
+
+              return (
+                <div key={stage.status} className="flex-1 flex flex-col md:flex-row items-center">
+                  
+                  {/* Stage Card */}
+                  <div 
+                    className="flex-1 w-full bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-center justify-center relative shadow-lg transition-transform hover:-translate-y-1"
+                    style={{ 
+                      borderTopColor: hasData ? stage.color : 'rgba(255,255,255,0.1)',
+                      borderTopWidth: '4px' 
+                    }}
+                  >
+                    <span className="text-3xl font-black mb-1" style={{ color: hasData ? stage.color : 'rgba(255,255,255,0.2)' }}>
+                      {stage.count}
+                    </span>
+                    <span className="text-xs font-semibold uppercase tracking-wider text-white/50">{stage.status}</span>
+                  </div>
+
+                  {/* Connector / Conversion Rate */}
+                  {i < funnelData.length - 1 && (
+                    <div className="flex flex-col items-center justify-center w-full md:w-20 my-2 md:my-0 relative">
+                      <div className="hidden md:block absolute w-full h-[2px] bg-gradient-to-r from-white/20 to-white/5 top-1/2 -translate-y-1/2 -z-10" />
+                      <div className="md:hidden absolute h-full w-[2px] bg-gradient-to-b from-white/20 to-white/5 left-1/2 -translate-x-1/2 -z-10" />
+                      
+                      {stage.count > 0 && nextStage && nextStage.count > 0 ? (
+                        <div className="bg-indigo-500/20 text-indigo-300 text-[10px] font-bold px-2 py-1 rounded-full border border-indigo-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(99,102,241,0.2)]">
+                          {dropOff}% <ArrowRight size={10} className="hidden md:block" />
+                        </div>
+                      ) : (
+                        <div className="w-2 h-2 rounded-full bg-white/10" />
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </div>
 
