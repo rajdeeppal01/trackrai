@@ -24,8 +24,8 @@ ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440")) # 24 hours
 
 # Fail-Closed Cryptographic Bootloader Lock
-if os.getenv("ENVIRONMENT") == "production" and SECRET_KEY == "trackrai-super-secret-development-key-123456":
-    raise RuntimeError("CRITICAL SECURITY FAILURE: Attempting to boot in a production environment using the public, hardcoded development SECRET_KEY. You must configure SECRET_KEY in your environment variables to prevent database decryption and JWT forgery. Boot aborted.")
+if SECRET_KEY == "trackrai-super-secret-development-key-123456" and os.getenv("ENVIRONMENT") != "development":
+    raise RuntimeError("CRITICAL SECURITY FAILURE: Attempting to boot using the public, hardcoded development SECRET_KEY. You must configure SECRET_KEY in your environment variables to prevent database decryption and JWT forgery. Boot aborted (unless ENVIRONMENT=development).")
 
 router = APIRouter(
     prefix="/auth",
@@ -74,10 +74,16 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> models.
 
     # Check if this is an extension token (API Key)
     if token.startswith("ext_"):
-        user = db.query(models.User).filter(models.User.extension_token == token).first()
-        if not user:
-            raise credentials_exception
-        return user
+        try:
+            parts = token.split("_")
+            if len(parts) >= 3:
+                ext_user_id = int(parts[1])
+                user = db.query(models.User).filter(models.User.id == ext_user_id).first()
+                if user and user.extension_token and verify_password(token, user.extension_token):
+                    return user
+        except Exception:
+            pass
+        raise credentials_exception
 
     # Standard JWT Validation
     try:
@@ -143,11 +149,6 @@ def login(request: Request, response: Response, user_in: schemas.UserLogin, db: 
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    # Master Account Override
-    if user.email in ["rajdeep.pal2004@gmail.com", "rajdeeppalwork@gmail.com"] and not user.is_premium:
-        user.is_premium = True
-        db.commit()
-
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": str(user.id), "version": user.session_version},
@@ -185,16 +186,15 @@ def generate_extension_token(
     current_user: models.User = Depends(get_current_user)
 ):
     """Generates a new long-lived API token for the Chrome Extension."""
-    token = f"ext_{secrets.token_urlsafe(32)}"
-    current_user.extension_token = token
+    token = f"ext_{current_user.id}_{secrets.token_urlsafe(32)}"
+    current_user.extension_token = get_password_hash(token)
     db.commit()
-    db.refresh(current_user)
     return {"extension_token": token}
 
 @router.get("/extension-token")
 def get_extension_token(current_user: models.User = Depends(get_current_user)):
-    """Retrieves the current Chrome Extension API token."""
-    return {"extension_token": current_user.extension_token}
+    """Retrieves whether the user has a Chrome Extension API token active."""
+    return {"has_token": current_user.extension_token is not None}
 
 
 @router.get("/resume", response_model=schemas.ResumeResponse)

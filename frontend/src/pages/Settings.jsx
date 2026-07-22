@@ -132,7 +132,11 @@ export default function Settings() {
     async function fetchExtensionToken() {
       try {
         const res = await api.get('/auth/extension-token')
-        setExtensionToken(res.data.extension_token)
+        if (res.data.has_token) {
+          setExtensionToken('•••••••••••••••• (Hidden for security)')
+        } else {
+          setExtensionToken(null)
+        }
       } catch (err) {
         console.error('Failed to fetch extension token', err)
       } finally {
@@ -156,9 +160,11 @@ export default function Settings() {
   }
 
   function copyToken() {
-    if (extensionToken) {
+    if (extensionToken && !extensionToken.includes('Hidden')) {
       navigator.clipboard.writeText(extensionToken)
       toast.success('Token copied to clipboard')
+    } else {
+      toast.error('Please generate a new token to copy it.')
     }
   }
 
@@ -325,7 +331,7 @@ export default function Settings() {
                   value={extensionToken || 'No token generated yet'}
                   className={`flex-1 rounded-xl bg-black/40 border ${extensionToken ? 'border-emerald-500/30 text-emerald-300' : 'border-white/10 text-white/30'} px-4 py-3 text-sm font-mono focus:outline-none`}
                 />
-                {extensionToken && (
+                {extensionToken && !extensionToken.includes('Hidden') && (
                   <Button variant="secondary" onClick={copyToken} icon={Copy} size="sm">
                     Copy
                   </Button>
