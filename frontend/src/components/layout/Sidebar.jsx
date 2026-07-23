@@ -1,7 +1,7 @@
 import { NavLink, Link } from 'react-router-dom'
 import {
   LayoutDashboard, Briefcase, BarChart2, Cpu,
-  Settings, KanbanSquare, X, LogOut, Mail, Terminal, Zap, Pencil, Target
+  Settings, KanbanSquare, X, LogOut, Mail, Terminal, Zap, Pencil, Target, FileText
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { path: '/copilot',     label: 'AI Copilot',   icon: Cpu             },
   { path: '/ats-matcher', label: 'ATS Matcher',  icon: Target          },
   { path: '/cold-email',  label: 'Cold Emailer', icon: Mail            },
+  { path: '/resumes',     label: 'Resumes',      icon: FileText        },
   { path: '/premium',     label: 'Premium',      icon: Zap             },
   { path: 'https://trackrai.hashnode.dev', label: 'Guides', icon: Pencil, isExternal: true },
   { path: '/settings',    label: 'Settings',     icon: Settings        },

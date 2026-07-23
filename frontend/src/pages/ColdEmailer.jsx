@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Mail, Send, Copy, Check, Sparkles, Trash2,
-  User, Briefcase, History, FileText, ChevronRight
+  User, Briefcase, History, FileText, ChevronRight, FileDown
 } from 'lucide-react'
 import api from '../api/applications'
 import toast from 'react-hot-toast'
@@ -185,6 +185,23 @@ export default function ColdEmailer() {
     setCompany(draft.company || '')
     setTargetRole(draft.targetRole || '')
     setTone(draft.tone || 'Professional')
+  }
+
+  const downloadResume = async (id) => {
+    try {
+      const res = await api.get(`/resumes/${id}/download`, { responseType: 'blob' })
+      const resumeName = resumes.find(r => r.id.toString() === id.toString())?.filename || 'resume.pdf'
+      const url = window.URL.createObjectURL(new Blob([res.data]))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', resumeName)
+      document.body.appendChild(link)
+      link.click()
+      link.parentNode.removeChild(link)
+      toast.success('Resume downloaded! You can now attach it manually.')
+    } catch (err) {
+      toast.error('Failed to download resume')
+    }
   }
 
   // Pre-fill mailto URL parameters safely
@@ -410,6 +427,16 @@ export default function ColdEmailer() {
                     </button>
 
                     <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+                      {selectedResumeId && (
+                        <button
+                          onClick={() => downloadResume(selectedResumeId)}
+                          className="w-full sm:w-auto text-center px-4 py-2.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
+                          title="Download the selected resume PDF to attach to your email"
+                        >
+                          <FileDown size={13} />
+                          <span>Download Resume</span>
+                        </button>
+                      )}
                       <a
                         href={getMailtoLink()}
                         className="w-full sm:w-auto text-center px-4 py-2.5 rounded-xl border border-white/10 bg-white/3 hover:bg-white/7 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"

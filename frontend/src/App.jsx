@@ -21,6 +21,7 @@ const Login        = lazy(() => import('./pages/Login'))
 const CreatorPortal = lazy(() => import('./pages/CreatorPortal'))
 const PremiumFeatures = lazy(() => import('./pages/PremiumFeatures'))
 const Landing      = lazy(() => import('./pages/Landing'))
+const Resumes      = lazy(() => import('./pages/Resumes'))
 const EmailTemplates = lazy(() => import('./pages/resources/EmailTemplates'))
 const ResumeGuide  = lazy(() => import('./pages/resources/ResumeGuide'))
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'))
@@ -92,6 +93,7 @@ function AppContent({ mobileMenuOpen, setMobileMenuOpen }) {
               <Route path="/ats-matcher"                 element={<ATSMatcher   />} />
               <Route path="/cold-email"                  element={<ColdEmailer  />} />
               <Route path="/settings"                    element={<Settings     />} />
+              <Route path="/resumes"                     element={<Resumes      />} />
               <Route path="/premium"                     element={<PremiumFeatures/>} />
               <Route path="/admin"                       element={<CreatorPortal/>} />
               <Route path="/resources/cold-email-templates" element={<EmailTemplates />} />

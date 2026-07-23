@@ -39,6 +39,11 @@ try:
             conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS extension_token VARCHAR(100)"))
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_users_gmail_sync_enabled ON users (gmail_sync_enabled)"))
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_users_is_premium ON users (is_premium)"))
+            
+            # Resumes table
+            conn.execute(text("ALTER TABLE resumes ADD COLUMN IF NOT EXISTS file_data BYTEA"))
+            conn.execute(text("ALTER TABLE resumes ADD COLUMN IF NOT EXISTS filename VARCHAR(255)"))
+            
             conn.commit()
         else:
             # SQLite doesn't support "IF NOT EXISTS" for ADD COLUMN, so check first
@@ -69,6 +74,15 @@ try:
             
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_users_gmail_sync_enabled ON users (gmail_sync_enabled)"))
             conn.execute(text("CREATE INDEX IF NOT EXISTS ix_users_is_premium ON users (is_premium)"))
+            
+            # Resumes table
+            result = conn.execute(text("PRAGMA table_info(resumes)"))
+            resumes_cols = [row[1] for row in result]
+            if "file_data" not in resumes_cols:
+                conn.execute(text("ALTER TABLE resumes ADD COLUMN file_data BLOB"))
+            if "filename" not in resumes_cols:
+                conn.execute(text("ALTER TABLE resumes ADD COLUMN filename VARCHAR(255)"))
+                
             conn.commit()
 except Exception as e:
     print(f"Migration check skipped/failed: {e}")

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Text, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, Date, Text, DateTime, ForeignKey, Boolean, LargeBinary
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .database import Base
@@ -64,6 +64,8 @@ class Resume(Base):
     name = Column(String(150), nullable=False)
     content = Column(Text, nullable=False)
     is_default = Column(Boolean, default=False, nullable=False)
+    file_data = Column(LargeBinary, nullable=True)
+    filename = Column(String(255), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 

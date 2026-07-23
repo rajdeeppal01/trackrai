@@ -83,6 +83,7 @@ class SavedResumeUpdate(BaseModel):
 class SavedResumeResponse(SavedResumeBase):
     id: int
     user_id: int
+    filename: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
