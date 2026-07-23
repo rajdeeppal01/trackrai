@@ -726,3 +726,39 @@ async def ats_match(
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Failed to parse AI response")
 
+from fastapi import UploadFile, File
+import io
+
+@router.post("/parse-file")
+@limiter.limit("20/minute")
+async def parse_file(
+    request: Request,
+    file: UploadFile = File(...),
+    current_user: models.User = Depends(get_current_user)
+):
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="No file uploaded")
+        
+    filename = file.filename.lower()
+    content = await file.read()
+    
+    try:
+        text = ""
+        if filename.endswith(".pdf"):
+            import PyPDF2
+            pdf_reader = PyPDF2.PdfReader(io.BytesIO(content))
+            for page in pdf_reader.pages:
+                extracted = page.extract_text()
+                if extracted:
+                    text += extracted + "\n"
+        elif filename.endswith(".docx"):
+            import docx2txt
+            text = docx2txt.process(io.BytesIO(content))
+        elif filename.endswith(".txt") or filename.endswith(".md"):
+            text = content.decode("utf-8")
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported file format. Please upload PDF, DOCX, or TXT.")
+            
+        return {"text": text.strip()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to parse file: {str(e)}")

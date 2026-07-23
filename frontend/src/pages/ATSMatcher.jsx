@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Target, FileText, CheckCircle, AlertTriangle, Play, Sparkles } from 'lucide-react';
+import { Target, FileText, CheckCircle, AlertTriangle, Play, Sparkles, Upload } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/applications';
 import toast from 'react-hot-toast';
@@ -16,6 +16,32 @@ export default function ATSMatcher() {
   const [selectedResumeId, setSelectedResumeId] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null); // { match_score, missing_keywords, improvement_tips }
+  
+  const [parsingJD, setParsingJD] = useState(false);
+  const [parsingResume, setParsingResume] = useState(false);
+
+  const handleFileUpload = async (e, setContentFunc, setLoadingFunc) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setLoadingFunc(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await api.post('/copilot/parse-file', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setContentFunc(res.data.text);
+      toast.success('File parsed successfully!');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to parse file. Please upload PDF, DOCX, or TXT.');
+    } finally {
+      setLoadingFunc(false);
+      e.target.value = ''; // Reset input
+    }
+  };
 
   useEffect(() => {
     async function fetchResumes() {
@@ -107,9 +133,18 @@ export default function ATSMatcher() {
           {/* Input Section */}
           <div className="space-y-6">
             <div className="glass rounded-2xl p-6 border border-white/10 flex flex-col h-[400px]">
-              <div className="flex items-center gap-2 mb-4">
-                <FileText size={16} className="text-indigo-400" />
-                <h2 className="font-semibold text-white/90">Job Description</h2>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <FileText size={16} className="text-indigo-400" />
+                  <h2 className="font-semibold text-white/90">Job Description</h2>
+                </div>
+                <div>
+                  <input type="file" id="jd-upload" className="hidden" accept=".pdf,.docx,.txt,.md" onChange={(e) => handleFileUpload(e, setJobDescription, setParsingJD)} />
+                  <label htmlFor="jd-upload" className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-300 cursor-pointer hover:bg-indigo-500/20 border border-indigo-500/20 transition-colors ${parsingJD ? 'opacity-50 cursor-wait' : ''}`}>
+                    <Upload size={12} />
+                    {parsingJD ? 'Parsing...' : 'Upload File'}
+                  </label>
+                </div>
               </div>
               <textarea
                 value={jobDescription}
@@ -125,18 +160,28 @@ export default function ATSMatcher() {
                   <FileText size={16} className="text-purple-400" />
                   <h2 className="font-semibold text-white/90">Your Resume</h2>
                 </div>
-                {resumes.length > 0 && (
-                  <select
-                    value={selectedResumeId}
-                    onChange={handleResumeSelect}
-                    className="bg-black/40 border border-white/10 rounded-lg text-xs text-white px-2 py-1 outline-none focus:border-purple-500/50"
-                  >
-                    <option value="">Custom Text</option>
-                    {resumes.map(r => (
-                      <option key={r.id} value={r.id.toString()}>{r.name} {r.is_default ? '(Default)' : ''}</option>
-                    ))}
-                  </select>
-                )}
+                <div className="flex items-center gap-2">
+                  <input type="file" id="resume-upload" className="hidden" accept=".pdf,.docx,.txt,.md" onChange={(e) => {
+                     setSelectedResumeId('');
+                     handleFileUpload(e, setResumeText, setParsingResume);
+                  }} />
+                  <label htmlFor="resume-upload" className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-purple-500/10 text-purple-300 cursor-pointer hover:bg-purple-500/20 border border-purple-500/20 transition-colors ${parsingResume ? 'opacity-50 cursor-wait' : ''}`}>
+                    <Upload size={12} />
+                    {parsingResume ? 'Parsing...' : 'Upload File'}
+                  </label>
+                  {resumes.length > 0 && (
+                    <select
+                      value={selectedResumeId}
+                      onChange={handleResumeSelect}
+                      className="bg-black/40 border border-white/10 rounded-lg text-xs text-white px-2 py-1.5 outline-none focus:border-purple-500/50"
+                    >
+                      <option value="">Custom Text</option>
+                      {resumes.map(r => (
+                        <option key={r.id} value={r.id.toString()}>{r.name} {r.is_default ? '(Default)' : ''}</option>
+                      ))}
+                    </select>
+                  )}
+                </div>
               </div>
               <textarea
                 value={resumeText}

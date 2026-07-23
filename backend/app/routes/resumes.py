@@ -24,6 +24,12 @@ def create_resume(
     current_user: User = Depends(get_current_user)
 ):
     """Create a new resume for the user."""
+    # Enforce premium limit
+    if not current_user.is_premium:
+        count = db.query(Resume).filter(Resume.user_id == current_user.id).count()
+        if count >= 2:
+            raise HTTPException(status_code=403, detail="Free users can only create up to 2 resumes. Please upgrade to Premium for unlimited resumes.")
+
     # If this is set to default, unset default on others
     if resume_in.is_default:
         db.query(Resume).filter(Resume.user_id == current_user.id).update({"is_default": False})

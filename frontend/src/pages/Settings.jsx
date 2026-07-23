@@ -10,6 +10,7 @@ import Button from '../components/ui/Button'
 import ConfirmDialog from '../components/ui/ConfirmDialog'
 import toast from 'react-hot-toast'
 import api from '../api/applications'
+import { useAuth } from '../context/AuthContext'
 
 function Section({ title, description, icon: Icon, children }) {
   return (
@@ -46,6 +47,7 @@ function SettingRow({ label, description, children }) {
 
 export default function Settings() {
   useDocumentTitle('Settings')
+  const { user } = useAuth()
   const { applications, clearApplications } = useApplications()
   const [confirmClear, setConfirmClear] = useState(false)
   const [clearing, setClearing] = useState(false)
@@ -297,8 +299,10 @@ export default function Settings() {
               RP
             </div>
             <div>
-              <p className="font-semibold text-white">Rajdeep Pal</p>
-              <p className="text-xs text-indigo-400">Premium User</p>
+              <p className="font-semibold text-white">{user?.email || 'User'}</p>
+              <p className={`text-xs ${user?.is_premium ? 'text-indigo-400' : 'text-white/50'}`}>
+                {user?.is_premium ? 'Premium User' : 'Free User'}
+              </p>
               <p className="text-xs text-white/30 mt-0.5">{applications.length} application{applications.length !== 1 ? 's' : ''} tracked</p>
             </div>
           </div>
@@ -387,11 +391,27 @@ export default function Settings() {
                       ))}
                     </div>
                   )}
-                  <div className="flex justify-end pt-2">
-                    <Button variant="secondary" size="sm" onClick={() => openResumeForm()}>
+                  <div className="flex justify-between items-center pt-2">
+                    {!user?.is_premium && (
+                      <p className="text-xs text-white/50">
+                        {resumes.length}/2 free resumes used.
+                      </p>
+                    )}
+                    <Button 
+                      variant="secondary" 
+                      size="sm" 
+                      onClick={() => openResumeForm()}
+                      disabled={!user?.is_premium && resumes.length >= 2}
+                      className={!user?.is_premium && resumes.length >= 2 ? 'opacity-50 cursor-not-allowed' : ''}
+                    >
                       + Add Resume
                     </Button>
                   </div>
+                  {!user?.is_premium && resumes.length >= 2 && (
+                    <div className="mt-2 text-xs text-orange-400/80 bg-orange-500/10 p-2 rounded-lg border border-orange-500/20 text-center">
+                      Free users can only add up to 2 resumes. Upgrade to Premium to add more.
+                    </div>
+                  )}
                 </>
               ) : (
                 <div className="space-y-4 bg-white/5 p-4 rounded-xl border border-white/10">
