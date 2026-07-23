@@ -106,7 +106,9 @@ export default function Sidebar({ mobileOpen, onClose }) {
             </div>
             <div className="overflow-hidden">
               <p className="text-xs font-semibold text-white truncate">{displayName}</p>
-              <p className="text-[10px] text-indigo-400">Premium User</p>
+              <p className={`text-[10px] ${user?.is_premium ? 'text-indigo-400' : 'text-white/40'}`}>
+                {user?.is_premium ? 'Premium User' : 'Free User'}
+              </p>
             </div>
           </div>
           <button
