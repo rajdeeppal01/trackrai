@@ -24,6 +24,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 class ChatRequest(BaseModel):
     message: str = Field(..., max_length=2000)
     history: Optional[List[dict]] = []
+    resume_id: Optional[int] = None
 
 
 class ColdEmailRequest(BaseModel):
@@ -34,6 +35,7 @@ class ColdEmailRequest(BaseModel):
     target_role: Optional[str] = Field("", max_length=100)
     user_bio: Optional[str] = Field("", max_length=2000)
     tone: Optional[str] = Field("Professional", max_length=50)
+    resume_id: Optional[int] = None
 
 
 class IntelRequest(BaseModel):
@@ -43,7 +45,8 @@ class IntelRequest(BaseModel):
 
 class ATSRequest(BaseModel):
     job_description: str = Field(..., max_length=15000)
-    resume_text: str = Field(..., max_length=15000)
+    resume_text: Optional[str] = Field(None, max_length=15000)
+    resume_id: Optional[int] = None
 
 import re
 
@@ -242,8 +245,12 @@ async def generate_gemini_insights(applications: List[models.Application], user:
             "notes": app.notes or ""
         })
 
+    default_resume = next((r for r in user.resumes if r.is_default), None)
+    if not default_resume and user.resumes:
+        default_resume = user.resumes[0]
+        
     resume_block = (
-        f"User's Resume:\n{user.resume_text}\n\n" if user.resume_text and user.resume_text.strip()
+        f"User's Resume:\n{default_resume.content}\n\n" if default_resume
         else "User has not uploaded a resume yet. If relevant, gently suggest adding one in Settings for more tailored insights.\n\n"
     )
 
@@ -382,9 +389,17 @@ async def copilot_chat(
         apps_summary.append(f"- {app.company}: {app.role} (Status: {app.status})")
     
     apps_str = "\n".join(apps_summary) if apps_summary else "No applications added yet."
+    
+    selected_resume = None
+    if req.resume_id:
+        selected_resume = db.query(models.Resume).filter(models.Resume.id == req.resume_id, models.Resume.user_id == current_user.id).first()
+    if not selected_resume:
+        selected_resume = next((r for r in current_user.resumes if r.is_default), None)
+    if not selected_resume and current_user.resumes:
+        selected_resume = current_user.resumes[0]
 
     resume_block = (
-        f"User's Resume:\n{current_user.resume_text}\n\n" if current_user.resume_text and current_user.resume_text.strip()
+        f"User's Resume:\n{selected_resume.content}\n\n" if selected_resume
         else "The user has not added a resume yet. If they ask for resume feedback, let them know they can paste it in Settings so you can give tailored advice, and offer general guidance in the meantime.\n\n"
     )
 
@@ -493,6 +508,7 @@ async def copilot_chat(
 async def draft_cold_email(
     request: Request,
     req: ColdEmailRequest,
+    db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
     sender_name = current_user.email.split("@")[0].capitalize()
@@ -523,6 +539,11 @@ async def draft_cold_email(
         user_context_parts.append(f"Core highlights/bio: {current_user.bio}")
     if req.user_bio:
         user_context_parts.append(req.user_bio)
+
+    if req.resume_id:
+        resume = db.query(models.Resume).filter(models.Resume.id == req.resume_id, models.Resume.user_id == current_user.id).first()
+        if resume:
+            user_context_parts.append(f"Resume Content: {resume.content}")
 
     bio = "; ".join(user_context_parts) if user_context_parts else "a software professional eager to contribute value"
 
@@ -637,10 +658,20 @@ async def generate_intel(
 async def ats_match(
     request: Request,
     req: ATSRequest,
+    db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
     if not GEMINI_API_KEY:
         raise HTTPException(status_code=503, detail="Gemini API Key not set.")
+        
+    resume_content = req.resume_text
+    if req.resume_id:
+        resume = db.query(models.Resume).filter(models.Resume.id == req.resume_id, models.Resume.user_id == current_user.id).first()
+        if resume:
+            resume_content = resume.content
+            
+    if not resume_content:
+        raise HTTPException(status_code=400, detail="Either resume_text or resume_id must be provided")
 
     prompt = (
         "You are an expert ATS (Applicant Tracking System) parser and technical recruiter.\n"
@@ -652,7 +683,7 @@ async def ats_match(
         '  "improvement_tips": [string, string, ...]\n'
         '}\n\n'
         f"Job Description:\n{req.job_description}\n\n"
-        f"Resume:\n{req.resume_text}\n"
+        f"Resume:\n{resume_content}\n"
     )
 
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"

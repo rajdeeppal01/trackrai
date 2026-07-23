@@ -35,6 +35,9 @@ export default function ColdEmailer() {
   // History of generated drafts
   const [history, setHistory] = useState([])
 
+  const [resumes, setResumes] = useState([])
+  const [selectedResumeId, setSelectedResumeId] = useState('')
+
   // Load history from localStorage on mount
   useEffect(() => {
     try {
@@ -45,6 +48,20 @@ export default function ColdEmailer() {
     } catch (e) {
       console.error('Failed to load email drafts history', e)
     }
+
+    async function fetchResumes() {
+      try {
+        const res = await api.get('/resumes/');
+        setResumes(res.data);
+        const defaultResume = res.data.find(r => r.is_default);
+        if (defaultResume) {
+          setSelectedResumeId(defaultResume.id.toString());
+        }
+      } catch (err) {
+        console.error('Failed to load resumes', err);
+      }
+    }
+    fetchResumes();
   }, [])
 
   // Sync draftSubject and draftBody when activeDraft changes
@@ -98,15 +115,17 @@ export default function ColdEmailer() {
 
     setLoading(true)
     try {
-      const res = await api.post('/copilot/draft-cold-email', {
+      const payload = {
         recipient_email: email,
         recipient_name: recipientName,
         recipient_role: recipientRole,
         company_name: company,
         target_role: targetRole,
         user_bio: userBio,
-        tone: tone
-      })
+        tone: tone,
+        resume_id: selectedResumeId ? parseInt(selectedResumeId) : undefined
+      }
+      const res = await api.post('/copilot/draft-cold-email', payload)
 
       const draft = {
         id: Date.now(),
@@ -278,10 +297,29 @@ export default function ColdEmailer() {
                 onChange={(e) => setTargetRole(e.target.value)}
               />
 
+              {/* Resume Selector */}
+              {resumes.length > 0 && (
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-white/50 uppercase tracking-wider">
+                    Base Context (Resume)
+                  </label>
+                  <select
+                    value={selectedResumeId}
+                    onChange={(e) => setSelectedResumeId(e.target.value)}
+                    className="w-full bg-black/40 border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white outline-none focus:border-indigo-500/50"
+                  >
+                    <option value="">Don't use a resume (Use only bio)</option>
+                    {resumes.map(r => (
+                      <option key={r.id} value={r.id.toString()}>{r.name} {r.is_default ? '(Default)' : ''}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               {/* Pitch/Bio */}
               <Textarea
                 label="Your Brief Pitch / Highlights (Optional)"
-                rows={4}
+                rows={3}
                 placeholder="Add 2-3 sentences about your core skills, notable projects, or achievements..."
                 value={userBio}
                 onChange={(e) => setUserBio(e.target.value)}

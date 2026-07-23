@@ -15,6 +15,7 @@ from app.routes.copilot import router as copilot_router
 from app.routes.admin import router as admin_router
 from app.routes.telemetry import router as telemetry_router
 from app.routes.gmail import router as gmail_router
+from app.routes.resumes import router as resumes_router
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -117,7 +118,7 @@ app.include_router(copilot_router)
 app.include_router(admin_router)
 app.include_router(telemetry_router)
 app.include_router(gmail_router)
-
+app.include_router(resumes_router, prefix="/resumes", tags=["Resumes"])
 
 @app.get("/")
 def root():

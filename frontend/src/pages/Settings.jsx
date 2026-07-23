@@ -91,35 +91,94 @@ export default function Settings() {
   }
 
 
-  // ── Resume ────────────────────────────────────────────────────
-  const [resumeText, setResumeText] = useState('')
+  // ── Multi-Resume Manager ──────────────────────────────────────
+  const [resumes, setResumes] = useState([])
   const [resumeLoading, setResumeLoading] = useState(true)
   const [resumeSaving, setResumeSaving] = useState(false)
+  const [editingResumeId, setEditingResumeId] = useState(null)
+  
+  // Form state
+  const [resumeName, setResumeName] = useState('')
+  const [resumeText, setResumeText] = useState('')
+  const [resumeIsDefault, setResumeIsDefault] = useState(false)
+  const [showResumeForm, setShowResumeForm] = useState(false)
 
   useEffect(() => {
-    async function fetchResume() {
+    async function fetchResumes() {
       try {
-        const res = await api.get('/auth/resume')
-        setResumeText(res.data.resume_text || '')
+        const res = await api.get('/resumes/')
+        setResumes(res.data)
       } catch (err) {
-        console.error('Failed to load resume', err)
+        console.error('Failed to load resumes', err)
       } finally {
         setResumeLoading(false)
       }
     }
-    fetchResume()
+    fetchResumes()
   }, [])
 
+  function openResumeForm(resume = null) {
+    if (resume) {
+      setEditingResumeId(resume.id)
+      setResumeName(resume.name)
+      setResumeText(resume.content)
+      setResumeIsDefault(resume.is_default)
+    } else {
+      setEditingResumeId(null)
+      setResumeName('')
+      setResumeText('')
+      setResumeIsDefault(resumes.length === 0) // First resume is default
+    }
+    setShowResumeForm(true)
+  }
+
+  function closeResumeForm() {
+    setShowResumeForm(false)
+    setEditingResumeId(null)
+  }
+
   async function saveResume() {
+    if (!resumeName.trim() || !resumeText.trim()) {
+      toast.error('Name and content are required')
+      return
+    }
     setResumeSaving(true)
     try {
-      await api.put('/auth/resume', { resume_text: resumeText })
-      toast.success('Resume saved!')
+      const payload = {
+        name: resumeName,
+        content: resumeText,
+        is_default: resumeIsDefault
+      }
+      
+      if (editingResumeId) {
+        const res = await api.put(`/resumes/${editingResumeId}`, payload)
+        setResumes(prev => prev.map(r => r.id === editingResumeId ? res.data : (payload.is_default ? {...r, is_default: false} : r)))
+        toast.success('Resume updated!')
+      } else {
+        const res = await api.post('/resumes/', payload)
+        setResumes(prev => {
+          const updated = payload.is_default ? prev.map(r => ({...r, is_default: false})) : prev
+          return [...updated, res.data]
+        })
+        toast.success('Resume created!')
+      }
+      closeResumeForm()
     } catch (err) {
       console.error('Failed to save resume', err)
       toast.error('Failed to save resume')
     } finally {
       setResumeSaving(false)
+    }
+  }
+  
+  async function deleteResume(id) {
+    if (!confirm('Are you sure you want to delete this resume?')) return
+    try {
+      await api.delete(`/resumes/${id}`)
+      setResumes(prev => prev.filter(r => r.id !== id))
+      toast.success('Resume deleted')
+    } catch (err) {
+      toast.error('Failed to delete resume')
     }
   }
 
@@ -290,27 +349,91 @@ export default function Settings() {
         </Section>
 
         {/* Resume */}
-        <Section icon={FileText} title="Resume" description="Paste your resume so AI Copilot can give tailored feedback and insights">
+        <Section icon={FileText} title="Resumes" description="Manage your resumes for tailored AI Copilot feedback">
           {resumeLoading ? (
             <div className="h-40 rounded-xl bg-white/3 animate-pulse" />
           ) : (
-            <>
-              <textarea
-                value={resumeText}
-                onChange={(e) => setResumeText(e.target.value)}
-                placeholder="Paste your resume text here (plain text is fine — no need for formatting)..."
-                rows={10}
-                className="w-full rounded-xl bg-white/3 border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors resize-y"
-              />
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-white/30">
-                  {resumeText.trim() ? `${resumeText.trim().split(/\s+/).length} words` : 'No resume added yet'}
-                </p>
-                <Button variant="primary" size="sm" icon={Save} onClick={saveResume} loading={resumeSaving}>
-                  Save Resume
-                </Button>
-              </div>
-            </>
+            <div className="space-y-4">
+              {!showResumeForm ? (
+                <>
+                  {resumes.length === 0 ? (
+                    <div className="text-center py-6 text-white/40 text-sm bg-white/5 rounded-xl border border-white/5">
+                      No resumes found. Add one to get started.
+                    </div>
+                  ) : (
+                    <div className="grid gap-3">
+                      {resumes.map(resume => (
+                        <div key={resume.id} className="flex items-center justify-between p-3 rounded-xl bg-white/3 border border-white/10 group">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="text-sm font-medium text-white">{resume.name}</h3>
+                              {resume.is_default && (
+                                <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full border border-emerald-400/20">
+                                  Default
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-white/30 mt-1">{resume.content.trim().split(/\s+/).length} words</p>
+                          </div>
+                          <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={() => openResumeForm(resume)} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                              <SettingsIcon size={14} />
+                            </button>
+                            <button onClick={() => deleteResume(resume.id)} className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors">
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex justify-end pt-2">
+                    <Button variant="secondary" size="sm" onClick={() => openResumeForm()}>
+                      + Add Resume
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-4 bg-white/5 p-4 rounded-xl border border-white/10">
+                  <div>
+                    <label className="text-xs text-white/50 font-semibold uppercase tracking-wider mb-1 block">Resume Name</label>
+                    <input
+                      type="text"
+                      value={resumeName}
+                      onChange={(e) => setResumeName(e.target.value)}
+                      placeholder="e.g. Frontend Engineer, Product Manager"
+                      className="w-full rounded-[6px] bg-black/40 border border-white/10 px-3.5 py-2 text-xs text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-white/50 font-semibold uppercase tracking-wider mb-1 block">Resume Content</label>
+                    <textarea
+                      value={resumeText}
+                      onChange={(e) => setResumeText(e.target.value)}
+                      placeholder="Paste your resume text here (plain text is fine)..."
+                      rows={10}
+                      className="w-full rounded-[6px] bg-black/40 border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-colors resize-y"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input 
+                      type="checkbox" 
+                      id="default-resume"
+                      checked={resumeIsDefault}
+                      onChange={(e) => setResumeIsDefault(e.target.checked)}
+                      className="w-4 h-4 rounded border-white/20 bg-black/40 text-indigo-500 focus:ring-indigo-500/50"
+                    />
+                    <label htmlFor="default-resume" className="text-sm text-white/70 cursor-pointer">Set as default resume</label>
+                  </div>
+                  <div className="flex items-center justify-end gap-3 pt-2">
+                    <Button variant="secondary" size="sm" onClick={closeResumeForm}>Cancel</Button>
+                    <Button variant="primary" size="sm" icon={Save} onClick={saveResume} loading={resumeSaving}>
+                      Save Resume
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
         </Section>
 

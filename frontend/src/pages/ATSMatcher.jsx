@@ -11,9 +11,40 @@ export default function ATSMatcher() {
   const { user } = useAuth();
   
   const [jobDescription, setJobDescription] = useState('');
-  const [resumeText, setResumeText] = useState(user?.resume_text || '');
+  const [resumeText, setResumeText] = useState('');
+  const [resumes, setResumes] = useState([]);
+  const [selectedResumeId, setSelectedResumeId] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null); // { match_score, missing_keywords, improvement_tips }
+
+  import { useEffect } from 'react';
+  useEffect(() => {
+    async function fetchResumes() {
+      try {
+        const res = await api.get('/resumes/');
+        setResumes(res.data);
+        const defaultResume = res.data.find(r => r.is_default) || res.data[0];
+        if (defaultResume) {
+          setSelectedResumeId(defaultResume.id.toString());
+          setResumeText(defaultResume.content);
+        }
+      } catch (err) {
+        console.error('Failed to load resumes', err);
+      }
+    }
+    fetchResumes();
+  }, []);
+
+  const handleResumeSelect = (e) => {
+    const id = e.target.value;
+    setSelectedResumeId(id);
+    if (id) {
+      const selected = resumes.find(r => r.id.toString() === id);
+      if (selected) setResumeText(selected.content);
+    } else {
+      setResumeText('');
+    }
+  };
 
   const handleMatch = async (e) => {
     e.preventDefault();
@@ -24,10 +55,19 @@ export default function ATSMatcher() {
 
     setLoading(true);
     try {
-      const res = await api.post('/copilot/ats-match', {
+      const payload = {
         job_description: jobDescription,
-        resume_text: resumeText
-      });
+        resume_text: selectedResumeId ? undefined : resumeText,
+        resume_id: selectedResumeId ? parseInt(selectedResumeId) : undefined
+      };
+      // If user edited the text after selecting, send text instead
+      const selected = resumes.find(r => r.id.toString() === selectedResumeId);
+      if (selected && selected.content !== resumeText) {
+        payload.resume_text = resumeText;
+        payload.resume_id = undefined;
+      }
+
+      const res = await api.post('/copilot/ats-match', payload);
       setResult(res.data);
       toast.success('ATS Match Complete!');
     } catch (err) {
@@ -86,6 +126,18 @@ export default function ATSMatcher() {
                   <FileText size={16} className="text-purple-400" />
                   <h2 className="font-semibold text-white/90">Your Resume</h2>
                 </div>
+                {resumes.length > 0 && (
+                  <select
+                    value={selectedResumeId}
+                    onChange={handleResumeSelect}
+                    className="bg-black/40 border border-white/10 rounded-lg text-xs text-white px-2 py-1 outline-none focus:border-purple-500/50"
+                  >
+                    <option value="">Custom Text</option>
+                    {resumes.map(r => (
+                      <option key={r.id} value={r.id.toString()}>{r.name} {r.is_default ? '(Default)' : ''}</option>
+                    ))}
+                  </select>
+                )}
               </div>
               <textarea
                 value={resumeText}

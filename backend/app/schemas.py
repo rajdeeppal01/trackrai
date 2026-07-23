@@ -64,6 +64,32 @@ class ResumeResponse(BaseModel):
         from_attributes = True
 
 
+class SavedResumeBase(BaseModel):
+    name: str
+    content: str
+    is_default: bool = False
+
+
+class SavedResumeCreate(SavedResumeBase):
+    pass
+
+
+class SavedResumeUpdate(BaseModel):
+    name: Optional[str] = None
+    content: Optional[str] = None
+    is_default: Optional[bool] = None
+
+
+class SavedResumeResponse(SavedResumeBase):
+    id: int
+    user_id: int
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class UserProfileUpdate(BaseModel):
     current_position: Optional[str] = None
     current_company: Optional[str] = None

@@ -39,6 +39,30 @@
   --scrollbar-thumb: rgba(0, 0, 0, 0.12);
 }
 
+[data-theme="cyberpunk"] {
+  --bg:              #120421;
+  --sidebar-bg:      #1c0b2b;
+  --navbar-bg:       rgba(18, 4, 33, 0.88);
+  --glass-bg:        rgba(255, 0, 128, 0.05);
+  --glass-border:    rgba(0, 255, 255, 0.2);
+  --glass-strong-bg: rgba(28, 11, 43, 0.90);
+  --text:            #00ffff;
+  --text-muted:      rgba(255, 0, 128, 0.8);
+  --scrollbar-thumb: rgba(0, 255, 255, 0.2);
+}
+
+[data-theme="midnight"] {
+  --bg:              #000000;
+  --sidebar-bg:      #050505;
+  --navbar-bg:       rgba(0, 0, 0, 0.88);
+  --glass-bg:        rgba(255, 255, 255, 0.02);
+  --glass-border:    rgba(255, 255, 255, 0.05);
+  --glass-strong-bg: rgba(10, 10, 10, 0.90);
+  --text:            #e2e8f0;
+  --text-muted:      rgba(226, 232, 240, 0.5);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.1);
+}
+
 /* ─── Base ───────────────────────────────────────────────────── */
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }
@@ -105,6 +129,18 @@
   /* Light-mode chat bubble fixes */
   [data-theme="light"] .bg-white\/5 { background-color: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.06) !important; }
   [data-theme="light"] .bg-indigo-600\/90 { color: #ffffff !important; }
+
+  /* Cyberpunk specific overrides */
+  [data-theme="cyberpunk"] .bg-indigo-600\/90 { background-color: rgba(255,0,128,0.9) !important; color: #fff !important; }
+  [data-theme="cyberpunk"] .text-indigo-400 { color: #00ffff !important; }
+  [data-theme="cyberpunk"] .bg-indigo-500\/20 { background-color: rgba(0,255,255,0.2) !important; }
+  [data-theme="cyberpunk"] .border-indigo-500\/20 { border-color: rgba(0,255,255,0.2) !important; }
+  [data-theme="cyberpunk"] .text-white { color: #00ffff !important; }
+  [data-theme="cyberpunk"] .text-white\/40,
+  [data-theme="cyberpunk"] .text-white\/50 { color: rgba(255,0,128,0.8) !important; }
+
+  /* Midnight specific overrides */
+  [data-theme="midnight"] .bg-indigo-600\/90 { background-color: rgba(30,58,138,0.9) !important; }
 }
 
 /* ─── Utility classes ────────────────────────────────────────── */

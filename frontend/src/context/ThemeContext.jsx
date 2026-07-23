@@ -13,7 +13,15 @@ export function ThemeProvider({ children }) {
     localStorage.setItem('trackrai_theme', theme)
   }, [theme])
 
-  const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark')
+  const themes = ['dark', 'light', 'cyberpunk', 'midnight']
+
+  const toggleTheme = () => {
+    setTheme(current => {
+      const currentIndex = themes.indexOf(current)
+      const nextIndex = (currentIndex + 1) % themes.length
+      return themes[nextIndex]
+    })
+  }
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
