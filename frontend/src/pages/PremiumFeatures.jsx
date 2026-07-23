@@ -176,9 +176,14 @@ export default function PremiumFeatures() {
   }
 
   async function handleCancelPremium() {
-    // In a real app with subscriptions, we would hit /payments/create-portal-session
-    // Since this is a 1-year one-time pass, there is no subscription to cancel.
-    toast.error('Your 1-year pass does not automatically renew. No need to cancel!')
+    try {
+      const res = await api.post('/payments/create-portal-session')
+      if (res.data.url) {
+        window.location.href = res.data.url
+      }
+    } catch (err) {
+      toast.error('Failed to open billing portal.')
+    }
   }
 
   // Check URL for stripe success/cancel
@@ -225,7 +230,7 @@ export default function PremiumFeatures() {
                 </Button>
               ) : (
                 <Button variant="danger" size="sm" onClick={handleCancelPremium} className="opacity-80 hover:opacity-100">
-                  Cancel Subscription
+                  Manage Subscription
                 </Button>
               )}
             </div>
