@@ -191,7 +191,9 @@ def get_profile(current_user: models.User = Depends(get_current_user)):
         "bio": current_user.bio,
         "gmail_connected": current_user.google_refresh_token is not None,
         "gmail_sync_enabled": current_user.gmail_sync_enabled,
-        "last_gmail_sync": current_user.last_gmail_sync
+        "last_gmail_sync": current_user.last_gmail_sync,
+        "is_premium": current_user.is_premium,
+        "gmail_scans_used": current_user.gmail_scans_used
     }
 
 
