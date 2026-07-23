@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Flame } from 'lucide-react';
 
 export default function ActivityHeatmap({ applications = [] }) {
-  const { days, totalCount, streak } = useMemo(() => {
+  const { days, monthLabels, totalCount, streak } = useMemo(() => {
     const map = {};
     let total = 0;
     
