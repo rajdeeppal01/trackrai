@@ -139,25 +139,20 @@ export default function ATSMatcher() {
                   <FileText size={16} className="text-indigo-400" />
                   <h2 className="font-semibold text-white/90">Job Description</h2>
                 </div>
-                <input type="file" id="jd-upload" className="hidden" accept=".pdf,.docx,.txt,.md" onChange={(e) => handleFileUpload(e, setJobDescription, setParsingJD)} />
+                <div>
+                  <input type="file" id="jd-upload" className="hidden" accept=".pdf,.docx,.txt,.md" onChange={(e) => handleFileUpload(e, setJobDescription, setParsingJD)} />
+                  <label htmlFor="jd-upload" className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-300 cursor-pointer hover:bg-indigo-500/20 border border-indigo-500/20 transition-colors ${parsingJD ? 'opacity-50 cursor-wait' : ''}`}>
+                    <Upload size={12} />
+                    {parsingJD ? 'Parsing...' : 'Upload File'}
+                  </label>
+                </div>
               </div>
-              {jobDescription ? (
-                <div className="flex-1 w-full bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-6 flex flex-col items-center justify-center text-center">
-                  <CheckCircle size={48} className="text-emerald-400 mb-4" />
-                  <h3 className="text-white font-semibold">Job Description Ready</h3>
-                  <p className="text-xs text-white/50 mt-2 mb-4">{jobDescription.trim().split(/\s+/).length} words parsed</p>
-                  <Button variant="secondary" size="sm" onClick={() => setJobDescription('')}>Remove File</Button>
-                </div>
-              ) : (
-                <div 
-                  className={`flex-1 w-full bg-black/20 border-2 border-dashed border-white/10 hover:border-indigo-500/50 rounded-xl p-6 flex flex-col items-center justify-center text-center transition-colors cursor-pointer ${parsingJD ? 'opacity-50 cursor-wait' : ''}`}
-                  onClick={() => !parsingJD && document.getElementById('jd-upload').click()}
-                >
-                  <Upload size={32} className="text-white/20 mb-4" />
-                  <p className="text-sm text-white/60 mb-2">{parsingJD ? 'Parsing File...' : 'Click to upload Job Description'}</p>
-                  <p className="text-xs text-white/30">PDF, DOCX, TXT</p>
-                </div>
-              )}
+              <textarea
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                placeholder="Paste the target job description here..."
+                className="flex-1 w-full bg-black/20 border border-white/5 rounded-xl p-4 text-sm text-white/80 placeholder-white/20 focus:outline-none focus:border-indigo-500/50 resize-none transition-colors"
+              />
             </div>
 
             <div className="glass rounded-2xl p-6 border border-white/10 flex flex-col h-[400px]">
