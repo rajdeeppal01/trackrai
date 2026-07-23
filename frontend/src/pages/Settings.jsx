@@ -4,7 +4,7 @@ import useDocumentTitle from '../hooks/useDocumentTitle'
 import { motion } from 'framer-motion'
 import {
   Settings as SettingsIcon, Download, Trash2, Database,
-  User, Shield, FileText, Save
+  User, Shield, FileText, Save, Puzzle, Copy, RefreshCw
 } from 'lucide-react'
 import Button from '../components/ui/Button'
 import ConfirmDialog from '../components/ui/ConfirmDialog'
@@ -94,7 +94,50 @@ export default function Settings() {
 
 
 
+  // ── Chrome Extension ──────────────────────────────────────────
+  const [extensionToken, setExtensionToken] = useState(null)
+  const [tokenLoading, setTokenLoading] = useState(true)
+  const [generatingToken, setGeneratingToken] = useState(false)
 
+  useEffect(() => {
+    async function fetchExtensionToken() {
+      try {
+        const res = await api.get('/auth/extension-token')
+        if (res.data.has_token) {
+          setExtensionToken('•••••••••••••••• (Hidden for security)')
+        } else {
+          setExtensionToken(null)
+        }
+      } catch (err) {
+        console.error('Failed to fetch extension token', err)
+      } finally {
+        setTokenLoading(false)
+      }
+    }
+    fetchExtensionToken()
+  }, [])
+
+  async function generateNewToken() {
+    setGeneratingToken(true)
+    try {
+      const res = await api.post('/auth/extension-token')
+      setExtensionToken(res.data.extension_token)
+      toast.success('Generated new Extension Token!')
+    } catch (err) {
+      toast.error('Failed to generate token')
+    } finally {
+      setGeneratingToken(false)
+    }
+  }
+
+  function copyToken() {
+    if (extensionToken && !extensionToken.includes('Hidden')) {
+      navigator.clipboard.writeText(extensionToken)
+      toast.success('Token copied to clipboard')
+    } else {
+      toast.error('Please generate a new token to copy it.')
+    }
+  }
 
   // ── Export as JSON ───────────────────────────────────────────
   function exportJSON() {
@@ -220,7 +263,47 @@ export default function Settings() {
         </Section>
 
 
-
+        {/* Chrome Extension */}
+        <Section icon={Puzzle} title="Chrome Extension Integration" description="Connect the official TrackrAI 1-Click Chrome Clipper">
+          <div className="space-y-4">
+            <p className="text-sm text-white/70">
+              The TrackrAI Chrome Extension allows you to save jobs from LinkedIn and Indeed with one click. 
+              To connect it, generate a token below and paste it into the extension's settings.
+            </p>
+            {tokenLoading ? (
+              <div className="h-10 rounded-xl bg-white/3 animate-pulse" />
+            ) : (
+              <div className="flex items-center gap-3">
+                <input
+                  type="text"
+                  readOnly
+                  value={extensionToken || 'No token generated yet'}
+                  className={`flex-1 rounded-xl bg-black/40 border ${extensionToken ? 'border-emerald-500/30 text-emerald-300' : 'border-white/10 text-white/30'} px-4 py-3 text-sm font-mono focus:outline-none`}
+                />
+                {extensionToken && !extensionToken.includes('Hidden') && (
+                  <Button variant="secondary" onClick={copyToken} icon={Copy} size="sm">
+                    Copy
+                  </Button>
+                )}
+                <Button 
+                  variant="primary" 
+                  onClick={generateNewToken} 
+                  loading={generatingToken} 
+                  icon={RefreshCw} 
+                  size="sm"
+                  className={extensionToken ? 'bg-orange-500/20 text-orange-400 hover:bg-orange-500/30' : ''}
+                >
+                  {extensionToken ? 'Regenerate' : 'Generate Token'}
+                </Button>
+              </div>
+            )}
+            {extensionToken && (
+              <p className="text-xs text-orange-400/80 bg-orange-500/10 p-3 rounded-xl border border-orange-500/20">
+                Warning: Anyone with this token can save jobs to your account. Do not share it publicly.
+              </p>
+            )}
+          </div>
+        </Section>
 
         {/* Data & Export */}
         <Section icon={Database} title="Data & Export" description="Download or manage your application data">
