@@ -171,7 +171,8 @@ export default function PremiumFeatures() {
         window.location.href = res.data.url
       }
     } catch (err) {
-      toast.error('Failed to initiate checkout. Please try again.')
+      const errorMessage = err.response?.data?.detail || 'Failed to initiate checkout. Please try again.'
+      toast.error(errorMessage)
     }
   }
 

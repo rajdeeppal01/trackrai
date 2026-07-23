@@ -20,25 +20,31 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4173")
 @router.post("/create-checkout-session")
 async def create_checkout_session(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
+        stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+        price_id = os.getenv("STRIPE_PRICE_ID")
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:4173")
+        
+        print(f"DEBUG: creating checkout session with price_id={price_id}")
+
         # Create a Stripe Checkout Session
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[
                 {
-                    'price': STRIPE_PRICE_ID,
+                    'price': price_id,
                     'quantity': 1,
                 },
             ],
             mode='subscription', # Changed from 'payment' to 'subscription'
-            success_url=f"{FRONTEND_URL}/premium?success=true",
-            cancel_url=f"{FRONTEND_URL}/premium?canceled=true",
+            success_url=f"{frontend_url}/premium?success=true",
+            cancel_url=f"{frontend_url}/premium?canceled=true",
             client_reference_id=str(current_user.id),
             customer_email=current_user.email
         )
         return {"url": checkout_session.url}
     except Exception as e:
         print(f"Stripe Error: {str(e)}")
-        raise HTTPException(status_code=500, detail="Could not create checkout session.")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/create-portal-session")
