@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import { motion } from 'framer-motion'
-import { Zap, Mail } from 'lucide-react'
+import { Zap, Mail, FileText } from 'lucide-react'
 import Button from '../components/ui/Button'
 import toast from 'react-hot-toast'
 import api from '../api/applications'
@@ -220,6 +220,23 @@ export default function PremiumFeatures() {
           ) : (
             <div className="h-24 rounded-xl bg-white/3 animate-pulse" />
           )}
+        </Section>
+
+        <Section icon={FileText} title="Multi-Resume Manager" description="Manage multiple resumes tailored for different roles">
+          <div className="p-4 rounded-xl bg-purple-500/5 border border-purple-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[9px] font-bold uppercase tracking-wider">Premium Feature</span>
+              <p className="text-sm font-semibold text-white">Unlock Unlimited Resumes</p>
+              <p className="text-xs text-white/40 leading-relaxed font-medium max-w-md">
+                Free users can save up to 2 resumes. Upgrade to Premium to save unlimited customized resumes for different roles and instantly use them across all AI Copilot tools.
+              </p>
+            </div>
+            {!isPremium && (
+              <Button variant="primary" size="sm" onClick={handleUpgradePremium}>
+                Upgrade
+              </Button>
+            )}
+          </div>
         </Section>
 
         <Section icon={Mail} title="AI Gmail Sync" description="Connect your inbox to automatically parse and synchronize job application updates in real time">
