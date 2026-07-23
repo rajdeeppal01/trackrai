@@ -3,7 +3,9 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+# Explicitly load from backend/.env so it works regardless of where the script is run from
+env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
+load_dotenv(dotenv_path=env_path, override=True)
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./trackrai.db")
 
