@@ -166,23 +166,35 @@ export default function PremiumFeatures() {
 
   async function handleUpgradePremium() {
     try {
-      const res = await api.post('/auth/upgrade-premium')
-      setIsPremium(res.data.is_premium)
-      toast.success('Successfully upgraded to Premium Mode!')
+      const res = await api.post('/payments/create-checkout-session')
+      if (res.data.url) {
+        window.location.href = res.data.url
+      }
     } catch (err) {
-      toast.error('Failed to upgrade.')
+      toast.error('Failed to initiate checkout. Please try again.')
     }
   }
 
   async function handleCancelPremium() {
-    try {
-      const res = await api.post('/auth/cancel-premium')
-      setIsPremium(res.data.is_premium)
-      toast.success('Successfully downgraded to Free Tier.')
-    } catch (err) {
-      toast.error('Failed to cancel subscription.')
-    }
+    // In a real app with subscriptions, we would hit /payments/create-portal-session
+    // Since this is a 1-year one-time pass, there is no subscription to cancel.
+    toast.error('Your 1-year pass does not automatically renew. No need to cancel!')
   }
+
+  // Check URL for stripe success/cancel
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('success')) {
+      toast.success('Payment successful! Welcome to Premium.')
+      setIsPremium(true)
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname)
+    }
+    if (params.get('canceled')) {
+      toast.error('Payment was canceled.')
+      window.history.replaceState({}, document.title, window.location.pathname)
+    }
+  }, [])
 
   return (
     <div className="h-full overflow-y-auto">
