@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Target, FileText, CheckCircle, AlertTriangle, Play, Sparkles } from 'lucide-react';
@@ -17,7 +17,6 @@ export default function ATSMatcher() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null); // { match_score, missing_keywords, improvement_tips }
 
-  import { useEffect } from 'react';
   useEffect(() => {
     async function fetchResumes() {
       try {
