@@ -36,6 +36,7 @@ export default function PremiumPromo() {
           
           <ul className="space-y-2 mt-2">
             {[
+              'Unlimited multi-resume manager',
               'Zero manual data entry',
               'Instant notifications for interview invites',
               'Automatic status syncing'
