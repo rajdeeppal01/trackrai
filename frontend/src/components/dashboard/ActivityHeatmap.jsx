@@ -53,7 +53,33 @@ export default function ActivityHeatmap({ applications = [] }) {
       });
     }
 
-    return { days: daysArr, totalCount: total, streak: currentStreak };
+    const weeksArr = [];
+    for (let i = 0; i < daysArr.length; i += 7) {
+      weeksArr.push(daysArr.slice(i, i + 7));
+    }
+
+    const monthLabels = [];
+    let currentMonth = -1;
+    let currentYear = -1;
+    weeksArr.forEach((week, index) => {
+      const month = week[0].date.getMonth();
+      const year = week[0].date.getFullYear();
+      if (month !== currentMonth || year !== currentYear) {
+        // Only show year if it's the first month shown or January
+        const label = (monthLabels.length === 0 || month === 0) 
+            ? format(week[0].date, 'MMM yyyy') 
+            : format(week[0].date, 'MMM');
+            
+        // Don't overlap labels if they are too close
+        if (monthLabels.length === 0 || index - monthLabels[monthLabels.length - 1].index > 2) {
+          monthLabels.push({ index, label });
+        }
+        currentMonth = month;
+        currentYear = year;
+      }
+    });
+
+    return { days: daysArr, monthLabels, totalCount: total, streak: currentStreak };
   }, [applications]);
 
   return (
@@ -79,6 +105,17 @@ export default function ActivityHeatmap({ applications = [] }) {
       </div>
 
       <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+        <div className="relative mb-2 h-4 min-w-max">
+          {monthLabels.map((m, i) => (
+            <span 
+              key={i} 
+              className="absolute text-[10px] text-white/40 font-medium"
+              style={{ left: `calc(${m.index} * (0.875rem + 0.375rem))` }}
+            >
+              {m.label}
+            </span>
+          ))}
+        </div>
         <div className="inline-grid grid-rows-7 grid-flow-col gap-1.5 min-w-max">
           {days.map((day, i) => {
             let colorClass = 'bg-white/5 border border-white/5'; // empty

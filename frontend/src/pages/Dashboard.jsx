@@ -82,17 +82,19 @@ export default function Dashboard() {
 
         {/* Chart + AI Insights + Upcoming */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 flex flex-col gap-6">
+          <div className="lg:col-span-2 flex flex-col gap-6 h-full">
             <ApplicationChart applications={applications} />
             <PremiumPromo />
           </div>
-          <div className="space-y-6">
+          <div className="flex flex-col gap-6 h-full">
             <AIInsights applications={applications} loading={loading} />
-            <UpcomingSection
-              applications={applications}
-              loading={loading}
-              onEdit={openEdit}
-            />
+            <div className="flex-1 flex flex-col [&>div]:h-full">
+              <UpcomingSection
+                applications={applications}
+                loading={loading}
+                onEdit={openEdit}
+              />
+            </div>
           </div>
         </div>
 
