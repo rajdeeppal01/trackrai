@@ -5,6 +5,7 @@ import { Target, FileText, CheckCircle, AlertTriangle, Play, Sparkles, Upload } 
 import { useAuth } from '../context/AuthContext';
 import api from '../api/applications';
 import toast from 'react-hot-toast';
+import Button from '../components/ui/Button';
 
 export default function ATSMatcher() {
   useDocumentTitle('ATS Matcher');

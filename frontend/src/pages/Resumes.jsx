@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { FileText, UploadCloud, Trash2, CheckCircle2, FileDown } from 'lucide-react'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
+import { Link } from 'react-router-dom'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import api from '../api/applications'
 import Button from '../components/ui/Button'
@@ -105,8 +106,11 @@ export default function Resumes() {
         </div>
         
         {!user?.is_premium && resumes.length >= 2 ? (
-          <div className="bg-amber-500/10 border border-amber-500/20 text-amber-400 px-4 py-2 rounded-xl text-sm flex items-center gap-2">
-            Free Plan Limit Reached (2/2)
+          <div className="bg-amber-500/10 border border-amber-500/20 text-amber-400 px-4 py-2 rounded-xl text-sm flex flex-col sm:flex-row items-center gap-3">
+            <span>Free Plan Limit Reached (2/2)</span>
+            <Link to="/premium" className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 px-3 py-1 rounded-lg transition-colors font-semibold text-xs">
+              Upgrade to Premium
+            </Link>
           </div>
         ) : (
           <div>
