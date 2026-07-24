@@ -110,8 +110,11 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
   };
 
   // ── Delete flow ──────────────────────────────────────────────
-  function requestDelete(app) {
-    setConfirmTarget({ id: app.id, company: app.company, role: app.role });
+  function requestDelete(appId) {
+    const app = applications.find(a => a.id.toString() === appId.toString());
+    if (app) {
+      setConfirmTarget({ id: app.id, company: app.company, role: app.role });
+    }
   }
 
   async function confirmDelete() {
