@@ -59,15 +59,7 @@ export default function Landing() {
     }
     window.addEventListener("mousemove", handleMouseMove)
     
-    // Force dark mode for the landing page
-    const root = document.documentElement
-    const originalTheme = root.getAttribute('data-theme')
-    root.setAttribute('data-theme', 'dark')
-    
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove)
-      if (originalTheme) root.setAttribute('data-theme', originalTheme)
-    }
+    return () => window.removeEventListener("mousemove", handleMouseMove)
   }, [mouseX, mouseY])
 
   const containerVariants = {
@@ -81,7 +73,7 @@ export default function Landing() {
   }
 
   return (
-    <div className="min-h-screen bg-[#020205] text-white font-sans overflow-x-hidden relative selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-[#020205] text-slate-50 font-sans overflow-x-hidden relative selection:bg-indigo-500/30">
       <Helmet>
         <title>TrackrAI (Track AI) — AI-Powered Job Search & Application Tracker</title>
         <meta name="description" content="The ultimate rai tracker to track AI jobs and standard roles. TrackrAI automatically syncs with your inbox and drafts personalized cold outreach." />
@@ -127,21 +119,21 @@ export default function Landing() {
       </div>
 
       {/* Navigation */}
-      <nav className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between relative z-10 border-b border-white/5">
+      <nav className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between relative z-10 border-b border-slate-50/5">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-lg shadow-indigo-900/50">
-            <Sparkles size={16} className="text-white" />
+            <Sparkles size={16} className="text-slate-50" />
           </div>
           <span className="font-extrabold text-lg tracking-tight">Trackr<span className="text-indigo-400">AI</span></span>
         </div>
         <div className="flex items-center gap-6">
-          <Link to="/resources/cold-email-templates" className="text-xs font-medium text-white/50 hover:text-white transition-colors hidden sm:block">
+          <Link to="/resources/cold-email-templates" className="text-xs font-medium text-slate-50/50 hover:text-slate-50 transition-colors hidden sm:block">
             Templates
           </Link>
-          <Link to="/resources/resume-guide" className="text-xs font-medium text-white/50 hover:text-white transition-colors hidden sm:block">
+          <Link to="/resources/resume-guide" className="text-xs font-medium text-slate-50/50 hover:text-slate-50 transition-colors hidden sm:block">
             Guides
           </Link>
-          <Link to="/login" className="px-5 py-2 rounded-full bg-white text-black hover:bg-white/90 text-xs font-bold transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+          <Link to="/login" className="px-5 py-2 rounded-full bg-slate-50 text-black hover:bg-slate-50/90 text-xs font-bold transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
             Sign In
           </Link>
         </div>
@@ -152,30 +144,30 @@ export default function Landing() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8">
-            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-white/70 text-xs font-semibold backdrop-blur-md">
+            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50/5 border border-slate-50/10 text-slate-50/70 text-xs font-semibold backdrop-blur-md">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               Next-Gen Job Tracking
             </motion.div>
 
-            <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.05] text-white">
+            <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.05] text-slate-50">
               The <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-indigo-400 animate-[shimmer_4s_linear_infinite] bg-[length:200%_auto]">intelligent</span> way to land your next role.
             </motion.h1>
 
-            <motion.p variants={itemVariants} className="text-white/50 text-base md:text-lg max-w-lg font-medium leading-relaxed">
+            <motion.p variants={itemVariants} className="text-slate-50/50 text-base md:text-lg max-w-lg font-medium leading-relaxed">
               Ditch the spreadsheets. TrackrAI (often called Trak AI) automatically syncs with your inbox to parse recruiter emails, update your kanban board, and draft personalized cold outreach. The ultimate tool to track AI roles or any modern job.
             </motion.p>
 
             <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-4 pt-4">
               <Link
                 to="/login"
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white text-black hover:bg-gray-100 text-sm font-bold flex items-center justify-center gap-2 transition-transform hover:scale-105"
+                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-slate-50 text-black hover:bg-gray-100 text-sm font-bold flex items-center justify-center gap-2 transition-transform hover:scale-105"
               >
                 <span>Get Started — Free</span>
                 <ArrowRight size={16} />
               </Link>
               <a
                 href="#features"
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-bold flex items-center justify-center gap-2 transition-colors"
+                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-slate-50/5 border border-slate-50/10 hover:bg-slate-50/10 text-slate-50 text-sm font-bold flex items-center justify-center gap-2 transition-colors"
               >
                 <Play size={14} className="fill-current" />
                 <span>See how it works</span>
@@ -193,7 +185,7 @@ export default function Landing() {
           >
             <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-cyan-500/10 blur-[100px] rounded-full" />
             
-            <div className="relative w-full max-w-md p-6 rounded-2xl bg-[#0a0a0f]/60 backdrop-blur-2xl border border-white/10 shadow-2xl">
+            <div className="relative w-full max-w-md p-6 rounded-2xl bg-[#0a0a0f]/60 backdrop-blur-2xl border border-slate-50/10 shadow-2xl">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
                 <div className="w-3 h-3 rounded-full bg-amber-500/20 border border-amber-500/50" />
@@ -206,14 +198,14 @@ export default function Landing() {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 1, duration: 0.5 }}
-                  className="p-4 rounded-xl bg-white/5 border border-white/5"
+                  className="p-4 rounded-xl bg-slate-50/5 border border-slate-50/5"
                 >
                   <div className="flex items-center gap-3 mb-2">
-                    <Mail size={16} className="text-white/40" />
-                    <span className="text-xs font-bold text-white/70">Incoming Email</span>
+                    <Mail size={16} className="text-slate-50/40" />
+                    <span className="text-xs font-bold text-slate-50/70">Incoming Email</span>
                   </div>
                   <p className="text-sm font-semibold">"Invitation to Interview: Software Engineer"</p>
-                  <p className="text-xs text-white/40 mt-1">From: Stripe Recruiting</p>
+                  <p className="text-xs text-slate-50/40 mt-1">From: Stripe Recruiting</p>
                 </motion.div>
 
                 {/* Animated Connection */}
@@ -237,8 +229,8 @@ export default function Landing() {
                      <Sparkles size={14} className="text-indigo-400" />
                    </div>
                    <h3 className="font-bold text-lg">Stripe</h3>
-                   <p className="text-xs text-white/50 mt-1">Software Engineer</p>
-                   <div className="mt-4 text-[10px] text-white/40 flex items-center gap-1 font-medium">
+                   <p className="text-xs text-slate-50/50 mt-1">Software Engineer</p>
+                   <div className="mt-4 text-[10px] text-slate-50/40 flex items-center gap-1 font-medium">
                      <Check size={12} className="text-emerald-400" /> Automatically updated via Gmail Sync
                    </div>
                 </motion.div>
@@ -252,13 +244,13 @@ export default function Landing() {
       <section id="features" className="max-w-7xl mx-auto px-6 py-24 relative z-10">
         <div className="mb-16">
           <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4">Everything you need. <br className="hidden md:block"/>Nothing you don't.</h2>
-          <p className="text-white/50 text-base max-w-xl">A complete operating system for your career progression, designed to keep you focused on interviews, not data entry.</p>
+          <p className="text-slate-50/50 text-base max-w-xl">A complete operating system for your career progression, designed to keep you focused on interviews, not data entry.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[340px]">
           
           <div className="md:col-span-2">
-            <div className="h-full rounded-3xl bg-[#0a0a0f]/80 backdrop-blur border border-white/5 p-8 flex flex-col justify-between group hover:border-indigo-500/30 transition-colors overflow-hidden relative shadow-2xl">
+            <div className="h-full rounded-3xl bg-[#0a0a0f]/80 backdrop-blur border border-slate-50/5 p-8 flex flex-col justify-between group hover:border-indigo-500/30 transition-colors overflow-hidden relative shadow-2xl">
               <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/5 blur-[80px] rounded-full group-hover:bg-indigo-500/20 transition-colors" />
               
               <div className="absolute -right-4 top-8 w-64 h-48 bg-gradient-to-br from-indigo-900/40 to-transparent rounded-l-2xl border-y border-l border-indigo-500/20 p-4 hidden md:flex flex-col gap-3 opacity-80 group-hover:opacity-100 transition-opacity transform group-hover:-translate-x-2">
@@ -288,13 +280,13 @@ export default function Landing() {
               </div>
               <div className="relative z-10">
                 <h3 className="text-2xl font-bold mb-2">Automated Inbox Parsing</h3>
-                <p className="text-sm text-white/50 max-w-sm leading-relaxed">Connect your Gmail securely. Our AI scans for recruiter emails and automatically updates your pipeline stages without lifting a finger.</p>
+                <p className="text-sm text-slate-50/50 max-w-sm leading-relaxed">Connect your Gmail securely. Our AI scans for recruiter emails and automatically updates your pipeline stages without lifting a finger.</p>
               </div>
             </div>
           </div>
 
           <div>
-            <div className="h-full rounded-3xl bg-[#0a0a0f]/80 backdrop-blur border border-white/5 p-8 flex flex-col justify-between group hover:border-cyan-500/30 transition-colors relative overflow-hidden shadow-2xl">
+            <div className="h-full rounded-3xl bg-[#0a0a0f]/80 backdrop-blur border border-slate-50/5 p-8 flex flex-col justify-between group hover:border-cyan-500/30 transition-colors relative overflow-hidden shadow-2xl">
               <div className="absolute right-0 top-0 w-32 h-32 bg-cyan-500/5 blur-[50px] rounded-full group-hover:bg-cyan-500/20 transition-colors" />
               <div className="absolute top-6 right-6 opacity-40 group-hover:opacity-100 transition-opacity">
                 <div className="w-20 h-20 border border-cyan-500/20 rounded-lg bg-cyan-900/10 flex flex-col items-center justify-center gap-2 transform rotate-12 group-hover:rotate-6 transition-transform">
@@ -312,13 +304,13 @@ export default function Landing() {
               </div>
               <div className="relative z-10">
                 <h3 className="text-xl font-bold mb-2">AI Cold Emails</h3>
-                <p className="text-sm text-white/50 leading-relaxed">Draft highly personalized outreach messages in seconds using your resume context.</p>
+                <p className="text-sm text-slate-50/50 leading-relaxed">Draft highly personalized outreach messages in seconds using your resume context.</p>
               </div>
             </div>
           </div>
 
           <div>
-            <div className="h-full rounded-3xl bg-[#0a0a0f]/80 backdrop-blur border border-white/5 p-8 flex flex-col justify-between group hover:border-emerald-500/30 transition-colors relative overflow-hidden shadow-2xl">
+            <div className="h-full rounded-3xl bg-[#0a0a0f]/80 backdrop-blur border border-slate-50/5 p-8 flex flex-col justify-between group hover:border-emerald-500/30 transition-colors relative overflow-hidden shadow-2xl">
                <div className="absolute right-0 bottom-0 w-32 h-32 bg-emerald-500/5 blur-[50px] rounded-full group-hover:bg-emerald-500/20 transition-colors" />
                <div className="absolute top-10 right-6 opacity-40 group-hover:opacity-100 transition-opacity flex items-end gap-1.5 h-16">
                   <div className="w-3 bg-emerald-500/20 rounded-t h-4 group-hover:h-6 transition-all duration-500" />
@@ -332,27 +324,27 @@ export default function Landing() {
               </div>
               <div className="relative z-10">
                 <h3 className="text-xl font-bold mb-2">Search Analytics</h3>
-                <p className="text-sm text-white/50 leading-relaxed">Visualize your conversion rates from application to offer in real-time.</p>
+                <p className="text-sm text-slate-50/50 leading-relaxed">Visualize your conversion rates from application to offer in real-time.</p>
               </div>
             </div>
           </div>
 
           <div className="md:col-span-2">
-            <div className="h-full rounded-3xl bg-[#0a0a0f]/80 backdrop-blur border border-white/5 p-8 flex flex-col justify-between group hover:border-purple-500/30 transition-colors relative overflow-hidden shadow-2xl">
+            <div className="h-full rounded-3xl bg-[#0a0a0f]/80 backdrop-blur border border-slate-50/5 p-8 flex flex-col justify-between group hover:border-purple-500/30 transition-colors relative overflow-hidden shadow-2xl">
                <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/5 blur-[80px] rounded-full group-hover:bg-purple-500/20 transition-colors" />
               
                <div className="absolute -right-10 bottom-6 w-72 h-40 bg-gradient-to-t from-[#0a0a0f] to-transparent z-10 hidden md:block" />
-               <div className="absolute right-4 bottom-4 w-72 h-48 border border-white/10 rounded-xl bg-white/5 hidden md:flex gap-2 p-3 opacity-60 group-hover:opacity-100 transition-opacity transform group-hover:-translate-y-2">
-                  <div className="flex-1 rounded bg-white/5 border border-white/5 p-2 space-y-2">
-                     <div className="w-full h-8 rounded bg-white/10" />
-                     <div className="w-full h-12 rounded bg-white/5" />
+               <div className="absolute right-4 bottom-4 w-72 h-48 border border-slate-50/10 rounded-xl bg-slate-50/5 hidden md:flex gap-2 p-3 opacity-60 group-hover:opacity-100 transition-opacity transform group-hover:-translate-y-2">
+                  <div className="flex-1 rounded bg-slate-50/5 border border-slate-50/5 p-2 space-y-2">
+                     <div className="w-full h-8 rounded bg-slate-50/10" />
+                     <div className="w-full h-12 rounded bg-slate-50/5" />
                   </div>
                   <div className="flex-1 rounded bg-purple-500/10 border border-purple-500/20 p-2 space-y-2">
                      <div className="w-full h-12 rounded bg-purple-500/20 border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.2)]" />
-                     <div className="w-full h-8 rounded bg-white/5" />
+                     <div className="w-full h-8 rounded bg-slate-50/5" />
                   </div>
-                  <div className="flex-1 rounded bg-white/5 border border-white/5 p-2 space-y-2">
-                     <div className="w-full h-8 rounded bg-white/10" />
+                  <div className="flex-1 rounded bg-slate-50/5 border border-slate-50/5 p-2 space-y-2">
+                     <div className="w-full h-8 rounded bg-slate-50/10" />
                   </div>
                </div>
 
@@ -361,7 +353,7 @@ export default function Landing() {
               </div>
               <div className="relative z-10">
                 <h3 className="text-2xl font-bold mb-2">Visual Pipeline Board</h3>
-                <p className="text-sm text-white/50 max-w-sm leading-relaxed">Drag and drop applications across customizable stages. Keep track of upcoming interviews, salaries, and specific job links in one unified view.</p>
+                <p className="text-sm text-slate-50/50 max-w-sm leading-relaxed">Drag and drop applications across customizable stages. Keep track of upcoming interviews, salaries, and specific job links in one unified view.</p>
               </div>
             </div>
           </div>
@@ -372,10 +364,10 @@ export default function Landing() {
       {/* Minimalist CTA */}
       <section className="max-w-4xl mx-auto px-6 py-32 text-center relative z-10">
         <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6">Ready to get organized?</h2>
-        <p className="text-white/50 text-base mb-10 max-w-xl mx-auto">Join the job seekers who are treating their career search like a serious sales pipeline.</p>
+        <p className="text-slate-50/50 text-base mb-10 max-w-xl mx-auto">Join the job seekers who are treating their career search like a serious sales pipeline.</p>
         <Link
           to="/login"
-          className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black hover:bg-gray-200 text-sm font-bold transition-transform hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.15)]"
+          className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-slate-50 text-black hover:bg-gray-200 text-sm font-bold transition-transform hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.15)]"
         >
           <span>Create Free Account</span>
           <ArrowUpRight size={16} />
@@ -383,21 +375,21 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 bg-[#020205] relative z-10">
-        <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-white/40">
+      <footer className="border-t border-slate-50/5 bg-[#020205] relative z-10">
+        <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-slate-50/40">
           <div className="flex items-center gap-2">
             <Sparkles size={16} className="text-indigo-400" />
-            <span className="font-bold text-white/70">TrackrAI</span>
+            <span className="font-bold text-slate-50/70">TrackrAI</span>
           </div>
           
-          <div className="hidden lg:block text-xs text-white/20 italic">
+          <div className="hidden lg:block text-xs text-slate-50/20 italic">
             Whether you call us Trak AI, Track AI, or a Rai Tracker, we're here to help you get hired.
           </div>
 
           <div className="flex flex-wrap justify-center md:justify-end items-center gap-6">
-            <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-            <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
-            <a href="https://github.com/rajdeeppal01/trackrai" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">GitHub</a>
+            <Link to="/privacy" className="hover:text-slate-50 transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-slate-50 transition-colors">Terms</Link>
+            <a href="https://github.com/rajdeeppal01/trackrai" target="_blank" rel="noreferrer" className="hover:text-slate-50 transition-colors">GitHub</a>
           </div>
         </div>
       </footer>
