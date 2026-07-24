@@ -271,7 +271,7 @@ async def process_gmail_sync_for_user(db: Session, current_user: models.User) ->
     # and strictly exclude sensitive financial/personal keywords so they never reach our servers or Gemini.
     messages_url = "https://gmail.googleapis.com/gmail/v1/users/me/messages"
     params = {
-        "maxResults": 50, 
+        "maxResults": 10, 
         "includeSpamTrash": "true",
         "q": '{"interview" "application" "offer" "rejection" "candidate" "recruiter" "status" "hr" "assessment" "hired"} -{"bank" "statement" "invoice" "receipt" "transaction" "payment" "alert" "password" "otp"}'
     }
