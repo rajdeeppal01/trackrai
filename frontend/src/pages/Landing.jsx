@@ -58,7 +58,16 @@ export default function Landing() {
       mouseY.set(e.clientY)
     }
     window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
+    
+    // Force dark mode for the landing page
+    const root = document.documentElement
+    const originalTheme = root.getAttribute('data-theme')
+    root.setAttribute('data-theme', 'dark')
+    
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove)
+      if (originalTheme) root.setAttribute('data-theme', originalTheme)
+    }
   }, [mouseX, mouseY])
 
   const containerVariants = {
