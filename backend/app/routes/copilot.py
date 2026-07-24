@@ -1,4 +1,4 @@
-﻿from datetime import datetime, timezone, date
+from datetime import datetime, timezone, date
 import os
 import json
 from typing import List, Optional
@@ -720,9 +720,13 @@ async def ats_match(
             elif response.status_code == 429 or response.status_code == 402:
                 raise HTTPException(status_code=429, detail="AI Quota Exhausted")
             else:
-                raise HTTPException(status_code=response.status_code, detail="AI Analysis Failed")
-    except httpx.HTTPError:
-        raise HTTPException(status_code=503, detail="AI Analysis Failed")
+                try:
+                    error_msg = response.json()
+                except:
+                    error_msg = response.text
+                raise HTTPException(status_code=response.status_code, detail=f"AI Analysis Failed: {error_msg}")
+    except httpx.HTTPError as e:
+        raise HTTPException(status_code=503, detail=f"AI Analysis Failed (HTTP): {str(e)}")
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Failed to parse AI response")
 
