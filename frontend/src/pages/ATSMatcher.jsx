@@ -74,8 +74,12 @@ export default function ATSMatcher() {
 
   const handleMatch = async (e) => {
     e.preventDefault();
-    if (!jobDescription.trim() || !resumeText.trim()) {
-      toast.error('Please provide both Job Description and Resume Text.');
+    if (!jobDescription || typeof jobDescription !== 'string' || !jobDescription.trim()) {
+      toast.error('Please provide the Job Description. If you uploaded a file, it might not contain readable text.');
+      return;
+    }
+    if (!resumeText || typeof resumeText !== 'string' || !resumeText.trim()) {
+      toast.error('Please provide your Resume text. If you uploaded a file, it might not contain readable text.');
       return;
     }
 
