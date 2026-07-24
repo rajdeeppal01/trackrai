@@ -39,6 +39,7 @@ class UserResponse(BaseModel):
     id: int
     email: EmailStr
     created_at: datetime
+    is_premium: bool = False
 
     class Config:
         from_attributes = True
