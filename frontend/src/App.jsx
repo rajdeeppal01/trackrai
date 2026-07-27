@@ -8,6 +8,7 @@ import { ApplicationsProvider } from './context/ApplicationsContext'
 import Sidebar from './components/layout/Sidebar'
 import Navbar from './components/layout/Navbar'
 import CmdKMenu from './components/ui/CmdKMenu'
+import { AmbientBackground } from './components/ui/AmbientBackground'
 import api from './api/applications'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
@@ -118,62 +119,8 @@ export default function App() {
  <ApplicationsProvider>
  <BrowserRouter>
 
- {/* ── Blue glowy gradient background (Skiper UI style) ──── */}
- <div
- aria-hidden
- style={{
- position: 'fixed',
- inset: 0,
- zIndex: 0,
- pointerEvents: 'none',
- overflow: 'hidden',
- }}
- >
- {/* Bottom-left large electric-blue blob */}
- <div style={{
- position: 'absolute',
- bottom: '-15%',
- left: '-10%',
- width: '65%',
- height: '65%',
- background: 'radial-gradient(ellipse at center, rgba(0,191,255,0.28) 0%, rgba(0,100,255,0.12) 50%, transparent 72%)',
- filter: 'blur(70px)',
- borderRadius: '50%',
- }} />
- {/* Bottom-right blob */}
- <div style={{
- position: 'absolute',
- bottom: '-20%',
- right: '-8%',
- width: '55%',
- height: '60%',
- background: 'radial-gradient(ellipse at center, rgba(0,160,255,0.22) 0%, rgba(14,165,233,0.08) 55%, transparent 72%)',
- filter: 'blur(90px)',
- borderRadius: '50%',
- }} />
- {/* Center-bottom cyan accent */}
- <div style={{
- position: 'absolute',
- bottom: '0%',
- left: '20%',
- width: '60%',
- height: '35%',
- background: 'radial-gradient(ellipse at center, rgba(56,189,248,0.18) 0%, transparent 68%)',
- filter: 'blur(80px)',
- borderRadius: '50%',
- }} />
- {/* Top subtle indigo (keeps brand feel) */}
- <div style={{
- position: 'absolute',
- top: '-10%',
- right: '15%',
- width: '40%',
- height: '40%',
- background: 'radial-gradient(ellipse at center, rgba(99,102,241,0.10) 0%, transparent 70%)',
- filter: 'blur(100px)',
- borderRadius: '50%',
- }} />
- </div>
+ {/* ── Dynamic Animated Background ──── */}
+ <AmbientBackground />
 
  {/* Main content rendering */}
  <div className="saas-grid-bg" />

@@ -26,8 +26,10 @@ function InsightCard({ insight, index }) {
  <motion.div
  initial={{ opacity: 0, y: 12 }}
  animate={{ opacity: 1, y: 0 }}
- transition={{ delay: index * 0.07 }}
- className={`glass rounded-2xl p-5 border ${style.border} hover:scale-[1.01] transition-transform duration-200`}
+ whileHover={{ scale: 1.02, y: -4 }}
+ whileTap={{ scale: 0.98 }}
+ transition={{ delay: index * 0.07, type: "spring", stiffness: 300 }}
+ className={`glass rounded-2xl p-5 border ${style.border} hover:shadow-xl hover:border-opacity-50 transition-colors cursor-default`}
  >
  <div className="flex items-start gap-4">
  <div className={`w-11 h-11 rounded-2xl ${style.iconBg} flex items-center justify-center flex-shrink-0 text-xl`}>
@@ -182,7 +184,7 @@ export default function AICopilot() {
  <div className="w-9 h-9 rounded-3xl bg-purple-500/15 flex items-center justify-center">
  <Cpu size={18} className="text-purple-400" />
  </div>
- <h1 className="text-3xl font-bold gradient-text">AI Copilot</h1>
+ <h1 className="text-3xl font-extrabold bg-gradient-to-r from-brand-400 to-purple-400 text-transparent bg-clip-text drop-shadow-sm tracking-tight">AI Copilot</h1>
  </div>
  <p className="text-white/40 text-sm ml-12">Smart recommendations powered by your application data.</p>
  </header>
@@ -200,7 +202,7 @@ export default function AICopilot() {
  </div>
  </div>
  <div className="text-right">
- <p className="text-4xl font-bold gradient-text">{healthScore}<span className="text-xl text-white/30">/100</span></p>
+ <p className="text-4xl font-extrabold bg-gradient-to-r from-indigo-400 to-purple-400 text-transparent bg-clip-text drop-shadow-sm">{healthScore}<span className="text-xl text-white/30 font-bold mix-blend-screen">/100</span></p>
  </div>
  </div>
  {/* Progress bar */}

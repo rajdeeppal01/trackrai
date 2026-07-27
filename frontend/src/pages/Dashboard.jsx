@@ -58,7 +58,7 @@ export default function Dashboard() {
  {/* Header */}
  <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
  <div>
- <h1 className="text-3xl font-bold gradient-text">
+ <h1 className="text-3xl font-extrabold bg-gradient-to-r from-brand-400 to-purple-400 text-transparent bg-clip-text drop-shadow-sm tracking-tight">
  TrackrAI Dashboard
  </h1>
  <p className="text-white/40 mt-1 text-sm">

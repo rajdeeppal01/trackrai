@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { Loader2 } from 'lucide-react'
 
 /**
@@ -17,7 +18,7 @@ export default function Button({
  ...props
 }) {
  const base =
- 'inline-flex items-center justify-center gap-2 font-semibold rounded-full transition-all duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 select-none'
+ 'inline-flex items-center justify-center gap-2 font-semibold rounded-full disabled:opacity-50 disabled:cursor-not-allowed select-none'
 
  const variants = {
  primary:
@@ -36,10 +37,13 @@ export default function Button({
  }
 
  return (
- <button
+ <motion.button
  type={type}
  disabled={disabled || loading}
  onClick={onClick}
+ whileHover={{ scale: disabled ? 1 : 1.02 }}
+ whileTap={{ scale: disabled ? 1 : 0.96 }}
+ transition={{ type: "spring", stiffness: 400, damping: 25 }}
  className={`${base} ${variants[variant] || variants.primary} ${sizes[size] || sizes.md} ${className}`}
  {...props}
  >
@@ -49,6 +53,6 @@ export default function Button({
  <Icon size={14} />
  ) : null}
  {children}
- </button>
+ </motion.button>
  )
 }

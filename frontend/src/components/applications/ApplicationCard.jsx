@@ -26,8 +26,9 @@ export default function ApplicationCard({ application, onEdit, onDelete, deletin
  initial={{ opacity: 0, y: 16 }}
  animate={{ opacity: 1, y: 0 }}
  exit={{ opacity: 0, y: -8, scale: 0.97 }}
- whileHover={{ y: -2 }}
- transition={{ duration: 0.25, layout: { duration: 0.3 } }}
+ whileHover={{ scale: 1.02, y: -4 }}
+ whileTap={{ scale: 0.98 }}
+ transition={{ duration: 0.25, layout: { duration: 0.3 }, type: "spring", stiffness: 300 }}
  className="h-full flex flex-col glass rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-black/20 hover:border-white/15 transition-all duration-300"
  >
  <div className={`h-0.5 w-full ${isRejected ? 'bg-gradient-to-r from-red-500/50 to-red-400/50' : status === 'Offer' ? 'bg-gradient-to-r from-emerald-500/60 to-teal-400/60' : 'bg-gradient-to-r from-brand-500/40 to-purple-500/40'}`} />

@@ -52,8 +52,10 @@ function InsightCard({ insight, index }) {
  <motion.div
  initial={{ opacity: 0, x: -8 }}
  animate={{ opacity: 1, x: 0 }}
- transition={{ delay: index * 0.05 }}
- className={`glass rounded-2xl p-4 border ${style.border} hover:border-opacity-50 transition-all duration-300`}
+ whileHover={{ scale: 1.02, y: -4 }}
+ whileTap={{ scale: 0.98 }}
+ transition={{ delay: index * 0.05, type: "spring", stiffness: 300 }}
+ className={`glass rounded-2xl p-4 border ${style.border} hover:border-opacity-50 hover:shadow-xl transition-colors cursor-default`}
  >
  <div className="flex items-start gap-3">
  <div className={`w-9 h-9 rounded-3xl ${style.iconBg} flex items-center justify-center flex-shrink-0 text-lg`}>
