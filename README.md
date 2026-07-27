@@ -11,12 +11,23 @@
 ## ✨ Features
 
 - **Dashboard** — Live stats (total, active, offers, rejections), GitHub-style activity heatmap, AI insights, upcoming pipeline items
+- **Gamified Kanban Pipeline** — Drag-and-drop cards between status columns with satisfying spring physics and a confetti explosion upon moving an application to "Offer".
 - **AI Gmail Sync (Premium)** — Connect your Google account to automatically scan for job updates. Gemini 1.5 AI parses emails to move your Kanban cards instantly.
 - **ATS Resume Matcher** — Paste a job description and your resume to get an AI-generated match score and keyword analysis.
 - **Multi-Resume Manager** — Store and manage multiple tailored resumes (Free: 2 resumes, Premium: Unlimited).
-- **Pipeline (Kanban)** — Drag-and-drop cards between status columns. Changes persist to the backend instantly.
 - **Analytics** — Monthly trend chart, status pie chart, 14-day daily activity, response rates.
 - **Authentication & Security** — Secure JWT-based user authentication and Stripe Webhook signature verification.
+
+---
+
+## 🎨 Spatial / VisionOS Design System
+
+TrackrAI is built with a custom design language aimed at a younger, Gen-Z demographic, breaking away from standard "vibe-coded" AI templates.
+- **Typography:** `Outfit` (modern, geometric sans) instead of standard system fonts.
+- **Vibrant Ambient Glows:** Pure CSS radial gradients mapped to the background layer for hardware-accelerated, dynamic 60fps glows.
+- **Springy Physics:** Extensive use of `framer-motion` for bouncy micro-animations on interactive elements (hovering, tapping, dragging).
+- **Spatial UI:** Pill-shaped `rounded-3xl` corners, deep translucent glassmorphism (`backdrop-blur-md`), and high-contrast vibrant text gradients.
+- **Status colors:** Applied (Blue), OA (Yellow), Interview (Purple), HR (Cyan), Offer (Emerald), Rejected (Red).
 
 ---
 
@@ -25,7 +36,7 @@
 | Layer | Technology |
 |---|---|
 | Frontend | React 19, Vite, Tailwind CSS v4 |
-| Animations | Framer Motion |
+| Animations | Framer Motion, Canvas Confetti |
 | Charts | Recharts |
 | AI Integration | Google Gemini 1.5 Flash API |
 | Backend | FastAPI, SQLAlchemy |
@@ -91,18 +102,9 @@ Frontend runs at: `http://localhost:5173`
 
 ---
 
-## 🎨 Design System
-
-- **Theme:** Premium dark mode (`#080818` background)
-- **Accent colors:** Indigo `#6366f1` → Purple `#a855f7`
-- **Glassmorphism:** `bg-white/5 backdrop-blur-md border border-white/10`
-- **Status colors:** Applied (Blue), OA (Yellow), Interview (Purple), HR (Cyan), Offer (Emerald), Rejected (Red)
-
----
-
 ## 🌐 Deployment
 
-- **Frontend:** [Vercel](https://vercel.com) — import the `frontend/` directory
+- **Frontend:** [Vercel](https://vercel.com) / [Render](https://render.com)
 - **Backend:** [Render](https://render.com) — Uses PostgreSQL database
 
 ---
