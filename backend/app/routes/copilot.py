@@ -351,7 +351,11 @@ async def get_insights(
 
     if is_cache_valid:
         try:
-            return json.loads(current_user.cached_insights)
+            cached_data = current_user.cached_insights
+            if "Ã" in cached_data:
+                is_cache_valid = False
+            else:
+                return json.loads(cached_data)
         except Exception:
             pass
 
