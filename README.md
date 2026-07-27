@@ -1,4 +1,4 @@
-# TrackrAI 🚀
+# TrackrAI
 
 > **AI-powered job application tracking dashboard** — track every application, automate inbox scanning, and get smart insights about your job search.
 
@@ -8,7 +8,7 @@
 
 ---
 
-## ✨ Features
+## Features
 
 - **Dashboard** — Live stats (total, active, offers, rejections), GitHub-style activity heatmap, AI insights, upcoming pipeline items
 - **Gamified Kanban Pipeline** — Drag-and-drop cards between status columns with satisfying spring physics and a confetti explosion upon moving an application to "Offer".
@@ -20,7 +20,7 @@
 
 ---
 
-## 🎨 Spatial / VisionOS Design System
+## Spatial / VisionOS Design System
 
 TrackrAI is built with a custom design language aimed at a younger, Gen-Z demographic, breaking away from standard "vibe-coded" AI templates.
 - **Typography:** `Outfit` (modern, geometric sans) instead of standard system fonts.
@@ -31,7 +31,7 @@ TrackrAI is built with a custom design language aimed at a younger, Gen-Z demogr
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -45,7 +45,7 @@ TrackrAI is built with a custom design language aimed at a younger, Gen-Z demogr
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js 18+
@@ -89,7 +89,7 @@ Frontend runs at: `http://localhost:5173`
 
 ---
 
-## 📡 Core API Endpoints
+## Core API Endpoints
 
 | Method | Path | Description |
 |---|---|---|
@@ -102,14 +102,14 @@ Frontend runs at: `http://localhost:5173`
 
 ---
 
-## 🌐 Deployment
+## Deployment
 
 - **Frontend:** [Vercel](https://vercel.com) / [Render](https://render.com)
 - **Backend:** [Render](https://render.com) — Uses PostgreSQL database
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 trackrai/
