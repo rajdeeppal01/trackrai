@@ -1,4 +1,4 @@
-﻿from datetime import datetime, timezone, date
+from datetime import datetime, timezone, date
 import os
 import json
 from typing import List, Optional
@@ -151,7 +151,7 @@ def run_fallback_engine(applications: List[models.Application]) -> List[dict]:
         return [
             {
                 "type": "tip",
-                "icon": "Ã°Å¸â€™Â¡",
+                "icon": "💡",
                 "title": "Get Started",
                 "body": "Add your first job application to unlock smart insights about your search.",
             }
@@ -171,7 +171,7 @@ def run_fallback_engine(applications: List[models.Application]) -> List[dict]:
     if this_month_apps > 0:
         insights.append({
             "type": "stat",
-            "icon": "Ã°Å¸â€œâ€¦",
+            "icon": "📅",
             "title": "Applications This Month",
             "body": f"You've applied to {this_month_apps} companies this month. Keep it up!",
         })
@@ -181,7 +181,7 @@ def run_fallback_engine(applications: List[models.Application]) -> List[dict]:
     if missing_links > 0:
         insights.append({
             "type": "warning",
-            "icon": "Ã°Å¸â€â€”",
+            "icon": "🔗",
             "title": "Missing Job Links",
             "body": f"{missing_links} application{'s are' if missing_links > 1 else ' is'} missing links. Add them to revisit postings quickly.",
         })
@@ -191,7 +191,7 @@ def run_fallback_engine(applications: List[models.Application]) -> List[dict]:
     if interviews > 0:
         insights.append({
             "type": "action",
-            "icon": "Ã°Å¸Å½Â¯",
+            "icon": "🎯",
             "title": "Active Interviews",
             "body": f"You have {interviews} active interview{'s' if interviews > 1 else ''}. Prepare thoroughly!",
         })
@@ -202,7 +202,7 @@ def run_fallback_engine(applications: List[models.Application]) -> List[dict]:
         rate = int((responded / total) * 100)
         insights.append({
             "type": "success" if rate >= 20 else "stat",
-            "icon": "Ã°Å¸â€œÂ¬",
+            "icon": "📬",
             "title": f"Response Rate: {rate}%",
             "body": f"{responded} out of {total} applications received a response.",
         })
@@ -219,7 +219,7 @@ def run_fallback_engine(applications: List[models.Application]) -> List[dict]:
     if need_follow_up > 0:
         insights.append({
             "type": "warning",
-            "icon": "Ã¢ÂÂ°",
+            "icon": "⏰",
             "title": "Follow-Up Needed",
             "body": f"{need_follow_up} application{'s' if need_follow_up > 1 else ''} pending for 7+ days. Consider messaging recruiters.",
         })
