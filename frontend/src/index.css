@@ -149,8 +149,8 @@
   .glass {
     background-color: var(--glass-bg);
     border: 1px solid rgba(255, 255, 255, 0.05); /* very subtle highlight */
-    backdrop-filter: blur(32px);
-    -webkit-backdrop-filter: blur(32px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     box-shadow: 0 16px 40px -12px rgba(0,0,0,0.3);
     transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
@@ -159,8 +159,8 @@
   .glass-strong {
     background-color: var(--glass-strong-bg);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(48px);
-    -webkit-backdrop-filter: blur(48px);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     box-shadow: 0 24px 60px -12px rgba(0,0,0,0.4);
     transition: background-color 0.3s ease;
   }
