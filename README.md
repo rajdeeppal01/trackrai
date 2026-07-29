@@ -15,7 +15,7 @@
 - **AI Gmail Sync (Premium)** — Connect your Google account to automatically scan for job updates. Gemini 1.5 AI parses emails to move your Kanban cards instantly.
 - **ATS Resume Matcher** — Paste a job description and your resume to get an AI-generated match score and keyword analysis.
 - **Multi-Resume Manager** — Store and manage multiple tailored resumes (Free: 2 resumes, Premium: Unlimited).
-- **Analytics** — Monthly trend chart, status pie chart, 14-day daily activity, response rates.
+- **Analytics** — Monthly trend chart, pipeline status funnel, 14-day daily activity, and response rates.
 - **Authentication & Security** — Secure JWT-based user authentication and Stripe Webhook signature verification.
 
 ---
