@@ -16,7 +16,7 @@
 - **ATS Resume Matcher** — Paste a job description and your resume to get an AI-generated match score and keyword analysis.
 - **Multi-Resume Manager** — Store and manage multiple tailored resumes (Free: 2 resumes, Premium: Unlimited).
 - **Analytics** — Monthly trend chart, pipeline status funnel, 14-day daily activity, and response rates.
-- **Authentication & Security** — Secure JWT-based user authentication and Stripe Webhook signature verification.
+- **Authentication & Security** — Secure JWT-based user authentication and Razorpay signature verification.
 
 ---
 
@@ -40,8 +40,8 @@ TrackrAI is built with a custom design language aimed at a younger, Gen-Z demogr
 | Charts | Recharts |
 | AI Integration | Google Gemini 1.5 Flash API |
 | Backend | FastAPI, SQLAlchemy |
-| Database | Neon Serverless PostgreSQL |
-| Payments | Stripe API & Webhooks |
+| Database | Supabase PostgreSQL |
+| Payments | Razorpay API |
 
 ---
 
@@ -50,7 +50,7 @@ TrackrAI is built with a custom design language aimed at a younger, Gen-Z demogr
 ### Prerequisites
 - Node.js 18+
 - Python 3.11+
-- Stripe Account (for payments)
+- Razorpay Account (for payments)
 - Google Cloud Console Project (for Gmail OAuth & Gemini)
 
 ### Backend
@@ -64,12 +64,12 @@ venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 
 # Create .env file
-echo "DATABASE_URL=postgresql://user:password@ep-cool-db.neon.tech/neondb" > .env
+echo "DATABASE_URL=postgresql://postgres.xxx:password@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres" > .env
 echo "SECRET_KEY=your-secret-key-here" >> .env
 echo "ALGORITHM=HS256" >> .env
 echo "GEMINI_API_KEY=your-gemini-key" >> .env
-echo "STRIPE_SECRET_KEY=sk_test_..." >> .env
-echo "STRIPE_WEBHOOK_SECRET=whsec_..." >> .env
+echo "RAZORPAY_KEY_ID=rzp_test_..." >> .env
+echo "RAZORPAY_KEY_SECRET=secret_..." >> .env
 
 uvicorn app.main:app --reload --port 8000
 ```
@@ -98,7 +98,7 @@ Frontend runs at: `http://localhost:5173`
 | `POST` | `/gmail/auth-url` | Generate Google OAuth URL |
 | `POST` | `/gmail/sync` | Trigger AI Inbox Scan |
 | `POST` | `/copilot/match` | Run ATS Matcher |
-| `POST` | `/payments/webhook`| Stripe payment webhook |
+| `POST` | `/payments/verify-payment`| Razorpay payment verification |
 
 ---
 
@@ -123,7 +123,7 @@ trackrai/
 │   │       ├── auth.py
 │   │       ├── copilot.py   # Gemini AI routes
 │   │       ├── gmail.py     # Gmail API syncing
-│   │       └── payments.py  # Stripe Checkout
+│   │       └── payments.py  # Razorpay Checkout
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
