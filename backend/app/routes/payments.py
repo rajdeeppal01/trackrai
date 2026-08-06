@@ -1,7 +1,10 @@
 import os
-import stripe
+import razorpay
+import hmac
+import hashlib
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -10,97 +13,72 @@ from app.routes.auth import get_current_user
 
 router = APIRouter(prefix="/payments", tags=["payments"])
 
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "sk_test_placeholder")
-STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "whsec_placeholder")
-STRIPE_PRICE_ID = os.getenv("STRIPE_PRICE_ID", "price_placeholder")
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "rzp_test_placeholder")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "secret_placeholder")
+RAZORPAY_AMOUNT = 49900  # amount in paise (e.g. ₹499.00)
 
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4173")
+class VerifyPaymentRequest(BaseModel):
+    razorpay_order_id: str
+    razorpay_payment_id: str
+    razorpay_signature: str
 
-
-@router.post("/create-checkout-session")
-async def create_checkout_session(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@router.post("/create-razorpay-order")
+async def create_razorpay_order(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
-        stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
-        price_id = os.getenv("STRIPE_PRICE_ID")
-        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:4173")
+        key_id = os.getenv("RAZORPAY_KEY_ID", RAZORPAY_KEY_ID)
+        key_secret = os.getenv("RAZORPAY_KEY_SECRET", RAZORPAY_KEY_SECRET)
         
-        print(f"DEBUG: creating checkout session with price_id={price_id}")
-
-        # Create a Stripe Checkout Session
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[
-                {
-                    'price': price_id,
-                    'quantity': 1,
-                },
-            ],
-            mode='subscription', # Changed from 'payment' to 'subscription'
-            success_url=f"{frontend_url}/premium?success=true",
-            cancel_url=f"{frontend_url}/premium?canceled=true",
-            client_reference_id=str(current_user.id),
-            customer_email=current_user.email
-        )
-        return {"url": checkout_session.url}
+        client = razorpay.Client(auth=(key_id, key_secret))
+        
+        data = {
+            "amount": RAZORPAY_AMOUNT,
+            "currency": "INR",
+            "receipt": f"receipt_{current_user.id}",
+            "notes": {
+                "email": current_user.email,
+                "user_id": str(current_user.id)
+            }
+        }
+        
+        order = client.order.create(data=data)
+        return {"id": order["id"], "amount": order["amount"], "currency": order["currency"]}
+        
     except Exception as e:
-        print(f"Stripe Error: {str(e)}")
+        print(f"Razorpay Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
-@router.post("/create-portal-session")
-async def create_portal_session(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    if not current_user.stripe_customer_id:
-        raise HTTPException(status_code=400, detail="No active subscription found.")
-    
+@router.post("/verify-payment")
+async def verify_payment(
+    req: VerifyPaymentRequest,
+    current_user: User = Depends(get_current_user), 
+    db: Session = Depends(get_db)
+):
     try:
-        portal_session = stripe.billing_portal.Session.create(
-            customer=current_user.stripe_customer_id,
-            return_url=f"{FRONTEND_URL}/premium",
-        )
-        return {"url": portal_session.url}
-    except Exception as e:
-        print(f"Stripe Portal Error: {str(e)}")
-        raise HTTPException(status_code=500, detail="Could not create customer portal session.")
-
-
-@router.post("/webhook")
-async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
-    payload = await request.body()
-    sig_header = request.headers.get("stripe-signature")
-
-    try:
-        # Verify webhook signature if secret is provided
-        if STRIPE_WEBHOOK_SECRET and STRIPE_WEBHOOK_SECRET != "whsec_placeholder":
-            event = stripe.Webhook.construct_event(
-                payload, sig_header, STRIPE_WEBHOOK_SECRET
-            )
-        else:
-            # Bypass verification for local testing without proper setup
-            import json
-            data = json.loads(payload)
-            event = stripe.Event.construct_from(data, stripe.api_key)
-            
-    except ValueError as e:
-        # Invalid payload
-        raise HTTPException(status_code=400, detail="Invalid payload")
-    except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        raise HTTPException(status_code=400, detail="Invalid signature")
-
-    # Handle the checkout.session.completed event
-    if event['type'] == 'checkout.session.completed':
-        session = event['data']['object']
+        key_secret = os.getenv("RAZORPAY_KEY_SECRET", RAZORPAY_KEY_SECRET)
         
-        user_id = session.get('client_reference_id')
-        if user_id:
-            user = db.query(User).filter(User.id == int(user_id)).first()
-            if user:
-                # Initially unlock for 6 months
-                user.is_premium = True
-                user.premium_expires_at = datetime.utcnow() + timedelta(days=183)
-                user.stripe_customer_id = session.get('customer')
-                user.stripe_session_id = session.get('subscription') # Store subscription ID instead of session ID for recurring
-                db.commit()
-                print(f"User {user.email} successfully upgraded to Premium!")
-
-    return {"status": "success"}
+        # Verify signature manually
+        msg = f"{req.razorpay_order_id}|{req.razorpay_payment_id}"
+        generated_signature = hmac.new(
+            key_secret.encode('utf-8'),
+            msg.encode('utf-8'),
+            hashlib.sha256
+        ).hexdigest()
+        
+        if generated_signature != req.razorpay_signature:
+            raise HTTPException(status_code=400, detail="Invalid payment signature")
+            
+        # Upgrade user
+        current_user.is_premium = True
+        current_user.premium_expires_at = datetime.utcnow() + timedelta(days=183) # 6 months
+        current_user.razorpay_order_id = req.razorpay_order_id
+        current_user.razorpay_payment_id = req.razorpay_payment_id
+        db.commit()
+        
+        print(f"User {current_user.email} successfully upgraded to Premium via Razorpay!")
+        return {"status": "success", "message": "Premium activated"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Razorpay Verification Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))

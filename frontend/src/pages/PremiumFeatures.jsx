@@ -164,43 +164,67 @@ export default function PremiumFeatures() {
  }
  }
 
- async function handleUpgradePremium() {
- try {
- const res = await api.post('/payments/create-checkout-session')
- if (res.data.url) {
- window.location.href = res.data.url
- }
- } catch (err) {
- const errorMessage = err.response?.data?.detail || 'Failed to initiate checkout. Please try again.'
- toast.error(errorMessage)
- }
- }
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script')
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+      script.onload = () => resolve(true)
+      script.onerror = () => resolve(false)
+      document.body.appendChild(script)
+    })
+  }
 
- async function handleCancelPremium() {
- try {
- const res = await api.post('/payments/create-portal-session')
- if (res.data.url) {
- window.location.href = res.data.url
- }
- } catch (err) {
- toast.error('Failed to open billing portal.')
- }
- }
+  async function handleUpgradePremium() {
+    try {
+      const res = await loadRazorpay()
+      if (!res) {
+        toast.error('Razorpay SDK failed to load. Are you online?')
+        return
+      }
+      
+      const orderRes = await api.post('/payments/create-razorpay-order')
+      const { id, amount, currency } = orderRes.data
 
- // Check URL for stripe success/cancel
- useEffect(() => {
- const params = new URLSearchParams(window.location.search)
- if (params.get('success')) {
- toast.success('Payment successful! Welcome to Premium.')
- setIsPremium(true)
- // Clean up URL
- window.history.replaceState({}, document.title, window.location.pathname)
- }
- if (params.get('canceled')) {
- toast.error('Payment was canceled.')
- window.history.replaceState({}, document.title, window.location.pathname)
- }
- }, [])
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_placeholder', // Enter the Key ID generated from the Dashboard
+        amount: amount,
+        currency: currency,
+        name: 'TrackrAI',
+        description: '6-Month Premium Pass',
+        order_id: id,
+        handler: async function (response) {
+          try {
+            await api.post('/payments/verify-payment', {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+            })
+            toast.success('Payment successful! Welcome to Premium.')
+            setIsPremium(true)
+          } catch (err) {
+            toast.error('Payment verification failed.')
+          }
+        },
+        prefill: {
+          name: 'TrackrAI User',
+        },
+        theme: {
+          color: '#4f46e5',
+        },
+      }
+      
+      const paymentObject = new window.Razorpay(options)
+      paymentObject.open()
+      
+    } catch (err) {
+      const errorMessage = err.response?.data?.detail || 'Failed to initiate checkout. Please try again.'
+      toast.error(errorMessage)
+    }
+  }
+
+  async function handleCancelPremium() {
+    toast.info('You are on a one-time 6-month pass. It will automatically expire without auto-renewing.')
+  }
 
  return (
  <div className="h-full overflow-y-auto">

@@ -22,8 +22,8 @@ class User(Base):
     is_premium = Column(Boolean, default=False, nullable=False, index=True)
     gmail_scans_used = Column(Integer, default=0, nullable=False)
     session_version = Column(Integer, default=1, nullable=False)
-    stripe_customer_id = Column(String(200), nullable=True)
-    stripe_session_id = Column(String(200), nullable=True)
+    razorpay_order_id = Column(String(200), nullable=True)
+    razorpay_payment_id = Column(String(200), nullable=True)
     premium_expires_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 

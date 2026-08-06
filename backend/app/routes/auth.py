@@ -105,10 +105,20 @@ def signup(request: Request, user_in: schemas.UserCreate, db: Session = Depends(
         )
 
     hashed_pw = get_password_hash(user_in.password)
+    
+    # Auto-grant premium to admin accounts
+    is_admin_premium = user_in.email in ["rajdeep.pal2004@gmail.com", "rajdeeppalwork@gmail.com"]
+    
     new_user = models.User(
         email=user_in.email,
         hashed_password=hashed_pw,
+        is_premium=is_admin_premium,
     )
+    
+    if is_admin_premium:
+        # Give lifetime premium (or far in the future)
+        new_user.premium_expires_at = datetime.utcnow() + timedelta(days=36500)
+        
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
