@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 from sqlalchemy import text
 import os
+import sentry_sdk
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from app.limiter import limiter
@@ -96,6 +97,13 @@ except Exception as e:
 
 from contextlib import asynccontextmanager
 from app.scheduler import start_scheduler, shutdown_scheduler
+
+# Initialize Sentry for FastAPI
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN", "https://733f16c3473ed1ca0ce6255fd0610a18@o4511891250937856.ingest.us.sentry.io/4511891261227008"),
+    traces_sample_rate=1.0,
+    profiles_sample_rate=1.0,
+)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
