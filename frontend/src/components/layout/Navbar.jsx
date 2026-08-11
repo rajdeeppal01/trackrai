@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { formatDistanceToNow, parseISO, isValid } from 'date-fns'
 import { motion, AnimatePresence } from 'framer-motion'
 import ThemeToggle from '../ui/ThemeToggle'
-import { useApplicationsContext } from '../../context/ApplicationsContext'
+import { useApplications } from '../../hooks/useApplications'
 
 const PAGE_TITLES = {
  '/': 'Dashboard',
@@ -37,7 +37,7 @@ export default function Navbar({ onMenuOpen }) {
  const navigate = useNavigate()
  const title = PAGE_TITLES[pathname] || 'TrackrAI'
 
- const { activity = [], clearActivity } = useApplicationsContext() || {}
+ const { activity = [], clearActivity } = useApplications() || {}
  const [notifOpen, setNotifOpen] = useState(false)
  const notifRef = useRef(null)
 

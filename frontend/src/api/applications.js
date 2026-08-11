@@ -7,10 +7,6 @@ const api = axios.create({
  withCredentials: true,
 })
 
-const token = localStorage.getItem('access_token')
-if (token) {
- api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-}
 
 // ─── Applications ────────────────────────────────────────────────
 export const getApplications = () =>

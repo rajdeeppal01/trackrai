@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
- const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('access_token'));
+ const [isAuthenticated, setIsAuthenticated] = useState(false);
  const [user, setUser] = useState(null);
  const [loading, setLoading] = useState(true);
 
@@ -14,18 +14,13 @@ export function AuthProvider({ children }) {
  useEffect(() => {
  async function loadMe() {
  try {
- const token = localStorage.getItem('access_token');
- if (!token) throw new Error('No token');
- // Attach token to default headers so api.get works
- api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+ // The HttpOnly cookie is automatically sent by axios due to withCredentials: true
  const res = await api.get('/auth/me');
  setUser(res.data);
  setIsAuthenticated(true);
  } catch (err) {
  setIsAuthenticated(false);
  setUser(null);
- localStorage.removeItem('access_token');
- delete api.defaults.headers.common['Authorization'];
  } finally {
  setLoading(false);
  }
@@ -49,10 +44,8 @@ export function AuthProvider({ children }) {
  // Login
  const login = async (email, password) => {
  try {
- const response = await api.post('/auth/login', { email, password });
- const token = response.data.access_token;
- localStorage.setItem('access_token', token);
- api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+ await api.post('/auth/login', { email, password });
+ // Cookie is now set automatically via Set-Cookie header
  
  setIsAuthenticated(true);
  // Re-fetch the user profile to populate user state
@@ -77,8 +70,6 @@ export function AuthProvider({ children }) {
  console.error('Logout failed on backend:', err);
  }
  localStorage.removeItem('trackrai_activity'); // Reset local storage cache
- localStorage.removeItem('access_token');
- delete api.defaults.headers.common['Authorization'];
  setIsAuthenticated(false);
  setUser(null);
  toast.success('Logged out successfully.');

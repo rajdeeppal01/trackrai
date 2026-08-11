@@ -4,7 +4,6 @@ import { Toaster } from 'react-hot-toast'
 
 import { ThemeProvider } from './context/ThemeContext'
 import { AuthProvider, useAuth } from './context/AuthContext'
-import { ApplicationsProvider } from './context/ApplicationsContext'
 import Sidebar from './components/layout/Sidebar'
 import Navbar from './components/layout/Navbar'
 import CmdKMenu from './components/ui/CmdKMenu'
@@ -116,7 +115,6 @@ export default function App() {
  return (
  <ThemeProvider>
  <AuthProvider>
- <ApplicationsProvider>
  <BrowserRouter>
 
  {/* ── Dynamic Animated Background ──── */}
@@ -146,7 +144,6 @@ export default function App() {
  {/* ── Global Command Palette ───────────────────────────── */}
  <CmdKMenu />
  </BrowserRouter>
- </ApplicationsProvider>
  </AuthProvider>
  </ThemeProvider>
  )
