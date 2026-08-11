@@ -163,7 +163,7 @@ export default function Settings() {
  <Section icon={User} title="Profile" description="Your account and job search profile details">
  <div className="flex items-center gap-4 p-4 rounded-3xl bg-white/3">
  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xl shrink-0">
- RP
+ {user?.email ? user.email.substring(0, 2).toUpperCase() : 'US'}
  </div>
  <div>
  <p className="font-semibold text-white">{user?.email || 'User'}</p>
