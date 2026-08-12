@@ -1,8 +1,11 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Mail, Sparkles, ArrowRight, Zap, CheckCircle2 } from 'lucide-react'
+import { useAuth } from '../../context/AuthContext'
 
 export default function PremiumPromo() {
+  const { user } = useAuth()
+  const isPremium = user?.is_premium
  return (
  <motion.div
  initial={{ opacity: 0, y: 20 }}
@@ -21,17 +24,23 @@ export default function PremiumPromo() {
  
  {/* Left Side: Copy */}
  <div className="flex-1 space-y-4">
- <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[10px] font-bold uppercase tracking-wider">
- <Sparkles size={12} className="animate-pulse" />
- Premium
+ <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${isPremium ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-indigo-500/10 border-indigo-500/20 text-indigo-300'}`}>
+ <Sparkles size={12} className={!isPremium ? "animate-pulse" : ""} />
+ {isPremium ? 'Premium Active' : 'Premium'}
  </div>
  
  <h3 className="text-2xl font-bold text-white leading-tight">
- Put your job hunt on <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Autopilot</span>.
+ {isPremium ? (
+   <>Your job hunt is on <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Autopilot</span>.</>
+ ) : (
+   <>Put your job hunt on <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Autopilot</span>.</>
+ )}
  </h3>
  
  <p className="text-sm text-white/50 leading-relaxed max-w-md">
- Connect your Gmail and let our AI instantly scan your inbox for interview invites, rejections, and status updates. It automatically syncs your pipeline so you never miss a beat.
+ {isPremium 
+   ? 'Your AI Copilot is actively scanning your inbox for interview invites, rejections, and status updates, keeping your pipeline perfectly synced in real-time.'
+   : 'Connect your Gmail and let our AI instantly scan your inbox for interview invites, rejections, and status updates. It automatically syncs your pipeline so you never miss a beat.'}
  </p>
  
  <ul className="space-y-2 mt-2">
@@ -49,13 +58,23 @@ export default function PremiumPromo() {
  </ul>
  
  <div className="pt-2">
- <Link
- href="/premium"
- className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 text-[#1a1a2e] px-4 py-2 rounded-3xl text-sm font-bold shadow-lg shadow-amber-500/20 hover:scale-[1.02] active:scale-95 transition-all w-full justify-center"
- >
- Unlock AI Sync
- <ArrowRight size={14} />
- </Link>
+ {isPremium ? (
+   <Link
+   href="/premium"
+   className="inline-flex items-center gap-2 bg-white/10 text-white hover:bg-white/20 px-4 py-2 rounded-3xl text-sm font-bold transition-all w-full justify-center border border-white/10"
+   >
+   Manage Automation Settings
+   <ArrowRight size={14} />
+   </Link>
+ ) : (
+   <Link
+   href="/premium"
+   className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-400 to-amber-500 text-[#1a1a2e] px-4 py-2 rounded-3xl text-sm font-bold shadow-lg shadow-amber-500/20 hover:scale-[1.02] active:scale-95 transition-all w-full justify-center"
+   >
+   Unlock AI Sync
+   <ArrowRight size={14} />
+   </Link>
+ )}
  </div>
  </div>
  
