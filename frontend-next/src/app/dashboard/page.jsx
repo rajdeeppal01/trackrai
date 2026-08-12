@@ -49,7 +49,7 @@ export default function Dashboard() {
  }
 
  return (
- <div className="min-h-screen text-white p-4 md:p-8 font-sans">
+ <div className="min-h-screen p-4 md:p-8 font-sans">
  <div className="max-w-7xl mx-auto space-y-8">
 
  {/* Header */}

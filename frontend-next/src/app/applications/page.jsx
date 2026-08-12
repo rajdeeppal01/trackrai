@@ -35,7 +35,7 @@ export default function Applications() {
  }
 
  return (
- <div className="min-h-screen text-white p-4 md:p-8 font-sans">
+ <div className="min-h-screen p-4 md:p-8 font-sans">
  <div className="max-w-7xl mx-auto space-y-8">
 
  <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">

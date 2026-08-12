@@ -222,7 +222,7 @@ export default function ColdEmailer() {
  }
 
  return (
- <div className="min-h-screen text-white p-4 md:p-8 font-sans">
+ <div className="min-h-screen p-4 md:p-8 font-sans">
  <div className="max-w-6xl mx-auto space-y-8">
  
  {/* Header */}
