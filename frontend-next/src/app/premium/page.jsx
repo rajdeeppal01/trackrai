@@ -222,7 +222,7 @@ export default function PremiumFeatures() {
  }
 
  async function handleCancelPremium() {
- toast.info('You are on a one-time 6-month pass. It will automatically expire without auto-renewing.')
+ toast('You are on a one-time 6-month pass. It will automatically expire without auto-renewing.', { icon: 'ℹ️' })
  }
 
  return (
