@@ -1,16 +1,17 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
 import api from '../api/applications';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
+ export function AuthProvider({ children }) {
  const [isAuthenticated, setIsAuthenticated] = useState(false);
  const [user, setUser] = useState(null);
  const [loading, setLoading] = useState(true);
+ const router = useRouter();
 
  // Attempt to load user profile. If successful, cookie is present and valid.
  useEffect(() => {
@@ -75,6 +76,7 @@ export function AuthProvider({ children }) {
  setIsAuthenticated(false);
  setUser(null);
  toast.success('Logged out successfully.');
+ router.push('/login');
  };
 
  const value = {
