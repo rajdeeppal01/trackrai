@@ -100,12 +100,11 @@ export default function PremiumFeatures() {
  }, [])
 
  async function connectGmail() {
- const localToken = localStorage.getItem('access_token')
  const nonce = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
  localStorage.setItem('oauth_nonce', nonce)
  
  try {
- const res = await api.get(`/gmail/auth-url?token=${localToken}&nonce=${nonce}`)
+ const res = await api.get(`/gmail/auth-url?nonce=${nonce}`)
  window.location.href = res.data.auth_url
  } catch (err) {
  console.error('Failed to get Gmail OAuth URL', err)

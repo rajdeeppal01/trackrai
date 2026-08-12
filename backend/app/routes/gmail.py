@@ -56,7 +56,7 @@ def extract_body_text(payload) -> str:
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 
 @router.get("/auth-url")
-def get_auth_url(token: str, request: Request, nonce: str = ""):
+def get_auth_url(request: Request, nonce: str = "", current_user: models.User = Depends(get_current_user)):
     """
     Generate Google OAuth URL.
     We pass the user's JWT token and a frontend-generated nonce in the 'state' parameter.
@@ -72,11 +72,7 @@ def get_auth_url(token: str, request: Request, nonce: str = ""):
     redirect_uri = f"{scheme}://{request.url.netloc}/gmail/callback"
     
     import jwt as pyjwt_lib
-    try:
-        payload = pyjwt_lib.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")
-    except Exception:
-        raise HTTPException(status_code=401, detail="Invalid token")
+    user_id = str(current_user.id)
 
     state_token = pyjwt_lib.encode({"sub": user_id, "nonce": nonce}, SECRET_KEY, algorithm=ALGORITHM)
 
