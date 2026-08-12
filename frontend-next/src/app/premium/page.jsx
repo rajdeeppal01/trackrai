@@ -11,8 +11,8 @@ function SettingRow({ label, description, children }) {
  return (
  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-3">
  <div>
- <h4 className="text-sm font-semibold text-white">{label}</h4>
- {description && <p className="text-xs text-white/50 leading-relaxed mt-1 max-w-md">{description}</p>}
+ <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{label}</h4>
+ {description && <p className="text-xs text-gray-900 dark:text-gray-500 dark:text-white/50 leading-relaxed mt-1 max-w-md">{description}</p>}
  </div>
  <div className="shrink-0">{children}</div>
  </div>
@@ -24,15 +24,15 @@ function Section({ title, description, icon: Icon, children }) {
  <motion.div
  initial={{ opacity: 0, y: 12 }}
  animate={{ opacity: 1, y: 0 }}
- className="glass rounded-2xl overflow-hidden"
+ className="glass bg-white/50 dark:bg-transparent border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden"
  >
  <div className="px-6 py-5 border-b flex items-center gap-3">
  <div className="w-8 h-8 rounded-2xl bg-amber-500/10 flex items-center justify-center">
  <Icon size={16} className="text-amber-400" />
  </div>
  <div>
- <h2 className="text-base font-bold text-white">{title}</h2>
- {description && <p className="text-xs text-white/40 mt-0.5">{description}</p>}
+ <h2 className="text-base font-bold text-gray-900 dark:text-white">{title}</h2>
+ {description && <p className="text-xs text-gray-900 dark:text-gray-500 dark:text-white/40 mt-0.5">{description}</p>}
  </div>
  </div>
  <div className="p-6">{children}</div>
@@ -231,18 +231,18 @@ export default function PremiumFeatures() {
  
  <header className="mb-8">
  <h1 className="text-3xl font-bold gradient-text">Premium Features</h1>
- <p className="text-white/40 text-sm mt-1">Manage your plan and access advanced automation tools.</p>
+ <p className="text-gray-900 dark:text-gray-500 dark:text-white/40 text-sm mt-1">Manage your plan and access advanced automation tools.</p>
  </header>
 
  <Section icon={Zap} title="Subscription & Billing" description="Manage your current plan">
  {!profileLoading ? (
- <div className="p-4 rounded-3xl bg-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+ <div className="p-4 rounded-3xl bg-black/5 dark:bg-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
  <div>
- <h3 className="text-white font-bold flex items-center gap-2">
+ <h3 className="text-gray-900 dark:text-white font-bold flex items-center gap-2">
  {isPremium ? 'Premium Tier' : 'Free Tier'}
  {isPremium && <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[10px] font-bold uppercase tracking-wider">Active</span>}
  </h3>
- <p className="text-xs text-white/50 mt-1">
+ <p className="text-xs text-gray-900 dark:text-gray-500 dark:text-white/50 mt-1">
  {isPremium 
  ? 'You have unlimited access to all premium features including automated email sync.' 
  : 'Access to basic tracking. Try our premium Gmail scanner with 2 free scans.'}
@@ -259,7 +259,7 @@ export default function PremiumFeatures() {
  )}
  </div>
  ) : (
- <div className="h-24 rounded-3xl bg-white/3 animate-pulse" />
+ <div className="h-24 rounded-3xl bg-black/5 dark:bg-white/3 animate-pulse" />
  )}
  </Section>
 
@@ -267,8 +267,8 @@ export default function PremiumFeatures() {
  <div className="p-4 rounded-3xl bg-purple-500/5 border border-purple-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
  <div className="space-y-1">
  <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[9px] font-bold uppercase tracking-wider">Premium Feature</span>
- <p className="text-sm font-semibold text-white">Unlock Unlimited Resumes</p>
- <p className="text-xs text-white/40 leading-relaxed font-medium max-w-md">
+ <p className="text-sm font-semibold text-gray-900 dark:text-white">Unlock Unlimited Resumes</p>
+ <p className="text-xs text-gray-900 dark:text-gray-500 dark:text-white/40 leading-relaxed font-medium max-w-md">
  Free users can save up to 2 resumes. Upgrade to Premium to save unlimited customized resumes for different roles and instantly use them across all AI Copilot tools.
  </p>
  </div>
@@ -283,13 +283,13 @@ export default function PremiumFeatures() {
  <Section icon={Mail} title="AI Gmail Sync" description="Connect your inbox to automatically parse and synchronize job application updates in real time">
  <div className="space-y-4">
  {profileLoading ? (
- <div className="h-28 rounded-3xl bg-white/3 animate-pulse" />
+ <div className="h-28 rounded-3xl bg-black/5 dark:bg-white/3 animate-pulse" />
  ) : !gmailConnected ? (
  <div className="p-4 rounded-3xl bg-indigo-500/5 border border-indigo-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
  <div className="space-y-1">
  <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[9px] font-bold uppercase tracking-wider">Premium Feature</span>
- <p className="text-sm font-semibold text-white">Gmail Integration is not connected</p>
- <p className="text-xs text-white/40 leading-relaxed font-medium max-w-md">
+ <p className="text-sm font-semibold text-gray-900 dark:text-white">Gmail Integration is not connected</p>
+ <p className="text-xs text-gray-900 dark:text-gray-500 dark:text-white/40 leading-relaxed font-medium max-w-md">
  Authorize read-only access to search messages from recruiters. Gemini automatically extracts status updates and updates your pipeline.
  </p>
  </div>
@@ -306,7 +306,7 @@ export default function PremiumFeatures() {
  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
  Connected to Gmail
  </p>
- <p className="text-xs text-white/35 font-medium">
+ <p className="text-xs text-gray-900 dark:text-gray-500 dark:text-white/35 font-medium">
  Last scanned: {lastGmailSync ? new Date(lastGmailSync).toLocaleString() : 'Never'}
  </p>
  </div>
@@ -334,8 +334,8 @@ export default function PremiumFeatures() {
  </div>
 
  {!isPremium && (
- <div className="pt-2 flex items-center justify-between border-t border-white/5">
- <span className="text-xs font-semibold text-white/50">Free Tier Usage</span>
+ <div className="pt-2 flex items-center justify-between border-t border-black/5 dark:border-white/5">
+ <span className="text-xs font-semibold text-gray-900 dark:text-gray-500 dark:text-white/50">Free Tier Usage</span>
  <span className={`text-xs font-bold ${gmailScansUsed >= 2 ? 'text-red-400' : 'text-amber-400'}`}>
  {gmailScansUsed} / 2 Scans Used
  </span>
@@ -343,7 +343,7 @@ export default function PremiumFeatures() {
  )}
  </div>
 
- <div className="h-px bg-white/5" />
+ <div className="h-px bg-black/5 dark:bg-white/5" />
 
  <SettingRow
  label={<span className="flex items-center gap-2">Enable Automated Sync <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[8px] font-bold uppercase tracking-wider">Premium</span></span>}
@@ -357,7 +357,7 @@ export default function PremiumFeatures() {
  }
  toggleGmailSync(!gmailSyncEnabled)
  }}
- className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${gmailSyncEnabled ? 'bg-indigo-600' : 'bg-white/10'}`}
+ className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${gmailSyncEnabled ? 'bg-indigo-600' : 'bg-black/10 dark:bg-white/10'}`}
  >
  <span className={`w-4 h-4 rounded-full bg-white absolute top-1 left-1 transition-transform ${gmailSyncEnabled ? 'translate-x-5' : ''}`} />
  </button>
