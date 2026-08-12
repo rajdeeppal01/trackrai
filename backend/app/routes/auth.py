@@ -223,4 +223,12 @@ def update_profile(
     db.refresh(current_user)
     return current_user
 
+@router.post("/toggle-premium")
+def toggle_premium(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    current_user.is_premium = not current_user.is_premium
+    if current_user.is_premium:
+        current_user.premium_expires_at = datetime.utcnow() + timedelta(days=30)
+    db.commit()
+    return {"is_premium": current_user.is_premium}
+
 

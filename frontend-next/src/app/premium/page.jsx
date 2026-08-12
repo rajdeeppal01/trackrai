@@ -11,8 +11,8 @@ function SettingRow({ label, description, children }) {
  return (
  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-3">
  <div>
- <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{label}</h4>
- {description && <p className="text-xs text-gray-900 dark:text-gray-500 dark:text-white/50 leading-relaxed mt-1 max-w-md">{description}</p>}
+ <h4 className="text-sm font-semibold">{label}</h4>
+ {description && <p className="text-xs opacity-70 leading-relaxed mt-1 max-w-md">{description}</p>}
  </div>
  <div className="shrink-0">{children}</div>
  </div>
@@ -31,8 +31,8 @@ function Section({ title, description, icon: Icon, children }) {
  <Icon size={16} className="text-amber-400" />
  </div>
  <div>
- <h2 className="text-base font-bold text-gray-900 dark:text-white">{title}</h2>
- {description && <p className="text-xs text-gray-900 dark:text-gray-500 dark:text-white/40 mt-0.5">{description}</p>}
+ <h2 className="text-base font-bold">{title}</h2>
+ {description && <p className="text-xs opacity-70 mt-0.5">{description}</p>}
  </div>
  </div>
  <div className="p-6">{children}</div>
@@ -163,67 +163,16 @@ export default function PremiumFeatures() {
  }
  }
 
- const loadRazorpay = () => {
- return new Promise((resolve) => {
- const script = document.createElement('script')
- script.src = 'https://checkout.razorpay.com/v1/checkout.js'
- script.onload = () => resolve(true)
- script.onerror = () => resolve(false)
- document.body.appendChild(script)
- })
- }
-
- async function handleUpgradePremium() {
- try {
- const res = await loadRazorpay()
- if (!res) {
- toast.error('Razorpay SDK failed to load. Are you online?')
- return
- }
- 
- const orderRes = await api.post('/payments/create-razorpay-order')
- const { id, amount, currency } = orderRes.data
-
- const options = {
- key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_placeholder', // Changed to NEXT_PUBLIC_
- amount: amount,
- currency: currency,
- name: 'TrackrAI',
- description: '6-Month Premium Pass',
- order_id: id,
- handler: async function (response) {
- try {
- await api.post('/payments/verify-payment', {
- razorpay_payment_id: response.razorpay_payment_id,
- razorpay_order_id: response.razorpay_order_id,
- razorpay_signature: response.razorpay_signature,
- })
- toast.success('Payment successful! Welcome to Premium.')
- setIsPremium(true)
- } catch (err) {
- toast.error('Payment verification failed.')
- }
- },
- prefill: {
- name: 'TrackrAI User',
- },
- theme: {
- color: '#4f46e5',
- },
- }
- 
- const paymentObject = new window.Razorpay(options)
- paymentObject.open()
- 
- } catch (err) {
- const errorMessage = err.response?.data?.detail || 'Failed to initiate checkout. Please try again.'
- toast.error(errorMessage)
- }
- }
-
- async function handleCancelPremium() {
- toast('You are on a one-time 6-month pass. It will automatically expire without auto-renewing.', { icon: 'ℹ️' })
- }
+  async function handleTogglePremium() {
+    try {
+      const res = await api.post('/auth/toggle-premium')
+      setIsPremium(res.data.is_premium)
+      toast.success(res.data.is_premium ? 'Successfully upgraded to Premium!' : 'Successfully cancelled Premium. Back to Free plan.')
+    } catch (err) {
+      console.error(err)
+      toast.error('Failed to change subscription plan.')
+    }
+  }
 
  return (
  <div className="h-full overflow-y-auto">
@@ -231,30 +180,30 @@ export default function PremiumFeatures() {
  
  <header className="mb-8">
  <h1 className="text-3xl font-bold gradient-text">Premium Features</h1>
- <p className="text-gray-900 dark:text-gray-500 dark:text-white/40 text-sm mt-1">Manage your plan and access advanced automation tools.</p>
+ <p className="opacity-70 text-sm mt-1">Manage your plan and access advanced automation tools.</p>
  </header>
 
  <Section icon={Zap} title="Subscription & Billing" description="Manage your current plan">
  {!profileLoading ? (
  <div className="p-4 rounded-3xl bg-black/5 dark:bg-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
  <div>
- <h3 className="text-gray-900 dark:text-white font-bold flex items-center gap-2">
+ <h3 className="font-bold flex items-center gap-2">
  {isPremium ? 'Premium Tier' : 'Free Tier'}
  {isPremium && <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[10px] font-bold uppercase tracking-wider">Active</span>}
  </h3>
- <p className="text-xs text-gray-900 dark:text-gray-500 dark:text-white/50 mt-1">
+ <p className="text-xs opacity-70 mt-1">
  {isPremium 
  ? 'You have unlimited access to all premium features including automated email sync.' 
  : 'Access to basic tracking. Try our premium Gmail scanner with 2 free scans.'}
  </p>
  </div>
  {!isPremium ? (
- <Button variant="primary" onClick={handleUpgradePremium}>
+ <Button variant="primary" onClick={handleTogglePremium}>
  ✨ Upgrade to Premium
  </Button>
  ) : (
- <Button variant="danger" size="sm" onClick={handleCancelPremium} className="opacity-80 hover:opacity-100">
- Manage Subscription
+ <Button variant="danger" size="sm" onClick={handleTogglePremium} className="opacity-80 hover:opacity-100">
+ Cancel Subscription
  </Button>
  )}
  </div>
@@ -267,17 +216,17 @@ export default function PremiumFeatures() {
  <div className="p-4 rounded-3xl bg-purple-500/5 border border-purple-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
  <div className="space-y-1">
  <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[9px] font-bold uppercase tracking-wider">Premium Feature</span>
- <p className="text-sm font-semibold text-gray-900 dark:text-white">
+ <p className="text-sm font-semibold">
  {isPremium ? 'Unlimited Resumes Unlocked' : 'Unlock Unlimited Resumes'}
  </p>
- <p className="text-xs text-gray-900 dark:text-gray-500 dark:text-white/40 leading-relaxed font-medium max-w-md">
+ <p className="text-xs opacity-70 leading-relaxed font-medium max-w-md">
  {isPremium 
  ? 'You have unlimited resume storage. Save and customize as many resumes as you need for different roles and instantly use them across all AI Copilot tools.'
  : 'Free users can save up to 2 resumes. Upgrade to Premium to save unlimited customized resumes for different roles and instantly use them across all AI Copilot tools.'}
  </p>
  </div>
  {!isPremium && (
- <Button variant="primary" size="sm" onClick={handleUpgradePremium}>
+ <Button variant="primary" size="sm" onClick={handleTogglePremium}>
  Upgrade
  </Button>
  )}
