@@ -1,3 +1,4 @@
+import ProtectedRoute from '../../components/auth/ProtectedRoute';
 export const metadata = {
   title: 'My Applications | TrackrAI',
   description: 'Manage and track all your job applications in one place with TrackrAI.',
@@ -7,5 +8,5 @@ export const metadata = {
 };
 
 export default function Layout({ children }) {
-  return <>{children}</>;
+  return <ProtectedRoute>{children}</ProtectedRoute>;
 }

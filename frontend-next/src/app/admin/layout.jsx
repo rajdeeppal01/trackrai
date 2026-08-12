@@ -1,3 +1,4 @@
+import ProtectedRoute from '../../components/auth/ProtectedRoute';
 export const metadata = {
   title: 'Creator Portal | TrackrAI',
   description: 'TrackrAI telemetry and analytics dashboard.',
@@ -7,5 +8,5 @@ export const metadata = {
 };
 
 export default function Layout({ children }) {
-  return <>{children}</>;
+  return <ProtectedRoute>{children}</ProtectedRoute>;
 }

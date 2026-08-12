@@ -1,3 +1,4 @@
+import ProtectedRoute from '../../components/auth/ProtectedRoute';
 export const metadata = {
   title: 'Cold Email Generator | TrackrAI',
   description: 'Generate personalized cold emails for recruiters and hiring managers instantly.',
@@ -7,5 +8,5 @@ export const metadata = {
 };
 
 export default function Layout({ children }) {
-  return <>{children}</>;
+  return <ProtectedRoute>{children}</ProtectedRoute>;
 }

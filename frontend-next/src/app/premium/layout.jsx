@@ -1,3 +1,4 @@
+import ProtectedRoute from '../../components/auth/ProtectedRoute';
 export const metadata = {
   title: 'Premium Features | TrackrAI',
   description: 'Upgrade to TrackrAI Premium for automated Gmail sync and unlimited resumes.',
@@ -7,5 +8,5 @@ export const metadata = {
 };
 
 export default function Layout({ children }) {
-  return <>{children}</>;
+  return <ProtectedRoute>{children}</ProtectedRoute>;
 }

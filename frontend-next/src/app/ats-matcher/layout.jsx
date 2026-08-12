@@ -1,3 +1,4 @@
+import ProtectedRoute from '../../components/auth/ProtectedRoute';
 export const metadata = {
   title: 'ATS Resume Matcher | TrackrAI',
   description: 'Optimize your resume for ATS with TrackrAI. Compare your resume against job descriptions.',
@@ -7,5 +8,5 @@ export const metadata = {
 };
 
 export default function Layout({ children }) {
-  return <>{children}</>;
+  return <ProtectedRoute>{children}</ProtectedRoute>;
 }
