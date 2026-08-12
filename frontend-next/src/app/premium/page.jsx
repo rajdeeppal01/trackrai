@@ -267,9 +267,13 @@ export default function PremiumFeatures() {
  <div className="p-4 rounded-3xl bg-purple-500/5 border border-purple-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
  <div className="space-y-1">
  <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[9px] font-bold uppercase tracking-wider">Premium Feature</span>
- <p className="text-sm font-semibold text-gray-900 dark:text-white">Unlock Unlimited Resumes</p>
+ <p className="text-sm font-semibold text-gray-900 dark:text-white">
+ {isPremium ? 'Unlimited Resumes Unlocked' : 'Unlock Unlimited Resumes'}
+ </p>
  <p className="text-xs text-gray-900 dark:text-gray-500 dark:text-white/40 leading-relaxed font-medium max-w-md">
- Free users can save up to 2 resumes. Upgrade to Premium to save unlimited customized resumes for different roles and instantly use them across all AI Copilot tools.
+ {isPremium 
+ ? 'You have unlimited resume storage. Save and customize as many resumes as you need for different roles and instantly use them across all AI Copilot tools.'
+ : 'Free users can save up to 2 resumes. Upgrade to Premium to save unlimited customized resumes for different roles and instantly use them across all AI Copilot tools.'}
  </p>
  </div>
  {!isPremium && (
