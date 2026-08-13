@@ -19,11 +19,11 @@ export default function ResumeGuide() {
     },
     {
       title: 'Stick to Standard Section Headings',
-      desc: 'Use simple headings like "Work Experience", "Education", and "Skills". Creative titles like "Where I\\'ve Been" or "My Superpowers" confuse the parser.'
+      desc: 'Use simple headings like "Work Experience", "Education", and "Skills". Creative titles like "Where I\'ve Been" or "My Superpowers" confuse the parser.'
     },
     {
       title: 'Integrate Keywords Contextually',
-      desc: 'Don\\'t just list keywords in a block. Weave them naturally into your bullet points (e.g., "Developed responsive layouts using React and styled-components, improving core web vitals by 18%").'
+      desc: 'Don\'t just list keywords in a block. Weave them naturally into your bullet points (e.g., "Developed responsive layouts using React and styled-components, improving core web vitals by 18%").'
     },
     {
       title: 'Export as Clean PDF or DOCX',

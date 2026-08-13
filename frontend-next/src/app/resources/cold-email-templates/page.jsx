@@ -112,7 +112,7 @@ Warmly,
               <div className="px-6 py-4 border-b border-white/10 bg-white/5 flex items-center justify-between gap-4">
                 <h3 className="font-bold text-sm text-white/90">{t.role}</h3>
                 <button
-                  onClick={() => handleCopy(t.id, \`Subject: \${t.subject}\\n\\n\${t.body}\`)}
+                  onClick={() => handleCopy(t.id, `Subject: ${t.subject}\n\n${t.body}`)}
                   className="px-3 py-1.5 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 text-[10px] font-semibold text-indigo-300 hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   {copiedId === t.id ? (
