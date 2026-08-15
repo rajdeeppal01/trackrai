@@ -78,8 +78,6 @@ export default function Landing() {
  visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100 } }
  }
 
- if (loading || isAuthenticated) return null;
-
  return (
  <div className="min-h-screen bg-[#020205] text-slate-50 font-sans overflow-x-hidden relative selection:bg-indigo-500/30">
  

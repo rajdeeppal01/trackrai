@@ -21,6 +21,11 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata = {
   title: "TrackrAI (Track AI) — AI-Powered Job Tracker",
   description: "TrackrAI — AI-powered job application tracker. Manage your job search with smart insights, pipeline tracking, and intelligent analytics.",
+  keywords: [
+    "Track AI", "TrackrAI", "Trak AI", "Rai Tracker", 
+    "AI job application tracker", "automated job search", 
+    "job pipeline tracker", "AI cold emails"
+  ],
   metadataBase: new URL('https://trackrai.in'),
   alternates: {
     canonical: '/',
