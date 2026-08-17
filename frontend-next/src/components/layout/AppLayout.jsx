@@ -26,7 +26,19 @@ export default function AppLayout({ children }) {
 
   const isNoLayoutPage = NO_LAYOUT_PATHS.includes(pathname);
 
-  // If loading auth state, show spinner
+  // 1. If it's a public/no-layout page, don't block render with a loading spinner.
+  // This ensures Googlebot gets the full HTML instantly on SSR.
+  if (isNoLayoutPage) {
+    return (
+      <>
+        <AmbientBackground />
+        <div className="saas-grid-bg" />
+        {children}
+      </>
+    );
+  }
+
+  // 2. For protected routes, if loading auth state, show spinner
   if (loading) {
     return (
       <div className="min-h-screen bg-[#050510] flex items-center justify-center text-white">
@@ -35,8 +47,8 @@ export default function AppLayout({ children }) {
     );
   }
 
-  // If not authenticated, or if we're on a public landing/marketing page, just show children
-  if (!isAuthenticated || isNoLayoutPage) {
+  // 3. Fallback for unauthenticated state on protected routes (middleware should catch first)
+  if (!isAuthenticated) {
     return (
       <>
         <AmbientBackground />
