@@ -238,18 +238,23 @@ export default function PremiumFeatures() {
  {profileLoading ? (
  <div className="h-28 rounded-3xl bg-black/5 dark:bg-white/3 animate-pulse" />
  ) : !gmailConnected ? (
- <div className="p-4 rounded-3xl bg-indigo-500/5 border border-indigo-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
- <div className="space-y-1">
- <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[9px] font-bold uppercase tracking-wider">Premium Feature</span>
- <p className="text-sm font-semibold text-gray-900 dark:text-white">Gmail Integration is not connected</p>
- <p className="text-xs text-gray-900 dark:text-gray-500 dark:text-white/40 leading-relaxed font-medium max-w-md">
- Authorize read-only access to search messages from recruiters. Gemini automatically extracts status updates and updates your pipeline.
- </p>
- </div>
- <Button variant="secondary" size="sm" onClick={connectGmail}>
- Connect Google Account
- </Button>
- </div>
+  <div className="flex flex-col gap-4">
+  <div className="p-4 rounded-3xl bg-indigo-500/5 border border-indigo-500/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+  <div className="space-y-1">
+  <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[9px] font-bold uppercase tracking-wider">Premium Feature</span>
+  <p className="text-sm font-semibold text-gray-900 dark:text-white">Gmail Integration is not connected</p>
+  <p className="text-xs text-gray-900 dark:text-gray-500 dark:text-white/40 leading-relaxed font-medium max-w-md">
+  Authorize read-only access to search messages from recruiters. Gemini automatically extracts status updates and updates your pipeline.
+  </p>
+  </div>
+  <Button variant="secondary" size="sm" onClick={connectGmail} className="shrink-0">
+  Connect Google Account
+  </Button>
+  </div>
+  <div className="p-3 rounded-2xl bg-amber-500/5 border border-amber-500/10 text-xs text-amber-500/80 leading-relaxed font-medium">
+  <span className="font-bold">💡 Note on Google Auth:</span> TrackrAI is currently awaiting Google's official security verification. When connecting, Google will show a "Google hasn't verified this app" warning. This is normal! Simply click <span className="font-bold text-amber-400">Advanced</span> -> <span className="font-bold text-amber-400">Go to trackrai.in (unsafe)</span> to securely connect. We only request read-only access and will never send emails on your behalf.
+  </div>
+  </div>
  ) : (
  <div className="space-y-6">
  <div className="p-4 rounded-3xl border flex flex-col gap-4 bg-emerald-500/5 border-emerald-500/10">
