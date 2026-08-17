@@ -9,7 +9,7 @@ import {
 import { useAuth } from '../../context/AuthContext'
 
 const NAV_ITEMS = [
- { path: '/', label: 'Dashboard', icon: LayoutDashboard },
+ { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
  { path: '/applications',label: 'Applications', icon: Briefcase },
  { path: '/analytics', label: 'Analytics', icon: BarChart2 },
  { path: '/copilot', label: 'AI Copilot', icon: Cpu },
@@ -36,7 +36,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
  {/* Brand */}
  <div className="flex items-center justify-between p-6">
  <Link
- href="/"
+ href="/dashboard"
  onClick={onClose}
  className="block hover:opacity-80 transition-opacity duration-200"
  >
@@ -76,7 +76,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
  );
  }
 
-  const isActive = path === '/' ? pathname === '/' : pathname?.startsWith(path);
+  const isActive = path === '/dashboard' ? pathname === '/dashboard' : pathname?.startsWith(path);
   return (
   <Link
   key={path}

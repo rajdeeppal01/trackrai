@@ -9,7 +9,7 @@ import ThemeToggle from '../ui/ThemeToggle'
 import { useApplications } from '../../hooks/useApplications'
 
 const PAGE_TITLES = {
- '/': 'Dashboard',
+ '/dashboard': 'Dashboard',
  '/applications': 'Applications',
  '/pipeline': 'Pipeline',
  '/analytics': 'Analytics',
