@@ -2,7 +2,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import ApplicationCard from './ApplicationCard';
 
-export default function SortableApplicationCard({ id, application, onEdit, onDelete, deleting, disabled, isRecentlyMoved }) {
+export default function SortableApplicationCard({ id, application, onEdit, onDelete, onFollowUp, deleting, disabled, isRecentlyMoved }) {
  const {
  attributes,
  listeners,
@@ -25,6 +25,7 @@ export default function SortableApplicationCard({ id, application, onEdit, onDel
  application={application}
  onEdit={onEdit}
  onDelete={onDelete}
+ onFollowUp={onFollowUp}
  deleting={deleting}
  disabled={disabled}
  disableLayout={true}

@@ -1,18 +1,27 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Building2, Calendar, ExternalLink, FileText, Pencil, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
+import { Building2, Calendar, ExternalLink, FileText, Pencil, Trash2, ChevronDown, ChevronUp, Sparkles, AlertCircle } from 'lucide-react'
 import StatusBadge from '../ui/StatusBadge'
 import Button from '../ui/Button'
 import { PIPELINE_STAGES } from '../../utils/statusConfig'
 import { formatDate } from '../../utils/formatters'
 
-export default function ApplicationCard({ application, onEdit, onDelete, deleting, disabled, disableLayout = false }) {
+export default function ApplicationCard({ application, onEdit, onDelete, onFollowUp, deleting, disabled, disableLayout = false }) {
  const [expanded, setExpanded] = useState(false)
  const { id, company, role, status, applied_date, link, notes } = application
  const stageIdx = PIPELINE_STAGES.indexOf(status)
  const isRejected = status === 'Rejected'
  const pipelineProgress = isRejected ? 0 : stageIdx >= 0 ? stageIdx + 1 : 1
  const pipelinePercent = isRejected ? 100 : (pipelineProgress / PIPELINE_STAGES.length) * 100
+
+ // Calculate if follow-up is due
+ let isFollowUpDue = false;
+ if (status === 'Applied' && applied_date) {
+   const daysSince = Math.floor((new Date() - new Date(applied_date)) / (1000 * 60 * 60 * 24));
+   if (daysSince >= 7) {
+     isFollowUpDue = true;
+   }
+ }
 
  const getNotePreview = (htmlString) => {
  if (!htmlString) return '';
@@ -42,7 +51,15 @@ export default function ApplicationCard({ application, onEdit, onDelete, deletin
  </div>
  <h3 className="font-semibold text-white text-lg leading-tight truncate">{company}</h3>
  </div>
- <p className="text-sm text-white/50 ml-9">{role}</p>
+ <div className="ml-9 flex items-center gap-2">
+ <p className="text-sm text-white/50">{role}</p>
+ {isFollowUpDue && (
+ <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1">
+ <AlertCircle size={10} />
+ Due
+ </span>
+ )}
+ </div>
  </div>
  <StatusBadge status={status} />
  </div>
@@ -111,9 +128,21 @@ export default function ApplicationCard({ application, onEdit, onDelete, deletin
  )}
  </AnimatePresence>
 
- <div className="flex gap-2 mt-auto pt-4 border-t ">
+ <div className="flex flex-col gap-2 mt-auto pt-4 border-t border-white/5">
+ {isFollowUpDue && (
+ <button 
+ onClick={() => onFollowUp && onFollowUp(application)}
+ disabled={disabled}
+ className="w-full py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all mb-1 border border-amber-500/20"
+ >
+ <Sparkles size={12} />
+ Draft Follow-up Email
+ </button>
+ )}
+ <div className="flex gap-2">
  <Button variant="secondary" size="sm" icon={Pencil} disabled={disabled} onClick={() => onEdit(application)} className="flex-1">Edit</Button>
  <Button variant="danger" size="sm" icon={Trash2} loading={deleting === id} disabled={disabled || deleting === id} onClick={() => onDelete(id)} className="flex-1">Delete</Button>
+ </div>
  </div>
  </div>
  </motion.div>

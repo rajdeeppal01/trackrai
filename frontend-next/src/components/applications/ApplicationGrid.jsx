@@ -4,6 +4,7 @@ import ApplicationCard from './ApplicationCard';
 import KanbanColumn from './KanbanColumn';
 import { ApplicationCardSkeleton } from '../ui/Skeletons';
 import ConfirmDialog from '../ui/ConfirmDialog';
+import FollowUpModal from './FollowUpModal';
 import { STATUS_CONFIG } from '../../utils/statusConfig';
 import { Search, Plus, Inbox } from 'lucide-react';
 import { useApplications } from '../../hooks/useApplications';
@@ -16,6 +17,7 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
  const [confirmTarget, setConfirmTarget] = useState(null); // { id, company, role }
  const [activeDragId, setActiveDragId] = useState(null);
  const [recentlyMovedId, setRecentlyMovedId] = useState(null);
+ const [followUpApp, setFollowUpApp] = useState(null);
 
  const { editApplication } = useApplications();
 
@@ -198,6 +200,7 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
  applications={columns[key] || []}
  onEdit={onEdit}
  onDelete={requestDelete}
+ onFollowUp={(app) => setFollowUpApp(app)}
  deletingId={deletingId}
  submitting={submitting}
  recentlyMovedId={recentlyMovedId}
@@ -223,6 +226,12 @@ export default function ApplicationGrid({ applications = [], loading, onEdit, on
  title="Delete Application?"
  message={`Remove ${confirmTarget?.company}${confirmTarget?.role ? ` — ${confirmTarget.role}` : ''}? This cannot be undone.`}
  confirmLabel="Delete"
+ />
+
+ <FollowUpModal 
+   isOpen={!!followUpApp}
+   application={followUpApp}
+   onClose={() => setFollowUpApp(null)}
  />
  </div>
  );

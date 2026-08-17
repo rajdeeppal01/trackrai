@@ -3,7 +3,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import SortableApplicationCard from './SortableApplicationCard';
 import { STATUS_CONFIG } from '../../utils/statusConfig';
 
-export default function KanbanColumn({ statusKey, applications, onEdit, onDelete, deletingId, submitting, recentlyMovedId }) {
+export default function KanbanColumn({ statusKey, applications, onEdit, onDelete, onFollowUp, deletingId, submitting, recentlyMovedId }) {
  const { setNodeRef, isOver } = useDroppable({
  id: statusKey,
  data: {
@@ -39,6 +39,7 @@ export default function KanbanColumn({ statusKey, applications, onEdit, onDelete
  application={app}
  onEdit={onEdit}
  onDelete={onDelete}
+ onFollowUp={onFollowUp}
  deleting={deletingId === app.id}
  disabled={submitting}
  isRecentlyMoved={recentlyMovedId === app.id}
