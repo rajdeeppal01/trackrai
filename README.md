@@ -4,7 +4,7 @@
 
 **Live at:** [https://trackrai.in/](https://trackrai.in/)
 
-![TrackrAI Dashboard](https://img.shields.io/badge/Status-Active-brightgreen) ![React](https://img.shields.io/badge/React-19-61dafb) ![FastAPI](https://img.shields.io/badge/FastAPI-0.139-009688) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-336791) ![TailwindCSS](https://img.shields.io/badge/Tailwind-v4-38bdf8) ![Gemini AI](https://img.shields.io/badge/AI-Gemini_1.5-FF6D00)
+![TrackrAI Dashboard](https://img.shields.io/badge/Status-Active-brightgreen) ![Next.js](https://img.shields.io/badge/Next.js-14+-black) ![React](https://img.shields.io/badge/React-19-61dafb) ![FastAPI](https://img.shields.io/badge/FastAPI-0.139-009688) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-336791) ![TailwindCSS](https://img.shields.io/badge/Tailwind-v4-38bdf8) ![Gemini AI](https://img.shields.io/badge/AI-Gemini_1.5-FF6D00)
 
 ---
 
@@ -12,10 +12,11 @@
 
 - **Dashboard** — Live stats (total, active, offers, rejections), GitHub-style activity heatmap, AI insights, upcoming pipeline items
 - **Gamified Kanban Pipeline** — Drag-and-drop cards between status columns with satisfying spring physics and a confetti explosion upon moving an application to "Offer".
+- **Automated Follow-up Sequences** — Proactively prompts you to follow up on applications stuck in the "Applied" stage for >7 days, instantly drafting the email via Gemini.
 - **AI Gmail Sync (Premium)** — Connect your Google account to automatically scan for job updates. Gemini 1.5 AI parses emails to move your Kanban cards instantly.
 - **ATS Resume Matcher** — Paste a job description and your resume to get an AI-generated match score and keyword analysis.
+- **Cold Emailer** — Generate highly personalized cold outreach emails referencing your specific resume and target roles.
 - **Multi-Resume Manager** — Store and manage multiple tailored resumes (Free: 2 resumes, Premium: Unlimited).
-- **Analytics** — Monthly trend chart, pipeline status funnel, 14-day daily activity, and response rates.
 - **Authentication & Security** — Secure JWT-based user authentication and Razorpay signature verification.
 
 ---
@@ -35,7 +36,7 @@ TrackrAI is built with a custom design language aimed at a younger, Gen-Z demogr
 
 | Layer | Technology |
 |---|---|
-| Frontend | React 19, Vite, Tailwind CSS v4 |
+| Frontend | Next.js App Router, React 19, Tailwind CSS v4 |
 | Animations | Framer Motion, Canvas Confetti |
 | Charts | Recharts |
 | AI Integration | Google Gemini 1.5 Flash API |
@@ -80,12 +81,12 @@ API docs at: `http://localhost:8000/docs`
 ### Frontend
 
 ```bash
-cd frontend
+cd frontend-next
 npm install
 npm run dev
 ```
 
-Frontend runs at: `http://localhost:5173`
+Frontend runs at: `http://localhost:3000`
 
 ---
 
@@ -125,9 +126,9 @@ trackrai/
 │   │       ├── gmail.py     # Gmail API syncing
 │   │       └── payments.py  # Razorpay Checkout
 │   └── requirements.txt
-├── frontend/
+├── frontend-next/
 │   ├── src/
-│   │   ├── pages/           
+│   │   ├── app/             # Next.js App Router Pages
 │   │   ├── components/      
 │   │   ├── context/         # Auth & Theme context
 │   │   └── api/             # Axios API layer
