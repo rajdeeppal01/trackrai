@@ -269,7 +269,7 @@ async def process_gmail_sync_for_user(db: Session, current_user: models.User) ->
     params = {
         "maxResults": 10, 
         "includeSpamTrash": "true",
-        "q": '{"interview" "application" "offer" "rejection" "candidate" "recruiter" "status" "hr" "assessment" "hired"} -{"bank" "statement" "invoice" "receipt" "transaction" "payment" "alert" "password" "otp"}'
+        "q": '{"interview" "application" "apply" "applying" "applied" "offer" "rejection" "candidate" "recruiter" "status" "hr" "assessment" "hired"} -{"bank" "statement" "invoice" "receipt" "transaction" "payment" "alert" "password" "otp"}'
     }
 
     messages = []
