@@ -16,7 +16,8 @@ const NO_LAYOUT_PATHS = [
   '/privacy',
   '/terms',
   '/resources/cold-email-templates',
-  '/resources/resume-guide'
+  '/resources/resume-guide',
+  '/free-resume-grader'
 ];
 
 export default function AppLayout({ children }) {
