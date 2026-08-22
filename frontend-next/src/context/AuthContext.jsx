@@ -56,13 +56,18 @@ const AuthContext = createContext(null);
  setUser(res.data);
  toast.success('Welcome back!');
  return true;
- } catch (err) {
- setIsAuthenticated(false);
- setUser(null);
- const msg = err.response?.data?.detail || 'Invalid email or password';
- toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
- throw err;
- }
+  } catch (err) {
+  setIsAuthenticated(false);
+  setUser(null);
+  let msg = 'Invalid email or password';
+  if (!err.response) {
+      msg = 'Network error: Cannot reach the server. Is the backend running?';
+  } else if (err.response.data && err.response.data.detail) {
+      msg = err.response.data.detail;
+  }
+  toast.error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+  throw err;
+  }
  };
 
  // Logout
