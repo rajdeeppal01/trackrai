@@ -1,13 +1,10 @@
+"use client";
+
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Target, FileText, CheckCircle2, AlertTriangle, ArrowRight, Sparkles, XCircle, ArrowUpRight } from 'lucide-react';
-import api from '../../api/client';
+import api from '../../api/applications';
 import Button from '../../components/ui/Button';
-
-export const metadata = {
-  title: 'Free AI Resume Grader & ATS Checker | TrackrAI',
-  description: 'Paste your resume and job description to instantly get an AI-powered ATS match score and improvement tips for free. No account required.',
-};
 
 export default function FreeResumeGrader() {
   const [resumeText, setResumeText] = useState('');
