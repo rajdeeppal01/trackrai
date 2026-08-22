@@ -4,16 +4,17 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { LogIn, UserPlus, Mail, Lock, Cpu } from 'lucide-react';
+import { LogIn, UserPlus, Mail, Lock, Cpu, Eye, EyeOff } from 'lucide-react';
 import Button from '../../components/ui/Button';
 
 export default function Login() {
  const { login, signup, loading, isAuthenticated } = useAuth();
  const [isLogin, setIsLogin] = useState(true);
  const [email, setEmail] = useState('');
- const [password, setPassword] = useState('');
- const [submitting, setSubmitting] = useState(false);
- const router = useRouter();
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const router = useRouter();
 
  useEffect(() => {
    if (isAuthenticated) {
@@ -101,14 +102,21 @@ export default function Login() {
  <div className="relative">
  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={16} />
  <input
- type="password"
+ type={showPassword ? "text" : "password"}
  required
  minLength={6}
  value={password}
  onChange={(e) => setPassword(e.target.value)}
  placeholder="••••••••"
- className="w-full pl-10 pr-4 py-2.5 glass rounded-3xl text-sm text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-all duration-200"
+ className="w-full pl-10 pr-10 py-2.5 glass rounded-3xl text-sm text-white placeholder-white/20 focus:outline-none focus:border-indigo-500 transition-all duration-200"
  />
+ <button
+ type="button"
+ onClick={() => setShowPassword(!showPassword)}
+ className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/80 transition-colors focus:outline-none"
+ >
+ {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+ </button>
  </div>
  </div>
 
