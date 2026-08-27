@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=list[schemas.ApplicationResponse])
+@router.get("", response_model=list[schemas.ApplicationResponse])
 def get_applications(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
@@ -36,7 +36,7 @@ def get_application(
 
 
 @router.post(
-    "/",
+    "",
     response_model=schemas.ApplicationResponse,
     status_code=status.HTTP_201_CREATED,
 )
