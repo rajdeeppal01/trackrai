@@ -64,13 +64,20 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> models.
         headers={"WWW-Authenticate": "Bearer"},
     )
     
-    token = request.cookies.get("access_token")
-    if not token:
-        authorization = request.headers.get("Authorization")
+    # Prioritize Authorization header to override any stale/invalid cookies
+    token = None
+    authorization = request.headers.get("Authorization")
+    if authorization:
         scheme, param = get_authorization_scheme_param(authorization)
-        if not authorization or scheme.lower() != "bearer":
-            raise credentials_exception
-        token = param
+        if scheme.lower() == "bearer":
+            token = param
+
+    # Fallback to cookie if no valid Bearer token was provided
+    if not token:
+        token = request.cookies.get("access_token")
+        
+    if not token:
+        raise credentials_exception
 
     # Standard JWT Validation
     try:
