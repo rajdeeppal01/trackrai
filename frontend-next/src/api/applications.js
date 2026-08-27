@@ -4,14 +4,14 @@ const api = axios.create({
  baseURL: '/api',
  headers: { 'Content-Type': 'application/json' },
  timeout: 60000,
- withCredentials: true,
+ withCredentials: false,
 })
 
 // Attach Bearer token to all requests to bypass mobile cookie blocking
 api.interceptors.request.use((config) => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('trackrai_token') : null;
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.set ? config.headers.set('Authorization', `Bearer ${token}`) : config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
