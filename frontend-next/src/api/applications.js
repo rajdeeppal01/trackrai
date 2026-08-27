@@ -4,7 +4,7 @@ const api = axios.create({
  baseURL: '/api',
  headers: { 'Content-Type': 'application/json' },
  timeout: 60000,
- withCredentials: false,
+ withCredentials: true,
 })
 
 // Attach Bearer token to all requests to bypass mobile cookie blocking
