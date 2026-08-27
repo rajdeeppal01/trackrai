@@ -47,8 +47,11 @@ const AuthContext = createContext(null);
  // Login
  const login = async (email, password) => {
  try {
- await api.post('/auth/login', { email, password });
- // Cookie is now set automatically via Set-Cookie header
+ const loginRes = await api.post('/auth/login', { email, password });
+ // Save token to local storage for mobile bypass
+ if (loginRes.data && loginRes.data.access_token) {
+   localStorage.setItem('trackrai_token', loginRes.data.access_token);
+ }
  
  setIsAuthenticated(true);
  // Re-fetch the user profile to populate user state
@@ -78,6 +81,7 @@ const AuthContext = createContext(null);
  console.error('Logout failed on backend:', err);
  }
  localStorage.removeItem('trackrai_activity'); // Reset local storage cache
+ localStorage.removeItem('trackrai_token'); // Remove auth token
  setIsAuthenticated(false);
  setUser(null);
  toast.success('Logged out successfully.');

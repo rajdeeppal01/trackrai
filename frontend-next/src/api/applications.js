@@ -7,6 +7,15 @@ const api = axios.create({
  withCredentials: true,
 })
 
+// Attach Bearer token to all requests to bypass mobile cookie blocking
+api.interceptors.request.use((config) => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('trackrai_token') : null;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 
 // ─── Applications ────────────────────────────────────────────────
 export const getApplications = () =>
