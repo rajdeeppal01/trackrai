@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Zap, Mail, FileText } from 'lucide-react'
+import Script from 'next/script'
 import Button from '../../components/ui/Button'
 import toast from 'react-hot-toast'
 import api from '../../api/applications'
@@ -163,19 +164,59 @@ export default function PremiumFeatures() {
  }
  }
 
-  async function handleTogglePremium() {
+  async function handlePurchasePremium() {
     try {
-      const res = await api.post('/auth/toggle-premium')
-      setIsPremium(res.data.is_premium)
-      toast.success(res.data.is_premium ? 'Successfully upgraded to Premium!' : 'Successfully cancelled Premium. Back to Free plan.')
+      const orderRes = await api.post('/payments/create-razorpay-order')
+      const order = orderRes.data
+
+      const options = {
+        key: order.key_id,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'TrackrAI Premium',
+        description: '6-Month Premium Pass',
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            const verifyRes = await api.post('/payments/verify-payment', {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            });
+            if (verifyRes.data.status === 'success') {
+              setIsPremium(true);
+              toast.success('Successfully purchased Premium!');
+            }
+          } catch (err) {
+            console.error('Payment verification failed', err);
+            toast.error('Payment verification failed. Please contact support.');
+          }
+        },
+        prefill: {
+          name: '',
+          email: '',
+          contact: ''
+        },
+        theme: {
+          color: '#f59e0b'
+        }
+      };
+      
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on('payment.failed', function (response){
+        toast.error('Payment failed: ' + response.error.description);
+      });
+      rzp1.open();
     } catch (err) {
       console.error(err)
-      toast.error('Failed to change subscription plan.')
+      toast.error('Failed to initiate payment.')
     }
   }
 
- return (
- <div className="h-full overflow-y-auto">
+  return (
+    <>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+      <div className="h-full overflow-y-auto">
  <div className="max-w-4xl mx-auto p-8 lg:p-10 pb-32 space-y-8">
  
  <header className="mb-8">
@@ -197,13 +238,9 @@ export default function PremiumFeatures() {
  : 'Access to basic tracking. Try our premium Gmail scanner with 2 free scans.'}
  </p>
  </div>
- {!isPremium ? (
- <Button variant="primary" onClick={handleTogglePremium}>
- ✨ Upgrade to Premium
- </Button>
- ) : (
- <Button variant="danger" size="sm" onClick={handleTogglePremium} className="opacity-80 hover:opacity-100">
- Cancel Subscription
+ {!isPremium && (
+ <Button variant="primary" onClick={handlePurchasePremium}>
+ ✨ Purchase 6-Month Pass (₹499)
  </Button>
  )}
  </div>
@@ -226,7 +263,7 @@ export default function PremiumFeatures() {
  </p>
  </div>
  {!isPremium && (
- <Button variant="primary" size="sm" onClick={handleTogglePremium}>
+ <Button variant="primary" size="sm" onClick={handlePurchasePremium}>
  Upgrade
  </Button>
  )}
@@ -327,5 +364,6 @@ export default function PremiumFeatures() {
  
  </div>
  </div>
+ </>
  )
 }

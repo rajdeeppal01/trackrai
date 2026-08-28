@@ -41,7 +41,7 @@ async def create_razorpay_order(current_user: User = Depends(get_current_user), 
         }
         
         order = client.order.create(data=data)
-        return {"id": order["id"], "amount": order["amount"], "currency": order["currency"]}
+        return {"id": order["id"], "amount": order["amount"], "currency": order["currency"], "key_id": key_id}
         
     except Exception as e:
         print(f"Razorpay Error: {str(e)}")
