@@ -131,7 +131,7 @@ export default function Landing() {
  <Link href="/resources/resume-guide" className="text-xs font-medium text-slate-50/50 hover:text-slate-50 transition-colors hidden sm:block">
  Guides
  </Link>
- <Link href="/login" className="px-5 py-2 rounded-full bg-slate-50 text-black hover:bg-slate-50/90 text-xs font-bold transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+ <Link href="/signin" className="px-5 py-2 rounded-full bg-slate-50 text-black hover:bg-slate-50/90 text-xs font-bold transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
  Sign In
  </Link>
  </div>
@@ -157,7 +157,7 @@ export default function Landing() {
 
  <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-4 pt-4">
  <Link
- href="/login"
+ href="/signin"
  className="w-full sm:w-auto px-8 py-4 rounded-3xl bg-slate-50 text-black hover:bg-gray-100 text-sm font-bold flex items-center justify-center gap-2 transition-transform hover:scale-105"
  >
  <span>Get Started — Free</span>
@@ -364,7 +364,7 @@ export default function Landing() {
  <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6">Ready to get organized?</h2>
  <p className="text-slate-50/50 text-base mb-10 max-w-xl mx-auto">Join the job seekers who are treating their career search like a serious sales pipeline.</p>
  <Link
- href="/login"
+ href="/signin"
  className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-slate-50 text-black hover:bg-gray-200 text-sm font-bold transition-transform hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.15)]"
  >
  <span>Create Free Account</span>

@@ -11,7 +11,7 @@ import { AmbientBackground } from '../ui/AmbientBackground';
 // Pages that should NEVER show the sidebar/navbar
 const NO_LAYOUT_PATHS = [
   '/',
-  '/login',
+  '/signin',
   '/signup',
   '/privacy',
   '/terms',

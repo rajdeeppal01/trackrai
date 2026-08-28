@@ -56,7 +56,7 @@ export default function FreeResumeGrader() {
         <Link href="/" className="text-2xl font-black tracking-tighter">
           Trackr<span className="text-indigo-500">AI</span>
         </Link>
-        <Link href="/login" className="text-sm font-semibold text-white/70 hover:text-white transition-colors">
+        <Link href="/signin" className="text-sm font-semibold text-white/70 hover:text-white transition-colors">
           Sign In
         </Link>
       </nav>

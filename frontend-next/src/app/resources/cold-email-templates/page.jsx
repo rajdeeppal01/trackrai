@@ -149,7 +149,7 @@ Warmly,
             Register for a free TrackrAI account to utilize Gemini models. Input recruiter names and bio parameters to auto-generate fully personalized cold emails!
           </p>
           <Link
-            href="/login"
+            href="/signin"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-3xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-all shadow-md shadow-indigo-950"
           >
             <span>Draft Custom Emails Free</span>

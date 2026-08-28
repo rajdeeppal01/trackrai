@@ -85,7 +85,7 @@ const AuthContext = createContext(null);
  setIsAuthenticated(false);
  setUser(null);
  toast.success('Logged out successfully.');
- router.push('/login');
+ router.push('/signin');
  };
 
  const value = {

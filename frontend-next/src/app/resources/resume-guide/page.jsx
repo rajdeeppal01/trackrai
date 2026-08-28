@@ -106,7 +106,7 @@ export default function ResumeGuide() {
             Register a free account to upload your resume text directly. Our AI Copilot checks keyword matches, parses structures, and scores alignment parameters automatically!
           </p>
           <Link
-            href="/login"
+            href="/signin"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-3xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-all shadow-md shadow-indigo-950"
           >
             <span>Scan Resume Free</span>
