@@ -244,9 +244,13 @@ export default function PremiumFeatures() {
  </Button>
  ) : (
  <Button variant="danger" size="sm" onClick={async () => {
-    await api.post('/auth/dev-revoke-premium')
-    setIsPremium(false)
-    toast.success('Premium revoked for testing!')
+   try {
+     await api.post('/auth/dev-revoke-premium')
+     setIsPremium(false)
+     toast.success('Premium revoked for testing!')
+   } catch (err) {
+     toast.error('Failed to revoke: ' + (err.response?.data?.detail || err.message))
+   }
  }}>
  Dev: Revoke Premium
  </Button>
