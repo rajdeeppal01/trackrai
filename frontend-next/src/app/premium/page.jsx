@@ -238,9 +238,17 @@ export default function PremiumFeatures() {
  : 'Access to basic tracking. Try our premium Gmail scanner with 2 free scans.'}
  </p>
  </div>
- {!isPremium && (
+ {!isPremium ? (
  <Button variant="primary" onClick={handlePurchasePremium}>
  ✨ Purchase 6-Month Pass (₹499)
+ </Button>
+ ) : (
+ <Button variant="danger" size="sm" onClick={async () => {
+    await api.post('/auth/dev-revoke-premium')
+    setIsPremium(false)
+    toast.success('Premium revoked for testing!')
+ }}>
+ Dev: Revoke Premium
  </Button>
  )}
  </div>

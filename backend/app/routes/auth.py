@@ -231,6 +231,12 @@ def update_profile(
     db.refresh(current_user)
     return current_user
 
-
-
+@router.post("/dev-revoke-premium")
+def dev_revoke_premium(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    current_user.is_premium = False
+    db.commit()
+    return {"message": "Premium status revoked for testing"}
 
