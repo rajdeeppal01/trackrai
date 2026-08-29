@@ -13,9 +13,8 @@ from app.routes.auth import get_current_user
 
 router = APIRouter(prefix="/payments", tags=["payments"])
 
-# HARDCODED TEMPORARILY TO OVERRIDE RENDER ENV VARIABLES
-RAZORPAY_KEY_ID = "rzp_test_TVSxcjJDpOmeHZ"
-RAZORPAY_KEY_SECRET = "94fbvEtDpBAQEuro3j9eCyz5"
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
 RAZORPAY_AMOUNT = 49900  # amount in paise (e.g. ₹499.00)
 
 class VerifyPaymentRequest(BaseModel):
