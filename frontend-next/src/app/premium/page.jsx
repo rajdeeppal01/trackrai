@@ -166,6 +166,12 @@ export default function PremiumFeatures() {
 
   async function handlePurchasePremium() {
     try {
+      if (!window.Razorpay) {
+        console.error('Razorpay SDK failed to load')
+        toast.error('Payment system is loading or blocked by ad-blocker. Please refresh the page or disable ad-blockers.')
+        return
+      }
+
       const orderRes = await api.post('/payments/create-razorpay-order')
       const order = orderRes.data
 
@@ -208,8 +214,9 @@ export default function PremiumFeatures() {
       });
       rzp1.open();
     } catch (err) {
-      console.error(err)
-      toast.error('Failed to initiate payment.')
+      console.error('Failed to initiate payment', err)
+      const errorMsg = err.response?.data?.detail || err.message || 'Unknown error occurred'
+      toast.error(`Failed to initiate payment: ${errorMsg}`)
     }
   }
 
