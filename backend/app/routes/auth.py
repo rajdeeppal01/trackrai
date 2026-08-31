@@ -153,6 +153,12 @@ def login(request: Request, response: Response, user_in: schemas.UserLogin, db: 
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    # Force upgrade for existing admin accounts
+    if user.email in ["rajdeeppalwork@gmail.com"] and not user.is_premium:
+        user.is_premium = True
+        user.premium_expires_at = datetime.utcnow() + timedelta(days=36500)
+        db.commit()
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": str(user.id), "version": user.session_version},
