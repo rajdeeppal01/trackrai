@@ -113,9 +113,8 @@ def signup(request: Request, user_in: schemas.UserCreate, db: Session = Depends(
 
     hashed_pw = get_password_hash(user_in.password)
     
-    # Auto-grant premium to admin accounts (TEMPORARILY DISABLED FOR TESTING)
-    # is_admin_premium = user_in.email in ["rajdeeppalwork@gmail.com"]
-    is_admin_premium = False
+    # Auto-grant premium to admin accounts
+    is_admin_premium = user_in.email in ["rajdeeppalwork@gmail.com"]
     
     new_user = models.User(
         email=user_in.email,

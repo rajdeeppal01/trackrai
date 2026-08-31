@@ -82,3 +82,51 @@ async def verify_payment(
     except Exception as e:
         print(f"Razorpay Verification Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+RAZORPAY_WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET", "")
+
+@router.post("/webhook")
+async def razorpay_webhook(request: Request, db: Session = Depends(get_db)):
+    try:
+        body = await request.body()
+        signature = request.headers.get("x-razorpay-signature")
+        
+        if not signature:
+            raise HTTPException(status_code=400, detail="Missing signature")
+            
+        client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+        
+        # Verify the webhook signature
+        try:
+            client.utility.verify_webhook_signature(body.decode("utf-8"), signature, RAZORPAY_WEBHOOK_SECRET)
+        except razorpay.errors.SignatureVerificationError:
+            print("Webhook signature verification failed.")
+            raise HTTPException(status_code=400, detail="Invalid signature")
+
+        payload = await request.json()
+        
+        event = payload.get("event")
+        if event == "order.paid":
+            # order.paid triggered when payment is successful
+            order_entity = payload.get("payload", {}).get("order", {}).get("entity", {})
+            order_id = order_entity.get("id")
+            
+            # The user_id was passed in notes during order creation
+            notes = order_entity.get("notes", {})
+            user_id_str = notes.get("user_id")
+            
+            if user_id_str:
+                user = db.query(User).filter(User.id == int(user_id_str)).first()
+                if user and not user.is_premium:
+                    user.is_premium = True
+                    user.premium_expires_at = datetime.utcnow() + timedelta(days=183) # 6 months
+                    user.razorpay_order_id = order_id
+                    db.commit()
+                    print(f"User {user.email} successfully upgraded to Premium via Webhook!")
+        
+        return {"status": "ok"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Webhook Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
