@@ -3,11 +3,11 @@ import razorpay
 import hmac
 import hashlib
 from datetime import datetime, timedelta
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, BackgroundTasks
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from app.database import get_db
+from app.database import get_db, SessionLocal
 from app.models import User
 from app.routes.auth import get_current_user
 
@@ -85,8 +85,34 @@ async def verify_payment(
 
 RAZORPAY_WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET", "")
 
+def process_webhook_event(event: str, payload: dict):
+    db = SessionLocal()
+    try:
+        if event == "order.paid":
+            # order.paid triggered when payment is successful
+            order_entity = payload.get("payload", {}).get("order", {}).get("entity", {})
+            order_id = order_entity.get("id")
+            
+            # The user_id was passed in notes during order creation
+            notes = order_entity.get("notes", {})
+            user_id_str = notes.get("user_id")
+            
+            if user_id_str:
+                user = db.query(User).filter(User.id == int(user_id_str)).first()
+                # Idempotency Check: Don't process if we already processed this specific order
+                if user and user.razorpay_order_id != order_id:
+                    user.is_premium = True
+                    user.premium_expires_at = datetime.utcnow() + timedelta(days=183) # 6 months
+                    user.razorpay_order_id = order_id
+                    db.commit()
+                    print(f"User {user.email} successfully upgraded to Premium via Webhook async!")
+    except Exception as e:
+        print(f"Background Webhook Error: {str(e)}")
+    finally:
+        db.close()
+
 @router.post("/webhook")
-async def razorpay_webhook(request: Request, db: Session = Depends(get_db)):
+async def razorpay_webhook(request: Request, background_tasks: BackgroundTasks):
     try:
         body = await request.body()
         signature = request.headers.get("x-razorpay-signature")
@@ -104,29 +130,14 @@ async def razorpay_webhook(request: Request, db: Session = Depends(get_db)):
             raise HTTPException(status_code=400, detail="Invalid signature")
 
         payload = await request.json()
-        
         event = payload.get("event")
-        if event == "order.paid":
-            # order.paid triggered when payment is successful
-            order_entity = payload.get("payload", {}).get("order", {}).get("entity", {})
-            order_id = order_entity.get("id")
-            
-            # The user_id was passed in notes during order creation
-            notes = order_entity.get("notes", {})
-            user_id_str = notes.get("user_id")
-            
-            if user_id_str:
-                user = db.query(User).filter(User.id == int(user_id_str)).first()
-                if user and not user.is_premium:
-                    user.is_premium = True
-                    user.premium_expires_at = datetime.utcnow() + timedelta(days=183) # 6 months
-                    user.razorpay_order_id = order_id
-                    db.commit()
-                    print(f"User {user.email} successfully upgraded to Premium via Webhook!")
+        
+        # Dispatch to background task to ensure fast 200 OK
+        background_tasks.add_task(process_webhook_event, event, payload)
         
         return {"status": "ok"}
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Webhook Error: {str(e)}")
+        print(f"Webhook Endpoint Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
