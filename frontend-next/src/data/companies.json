@@ -1,0 +1,44 @@
+[
+  {
+    "slug": "google",
+    "name": "Google",
+    "industry": "Technology",
+    "description": "Prepare for the Google interview process. Track your Google job applications, understand their hiring timeline, and ace your technical interviews.",
+    "logoUrl": "https://logo.clearbit.com/google.com"
+  },
+  {
+    "slug": "amazon",
+    "name": "Amazon",
+    "industry": "Technology",
+    "description": "Ace the Amazon leadership principles. Track your Amazon application from the online assessment (OA) to the final loop.",
+    "logoUrl": "https://logo.clearbit.com/amazon.com"
+  },
+  {
+    "slug": "meta",
+    "name": "Meta",
+    "industry": "Technology",
+    "description": "Track your Meta (Facebook) engineering or product applications. Get insights on the Meta interview timeline and preparation strategies.",
+    "logoUrl": "https://logo.clearbit.com/meta.com"
+  },
+  {
+    "slug": "microsoft",
+    "name": "Microsoft",
+    "industry": "Technology",
+    "description": "Organize your Microsoft job applications. Keep track of recruiter phone screens, technical interviews, and final round status.",
+    "logoUrl": "https://logo.clearbit.com/microsoft.com"
+  },
+  {
+    "slug": "apple",
+    "name": "Apple",
+    "industry": "Technology",
+    "description": "Track your Apple job hunt. From submitting your resume to the final onsite interview, stay organized and focused.",
+    "logoUrl": "https://logo.clearbit.com/apple.com"
+  },
+  {
+    "slug": "netflix",
+    "name": "Netflix",
+    "industry": "Technology",
+    "description": "Prepare for Netflix's unique culture and technical interviews. Use TrackrAI to monitor your application progress.",
+    "logoUrl": "https://logo.clearbit.com/netflix.com"
+  }
+]
