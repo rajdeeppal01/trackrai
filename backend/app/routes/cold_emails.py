@@ -6,7 +6,7 @@ from .. import models, schemas
 from app.routes.auth import get_current_user
 
 router = APIRouter(
-    prefix="/api/cold-emails",
+    prefix="/cold-emails",
     tags=["Cold Emails"],
     responses={401: {"description": "Not authenticated"}}
 )
