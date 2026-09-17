@@ -169,3 +169,49 @@ class ApplicationResponse(ApplicationBase):
 
 class TelemetryVisit(BaseModel):
     path: Optional[str] = None
+
+# ─── Cold Email Schemas ─────────────────────────────────────────────
+
+class ColdEmailBase(BaseModel):
+    company_name: str
+    status: str = "Pending"
+
+    @field_validator("status")
+    @classmethod
+    def validate_status(cls, v: str) -> str:
+        valid = {"Pending", "Answered Yes", "Answered No"}
+        if v not in valid:
+            raise ValueError(f"status must be one of {sorted(valid)}")
+        return v
+
+    @field_validator("company_name")
+    @classmethod
+    def not_empty(cls, v: str) -> str:
+        if not v or not v.strip():
+            raise ValueError("Company name cannot be empty")
+        return v.strip()
+
+class ColdEmailCreate(ColdEmailBase):
+    pass
+
+class ColdEmailUpdate(BaseModel):
+    company_name: Optional[str] = None
+    status: Optional[str] = None
+
+    @field_validator("status")
+    @classmethod
+    def validate_status(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None:
+            valid = {"Pending", "Answered Yes", "Answered No"}
+            if v not in valid:
+                raise ValueError(f"status must be one of {sorted(valid)}")
+        return v
+
+class ColdEmailResponse(ColdEmailBase):
+    id: int
+    user_id: int
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True

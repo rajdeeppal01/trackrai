@@ -18,6 +18,7 @@ from app.routes.telemetry import router as telemetry_router
 from app.routes.gmail import router as gmail_router
 from app.routes.resumes import router as resumes_router
 from app.routes.payments import router as payments_router
+from app.routes.cold_emails import router as cold_emails_router
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -149,6 +150,7 @@ app.include_router(telemetry_router)
 app.include_router(gmail_router)
 app.include_router(resumes_router, prefix="/resumes", tags=["Resumes"])
 app.include_router(payments_router)
+app.include_router(cold_emails_router)
 
 @app.get("/")
 def root():

@@ -19,6 +19,7 @@ const NAV_ITEMS = [
  { path: '/premium', label: 'Premium', icon: Zap },
  { path: 'https://trackrai.hashnode.dev', label: 'Guides', icon: Pencil, isExternal: true },
  { path: '/settings', label: 'Settings', icon: Settings },
+ { path: '/cold-outreach', label: 'Cold Outreach', icon: Mail },
 ]
 
 export default function Sidebar({ mobileOpen, onClose }) {
