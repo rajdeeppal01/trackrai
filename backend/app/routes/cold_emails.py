@@ -11,7 +11,7 @@ router = APIRouter(
     responses={401: {"description": "Not authenticated"}}
 )
 
-@router.get("/", response_model=List[schemas.ColdEmailResponse])
+@router.get("", response_model=List[schemas.ColdEmailResponse])
 def get_cold_emails(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
@@ -19,7 +19,7 @@ def get_cold_emails(
     """Get all tracked cold emails for the current user."""
     return db.query(models.ColdEmail).filter(models.ColdEmail.user_id == current_user.id).order_by(models.ColdEmail.created_at.desc()).all()
 
-@router.post("/", response_model=schemas.ColdEmailResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=schemas.ColdEmailResponse, status_code=status.HTTP_201_CREATED)
 def create_cold_email(
     cold_email: schemas.ColdEmailCreate,
     db: Session = Depends(get_db),
