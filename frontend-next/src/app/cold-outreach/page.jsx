@@ -131,7 +131,7 @@ export default function ColdOutreachTracker() {
       </div>
 
       {/* Side Panel (Details) */}
-      <div className={`absolute top-0 right-0 h-full w-80 glass border-l border-white/10 transform transition-transform duration-300 z-20 flex flex-col ${selectedCompany ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`absolute top-0 right-0 h-full w-80 bg-[#050510] shadow-2xl border-l border-white/10 transform transition-transform duration-300 z-50 flex flex-col ${selectedCompany ? 'translate-x-0' : 'translate-x-full'}`}>
         
         <div className="p-6 border-b border-white/10 flex justify-between items-center">
           <h2 className="text-lg font-semibold text-white truncate pr-4">
