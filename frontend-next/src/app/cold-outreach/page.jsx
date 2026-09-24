@@ -1,28 +1,15 @@
 "use client";
 
-import { useState, useMemo, useCallback } from 'react';
-import { Plus, Search, Trash2, X } from 'lucide-react';
+import { useState } from 'react';
+import { Mail, Plus, Search, Trash2, Check, X, Clock } from 'lucide-react';
 import { useColdEmails } from '../../hooks/useColdEmails';
 import Button from '../../components/ui/Button';
-import dynamic from 'next/dynamic';
-
-// Dynamically import ForceGraph to avoid SSR issues with canvas
-const ForceGraph = dynamic(() => import('../../components/ui/ForceGraph'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-[600px] flex items-center justify-center text-white/40">
-      Initializing neural map...
-    </div>
-  )
-});
 
 export default function ColdOutreachTracker() {
   const { coldEmails, loading, addColdEmail, editColdEmail, deleteColdEmail, submitting } = useColdEmails();
   const [newCompany, setNewCompany] = useState('');
   const [search, setSearch] = useState('');
-  
-  // State for the side panel
-  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [flippedCards, setFlippedCards] = useState(new Set()); // Track which cards are flipped
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -33,41 +20,36 @@ export default function ColdOutreachTracker() {
 
   const handleStatusChange = async (id, newStatus) => {
     await editColdEmail({ id, data: { status: newStatus } });
-    
-    // Update local selected state to reflect change immediately
-    if (selectedCompany && selectedCompany.id === id) {
-      setSelectedCompany(prev => ({ ...prev, status: newStatus }));
-    }
   };
 
-  const handleDelete = async (id) => {
-    if (confirm("Remove this company from your outreach map?")) {
+  const handleDelete = async (id, e) => {
+    e.stopPropagation(); // Prevent card from flipping when clicking delete
+    if (confirm("Remove this company from your tracker?")) {
       await deleteColdEmail(id);
-      if (selectedCompany && selectedCompany.id === id) {
-        setSelectedCompany(null);
-      }
     }
   };
 
-  // Prepare nodes and links for the graph
-  const graphData = useMemo(() => {
-    const nodes = [{ id: 'root', name: 'My Outreach' }];
-    const links = [];
-    
-    coldEmails.forEach(email => {
-      if (email.company_name.toLowerCase().includes(search.toLowerCase())) {
-         nodes.push({ id: email.id, name: email.company_name, emailData: email });
-         links.push({ source: 'root', target: email.id });
-      }
-    });
-    
-    return { nodes, links };
-  }, [coldEmails, search]);
+  const toggleFlip = (id) => {
+    const newFlipped = new Set(flippedCards);
+    if (newFlipped.has(id)) {
+      newFlipped.delete(id);
+    } else {
+      newFlipped.add(id);
+    }
+    setFlippedCards(newFlipped);
+  };
 
-  const handleNodeClick = useCallback((node) => {
-    if (node.id === 'root') return;
-    setSelectedCompany(node.emailData);
-  }, []);
+  const filteredEmails = coldEmails.filter(email => 
+    email.company_name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'Answered Yes': return <Check size={20} className="text-green-400" />;
+      case 'Answered No': return <X size={20} className="text-red-400" />;
+      default: return <Clock size={20} className="text-yellow-400" />;
+    }
+  };
 
   const getStatusStyle = (status) => {
     switch (status) {
@@ -78,112 +60,160 @@ export default function ColdOutreachTracker() {
   };
 
   return (
-    <div className="h-screen w-full font-sans relative overflow-hidden flex">
-      
-      {/* Main Canvas Area */}
-      <div className="flex-1 h-full relative">
+    <div className="min-h-screen p-4 md:p-8 font-sans">
+      <div className="max-w-6xl mx-auto space-y-8">
         
-        {/* Floating Controls Overlay */}
-        <div className="absolute top-4 left-4 right-4 z-10 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center max-w-5xl mx-auto pointer-events-none">
-          <div className="pointer-events-auto">
-            <h1 className="text-2xl font-bold text-white/90 drop-shadow-md">Outreach Graph</h1>
-            <p className="text-white/60 text-xs drop-shadow-md">Click a node to view status.</p>
+        {/* Header */}
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-500/15 flex items-center justify-center border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+              <Mail size={24} className="text-indigo-400" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-white tracking-tight">Outreach Vault</h1>
+              <p className="text-white/40 text-sm mt-1">Keep track of your applications without the stress. Click a card to reveal its status.</p>
+            </div>
           </div>
 
-          <div className="flex gap-4 items-center w-full md:w-auto pointer-events-auto">
-            <form onSubmit={handleAdd} className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div className="relative shrink-0">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" size={16} />
               <input
                 type="text"
-                placeholder="Company name..."
-                className="bg-black/60 backdrop-blur-md border border-white/10 rounded-2xl px-4 py-2 text-sm text-white outline-none focus:border-indigo-500/50 transition-colors w-40 sm:w-auto"
-                value={newCompany}
-                onChange={(e) => setNewCompany(e.target.value)}
-                disabled={submitting}
-              />
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={!newCompany.trim() || submitting}
-                className="px-4 py-2 rounded-2xl shrink-0"
-                icon={Plus}
-              >
-                Add
-              </Button>
-            </form>
-
-            <div className="relative shrink-0 hidden sm:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={14} />
-              <input
-                type="text"
-                placeholder="Search graph..."
-                className="w-48 bg-black/60 backdrop-blur-md border border-white/10 rounded-2xl pl-9 pr-4 py-2 text-sm text-white outline-none focus:border-indigo-500/50 transition-colors"
+                placeholder="Search companies..."
+                className="w-full sm:w-56 bg-black/40 border border-white/10 rounded-2xl pl-10 pr-4 py-2.5 text-sm text-white outline-none focus:border-indigo-500/50 transition-colors"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
           </div>
-        </div>
+        </header>
 
-        {/* Graph Canvas */}
-        <div className="absolute inset-0 bg-[#050510]">
-          {!loading && <ForceGraph data={graphData} onNodeClick={handleNodeClick} />}
-        </div>
-      </div>
-
-      {/* Side Panel (Details) */}
-      <div className={`absolute top-0 right-0 h-full w-80 bg-[#050510] shadow-2xl border-l border-white/10 transform transition-transform duration-300 z-50 flex flex-col ${selectedCompany ? 'translate-x-0' : 'translate-x-full'}`}>
-        
-        <div className="p-6 border-b border-white/10 flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-white truncate pr-4">
-            {selectedCompany?.company_name}
-          </h2>
-          <button 
-            onClick={() => setSelectedCompany(null)}
-            className="text-white/40 hover:text-white transition-colors p-1"
+        {/* Add Company Form */}
+        <div className="glass p-2 rounded-2xl flex flex-col sm:flex-row gap-2 max-w-2xl">
+          <input
+            type="text"
+            placeholder="Type a company name and press Enter..."
+            className="flex-1 bg-transparent px-4 py-2 text-sm text-white outline-none"
+            value={newCompany}
+            onChange={(e) => setNewCompany(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleAdd(e)}
+            disabled={submitting}
+          />
+          <Button
+            type="button"
+            onClick={handleAdd}
+            variant="primary"
+            disabled={!newCompany.trim() || submitting}
+            className="px-6 py-2 rounded-xl shrink-0"
+            icon={Plus}
           >
-            <X size={18} />
-          </button>
+            Add Company
+          </Button>
         </div>
 
-        {selectedCompany && (
-          <div className="p-6 flex-1 flex flex-col gap-6">
-            
-            <div>
-              <p className="text-xs text-white/40 mb-2 font-medium uppercase tracking-wider">Outreach Status</p>
-              <select
-                value={selectedCompany.status}
-                onChange={(e) => handleStatusChange(selectedCompany.id, e.target.value)}
-                disabled={submitting}
-                className={`w-full appearance-none cursor-pointer border rounded-xl px-4 py-3 text-sm font-semibold outline-none transition-colors ${getStatusStyle(selectedCompany.status)}`}
-              >
-                <option value="Pending" className="bg-[#0f0f13] text-white">Pending</option>
-                <option value="Answered Yes" className="bg-[#0f0f13] text-white">Answered Yes</option>
-                <option value="Answered No" className="bg-[#0f0f13] text-white">Answered No</option>
-              </select>
-            </div>
+        {/* 3D Flip Card Grid */}
+        {loading ? (
+          <div className="flex items-center justify-center h-64 text-white/40">Loading vault...</div>
+        ) : filteredEmails.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-64 text-center text-white/20 glass rounded-3xl border-dashed border-2 border-white/5">
+            <Mail size={48} className="stroke-[1] mb-4 opacity-40 text-white/30" />
+            <p className="text-base font-medium text-white/60">Your vault is empty</p>
+            <p className="text-sm mt-2 max-w-sm">Add a company above to create your first outreach card.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 perspective-1000">
+            {filteredEmails.map((email) => {
+              const isFlipped = flippedCards.has(email.id);
 
-            <div>
-              <p className="text-xs text-white/40 mb-1 font-medium uppercase tracking-wider">Date Added</p>
-              <p className="text-sm text-white/80">
-                {new Date(selectedCompany.created_at).toLocaleDateString()}
-              </p>
-            </div>
+              return (
+                <div 
+                  key={email.id} 
+                  className="relative h-48 w-full group cursor-pointer"
+                  style={{ perspective: '1000px' }}
+                  onClick={() => toggleFlip(email.id)}
+                >
+                  {/* Card Inner Container (handles the 3D flip) */}
+                  <div 
+                    className="w-full h-full transition-transform duration-500"
+                    style={{ 
+                      transformStyle: 'preserve-3d', 
+                      transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)' 
+                    }}
+                  >
+                    
+                    {/* FRONT OF CARD (Uniform, No Status) */}
+                    <div 
+                      className="absolute inset-0 w-full h-full glass rounded-3xl border border-white/10 flex flex-col items-center justify-center p-6 shadow-lg hover:border-indigo-500/30 transition-colors bg-gradient-to-br from-[#0a0a16] to-[#13132b]"
+                      style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+                    >
+                      <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <Mail size={24} className="text-white/60" />
+                      </div>
+                      <h3 className="text-lg font-bold text-white/90 text-center truncate w-full">
+                        {email.company_name}
+                      </h3>
+                      <p className="text-xs text-white/30 mt-2 font-medium tracking-wide uppercase">
+                        Click to reveal
+                      </p>
+                    </div>
 
-            <div className="mt-auto pt-6">
-              <button
-                onClick={() => handleDelete(selectedCompany.id)}
-                disabled={submitting}
-                className="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 py-3 rounded-xl transition-colors text-sm font-medium"
-              >
-                <Trash2 size={16} />
-                Delete Node
-              </button>
-            </div>
-            
+                    {/* BACK OF CARD (Reveals Status & Controls) */}
+                    <div 
+                      className="absolute inset-0 w-full h-full glass rounded-3xl border border-white/10 flex flex-col p-5 shadow-lg bg-[#0a0a16]"
+                      style={{ 
+                        transform: 'rotateY(180deg)', 
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden' 
+                      }}
+                    >
+                      <div className="flex justify-between items-start mb-4">
+                        <h3 className="text-sm font-bold text-white/90 truncate pr-2">
+                          {email.company_name}
+                        </h3>
+                        <button
+                          onClick={(e) => handleDelete(email.id, e)}
+                          disabled={submitting}
+                          className="w-8 h-8 rounded-xl bg-white/5 hover:bg-red-500/10 text-white/30 hover:text-red-400 flex items-center justify-center transition-colors shrink-0"
+                          title="Delete"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+
+                      <div className="flex-1 flex flex-col justify-center">
+                        <div className="relative" onClick={(e) => e.stopPropagation()}>
+                          <select
+                            value={email.status}
+                            onChange={(e) => handleStatusChange(email.id, e.target.value)}
+                            disabled={submitting}
+                            className={`w-full appearance-none cursor-pointer border rounded-xl pl-4 pr-10 py-3 text-sm font-semibold outline-none transition-colors ${getStatusStyle(email.status)}`}
+                          >
+                            <option value="Pending" className="bg-[#0f0f13] text-white">Pending</option>
+                            <option value="Answered Yes" className="bg-[#0f0f13] text-white">Answered Yes</option>
+                            <option value="Answered No" className="bg-[#0f0f13] text-white">Answered No</option>
+                          </select>
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                            {getStatusIcon(email.status)}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 text-center">
+                        <p className="text-[10px] text-white/30 uppercase tracking-widest">
+                          Added {new Date(email.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+
+                    </div>
+
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
-
     </div>
   );
 }
