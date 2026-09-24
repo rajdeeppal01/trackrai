@@ -23,6 +23,10 @@ export default function ForceGraph({ data, onNodeClick }) {
 
     // Reheat graph layout if nodes change
     if (fgRef.current) {
+      // Tune physics engine for Obsidian-like sprawling web
+      fgRef.current.d3Force('charge').strength(-300);
+      fgRef.current.d3Force('link').distance(80);
+      
       fgRef.current.d3ReheatSimulation();
     }
 
@@ -39,30 +43,65 @@ export default function ForceGraph({ data, onNodeClick }) {
           height={dimensions.height}
           graphData={data}
           nodeLabel="" // We use custom painting for labels
-          nodeColor={() => '#e0e7ff'}
           nodeRelSize={6}
-          linkColor={() => 'rgba(255, 255, 255, 0.15)'}
+          linkColor={() => 'rgba(255, 255, 255, 0.2)'}
           linkWidth={1.5}
+          // Obsidian-style particle flow
+          linkDirectionalParticles={2}
+          linkDirectionalParticleWidth={1.5}
+          linkDirectionalParticleSpeed={0.005}
           onNodeClick={onNodeClick}
           backgroundColor="transparent"
-          // Custom render for uniform nodes (no color coding for accept/reject)
+          // Smooth pan/zoom
+          minZoom={0.5}
+          maxZoom={4}
+          // Custom render for uniform glowing nodes & crisp labels
           nodeCanvasObject={(node, ctx, globalScale) => {
             const isRoot = node.id === 'root';
             const label = node.name;
-            const fontSize = isRoot ? 16 / globalScale : 12 / globalScale;
-            ctx.font = `${fontSize}px Sans-Serif`;
+            const fontSize = isRoot ? 14 / globalScale : 11 / globalScale;
+            const nodeRadius = isRoot ? 8 : 4.5;
             
-            // Draw circle
+            // 1. Draw Glow Effect
             ctx.beginPath();
-            ctx.arc(node.x, node.y, isRoot ? 8 : 5, 0, 2 * Math.PI, false);
-            ctx.fillStyle = isRoot ? '#818cf8' : 'rgba(255,255,255,0.9)'; // Root is indigo, others are white/glowy
+            ctx.arc(node.x, node.y, nodeRadius * 2.5, 0, 2 * Math.PI, false);
+            ctx.fillStyle = isRoot ? 'rgba(99, 102, 241, 0.15)' : 'rgba(255, 255, 255, 0.08)';
+            ctx.fill();
+
+            // 2. Draw Solid Node
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, nodeRadius, 0, 2 * Math.PI, false);
+            ctx.fillStyle = isRoot ? '#818cf8' : 'rgba(255, 255, 255, 0.95)';
             ctx.fill();
             
-            // Draw label
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = isRoot ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.7)';
-            ctx.fillText(label, node.x, node.y + (isRoot ? 14 : 10));
+            // 3. Draw Label (Only if zoomed in enough, OR if it's the root node, to prevent clutter)
+            if (globalScale >= 1.2 || isRoot) {
+              ctx.font = `${isRoot ? 'bold ' : ''}${fontSize}px Sans-Serif`;
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              
+              const textOffset = isRoot ? 16 : 10;
+              const yPos = node.y + textOffset + (fontSize/2);
+
+              // Draw solid background pill behind text for readability
+              const textWidth = ctx.measureText(label).width;
+              const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize * 0.4); // padding
+
+              ctx.fillStyle = 'rgba(5, 5, 16, 0.7)'; // Dark bg matching canvas
+              ctx.beginPath();
+              ctx.roundRect(
+                node.x - bckgDimensions[0] / 2, 
+                yPos - bckgDimensions[1] / 2, 
+                bckgDimensions[0], 
+                bckgDimensions[1], 
+                4 / globalScale
+              );
+              ctx.fill();
+
+              // Draw text
+              ctx.fillStyle = isRoot ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.7)';
+              ctx.fillText(label, node.x, yPos);
+            }
           }}
         />
       )}
