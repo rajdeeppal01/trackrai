@@ -74,13 +74,13 @@ export default function ForceGraph({ data, onNodeClick }) {
             ctx.fillStyle = isRoot ? '#818cf8' : 'rgba(255, 255, 255, 0.95)';
             ctx.fill();
             
-            // 3. Draw Label (Only if zoomed in enough, OR if it's the root node, to prevent clutter)
-            if (globalScale >= 1.2 || isRoot) {
-              ctx.font = `${isRoot ? 'bold ' : ''}${fontSize}px Sans-Serif`;
+            // 3. Draw Label (Only if zoomed in enough, and NOT the root node)
+            if (!isRoot && globalScale >= 1.2) {
+              ctx.font = `${fontSize}px Sans-Serif`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
               
-              const textOffset = isRoot ? 16 : 10;
+              const textOffset = 10;
               const yPos = node.y + textOffset + (fontSize/2);
 
               // Draw solid background pill behind text for readability
@@ -99,7 +99,7 @@ export default function ForceGraph({ data, onNodeClick }) {
               ctx.fill();
 
               // Draw text
-              ctx.fillStyle = isRoot ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.7)';
+              ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
               ctx.fillText(label, node.x, yPos);
             }
           }}
