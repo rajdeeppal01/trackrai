@@ -24,8 +24,8 @@ export default function ForceGraph({ data, onNodeClick }) {
     // Reheat graph layout if nodes change
     if (fgRef.current) {
       // Tune physics engine for Obsidian-like sprawling web
-      fgRef.current.d3Force('charge').strength(-300);
-      fgRef.current.d3Force('link').distance(80);
+      fgRef.current.d3Force('charge').strength(-600);
+      fgRef.current.d3Force('link').distance(120);
       
       fgRef.current.d3ReheatSimulation();
     }
@@ -59,13 +59,13 @@ export default function ForceGraph({ data, onNodeClick }) {
           nodeCanvasObject={(node, ctx, globalScale) => {
             const isRoot = node.id === 'root';
             const label = node.name;
-            const fontSize = isRoot ? 14 / globalScale : 11 / globalScale;
+            const fontSize = 14 / globalScale;
             const nodeRadius = isRoot ? 8 : 4.5;
             
-            // 1. Draw Glow Effect
+            // 1. Draw Glow Effect (Tighter to prevent overlapping)
             ctx.beginPath();
-            ctx.arc(node.x, node.y, nodeRadius * 2.5, 0, 2 * Math.PI, false);
-            ctx.fillStyle = isRoot ? 'rgba(99, 102, 241, 0.15)' : 'rgba(255, 255, 255, 0.08)';
+            ctx.arc(node.x, node.y, nodeRadius * 1.5, 0, 2 * Math.PI, false);
+            ctx.fillStyle = isRoot ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.15)';
             ctx.fill();
 
             // 2. Draw Solid Node
@@ -75,7 +75,7 @@ export default function ForceGraph({ data, onNodeClick }) {
             ctx.fill();
             
             // 3. Draw Label (Only if zoomed in enough, and NOT the root node)
-            if (!isRoot && globalScale >= 1.2) {
+            if (!isRoot && globalScale >= 0.8) {
               ctx.font = `${fontSize}px Sans-Serif`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
@@ -83,23 +83,14 @@ export default function ForceGraph({ data, onNodeClick }) {
               const textOffset = 10;
               const yPos = node.y + textOffset + (fontSize/2);
 
-              // Draw solid background pill behind text for readability
-              const textWidth = ctx.measureText(label).width;
-              const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize * 0.4); // padding
+              // Draw thick background stroke for text readability against any lines/glows
+              ctx.lineWidth = 4 / globalScale;
+              ctx.strokeStyle = '#050510'; // Canvas background color
+              ctx.lineJoin = 'round';
+              ctx.strokeText(label, node.x, yPos);
 
-              ctx.fillStyle = 'rgba(5, 5, 16, 0.7)'; // Dark bg matching canvas
-              ctx.beginPath();
-              ctx.roundRect(
-                node.x - bckgDimensions[0] / 2, 
-                yPos - bckgDimensions[1] / 2, 
-                bckgDimensions[0], 
-                bckgDimensions[1], 
-                4 / globalScale
-              );
-              ctx.fill();
-
-              // Draw text
-              ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+              // Draw white text
+              ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
               ctx.fillText(label, node.x, yPos);
             }
           }}
