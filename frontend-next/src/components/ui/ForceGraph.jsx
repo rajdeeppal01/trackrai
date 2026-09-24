@@ -24,8 +24,8 @@ export default function ForceGraph({ data, onNodeClick }) {
     // Reheat graph layout if nodes change
     if (fgRef.current) {
       // Tune physics engine for Obsidian-like sprawling web
-      fgRef.current.d3Force('charge').strength(-600);
-      fgRef.current.d3Force('link').distance(120);
+      fgRef.current.d3Force('charge').strength(-800);
+      fgRef.current.d3Force('link').distance(150);
       
       fgRef.current.d3ReheatSimulation();
     }
@@ -53,16 +53,16 @@ export default function ForceGraph({ data, onNodeClick }) {
           onNodeClick={onNodeClick}
           backgroundColor="transparent"
           // Smooth pan/zoom
-          minZoom={0.5}
+          minZoom={0.2}
           maxZoom={4}
           // Custom render for uniform glowing nodes & crisp labels
           nodeCanvasObject={(node, ctx, globalScale) => {
             const isRoot = node.id === 'root';
             const label = node.name;
-            const fontSize = 14 / globalScale;
-            const nodeRadius = isRoot ? 8 : 4.5;
+            const nodeRadius = isRoot ? 12 : 6; // Fixed size in coordinate space
+            const fontSize = 10; // Fixed font size in coordinate space (scales perfectly with zoom!)
             
-            // 1. Draw Glow Effect (Tighter to prevent overlapping)
+            // 1. Draw Glow Effect
             ctx.beginPath();
             ctx.arc(node.x, node.y, nodeRadius * 1.5, 0, 2 * Math.PI, false);
             ctx.fillStyle = isRoot ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.15)';
@@ -75,16 +75,17 @@ export default function ForceGraph({ data, onNodeClick }) {
             ctx.fill();
             
             // 3. Draw Label (Only if zoomed in enough, and NOT the root node)
-            if (!isRoot && globalScale >= 0.8) {
+            if (!isRoot && globalScale >= 0.5) {
               ctx.font = `${fontSize}px Sans-Serif`;
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
               
-              const textOffset = 10;
-              const yPos = node.y + textOffset + (fontSize/2);
+              // Push text cleanly below the node + glow
+              const textOffset = nodeRadius * 2.2;
+              const yPos = node.y + textOffset;
 
               // Draw thick background stroke for text readability against any lines/glows
-              ctx.lineWidth = 4 / globalScale;
+              ctx.lineWidth = 3;
               ctx.strokeStyle = '#050510'; // Canvas background color
               ctx.lineJoin = 'round';
               ctx.strokeText(label, node.x, yPos);
