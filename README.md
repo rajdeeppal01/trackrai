@@ -16,9 +16,10 @@
 - **AI Gmail Sync (Premium)** — Connect your Google account to automatically scan for job updates. Gemini 1.5 AI parses emails to move your Kanban cards instantly. Now features batched LLM analysis and robust whitelist parsing for major enterprise ATS providers (Taleo, Workday, Eightfold).
 - **Public Lead Magnet: Free Resume Grader** — A public, SEO-optimized endpoint where users can get instant AI feedback on their resume matching a job description, seamlessly funneled into signups.
 - **ATS Resume Matcher** — Paste a job description and your resume to get an AI-generated match score and keyword analysis.
-- **Cold Emailer** — Generate highly personalized cold outreach emails referencing your specific resume and target roles.
+- **Cold Outreach Vault** — Track networking and cold emails in a stress-free environment using an interactive 3D glassmorphic flip-card grid. Hides rejection statuses by default to reduce anxiety.
+- **Creator Portal** — A built-in admin telemetry dashboard visualizing total traffic, unique IPs, user signups, and app engagement over time.
 - **Multi-Resume Manager** — Store and manage multiple tailored resumes (Free: 2 resumes, Premium: Unlimited).
-- **Authentication & Security** — Secure JWT-based user authentication, password visibility toggles, and Razorpay signature verification.
+- **Authentication & Security** — Secure JWT-based user authentication, route protection layouts, and Razorpay signature verification.
 
 ---
 
