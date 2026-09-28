@@ -19,20 +19,20 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata = {
-  title: "TrackrAI (Track AI) — AI-Powered Job Tracker",
-  description: "TrackrAI — AI-powered job application tracker. Manage your job search with smart insights, pipeline tracking, and intelligent analytics.",
+  title: "TrackrAI | The Ultimate AI Job Application Tracker & Resume Grader",
+  description: "Stop getting ghosted. Manage your job applications with our stress-free 3D Kanban board and get free AI resume feedback instantly.",
   keywords: [
     "Track AI", "TrackrAI", "Trak AI", "Rai Tracker", 
     "AI job application tracker", "automated job search", 
-    "job pipeline tracker", "AI cold emails"
+    "job pipeline tracker", "AI cold emails", "free resume grader", "ATS resume checker"
   ],
   metadataBase: new URL('https://trackrai.in'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: "TrackrAI (Track AI) — AI-Powered Job Tracker & Copilot",
-    description: "Organize your job hunt automatically. The ultimate rai tracker to track AI jobs and standard roles. Features cold emailing and pipeline boards.",
+    title: "TrackrAI | The Ultimate AI Job Application Tracker & Resume Grader",
+    description: "Stop getting ghosted. Manage your job applications with our stress-free 3D Kanban board and get free AI resume feedback instantly.",
     url: "https://trackrai.in/",
     siteName: "TrackrAI",
     images: [
@@ -44,8 +44,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "TrackrAI (Track AI) — AI-Powered Job Tracker & Copilot",
-    description: "Organize your job hunt automatically. The ultimate rai tracker to track AI jobs and standard roles. Features cold emailing and pipeline boards.",
+    title: "TrackrAI | The Ultimate AI Job Application Tracker & Resume Grader",
+    description: "Stop getting ghosted. Manage your job applications with our stress-free 3D Kanban board and get free AI resume feedback instantly.",
     images: ["https://trackrai.in/og-image.png"],
   },
   verification: {
