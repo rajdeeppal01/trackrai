@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation'
 import { motion, useScroll, useTransform, useMotionValue, useSpring, useMotionTemplate } from 'framer-motion'
 import {
  Sparkles, Briefcase, BarChart2, Mail, Check,
- ArrowRight, Play, ArrowUpRight, Zap
+ ArrowRight, Play, ArrowUpRight, Zap, GripHorizontal
 } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import confetti from 'canvas-confetti'
 
 const LinePath = ({ scrollYProgress, className }) => {
  return (
@@ -77,6 +78,26 @@ export default function Landing() {
  hidden: { y: 25, opacity: 0 },
  visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100 } }
  }
+
+ const [demoState, setDemoState] = useState(0); // 0: Applied, 1: Interview, 2: Offer
+
+ useEffect(() => {
+   const interval = setInterval(() => {
+     setDemoState((prev) => {
+       const next = (prev + 1) % 4; // 0, 1, 2, 3 (3 is reset delay)
+       if (next === 2) {
+         confetti({
+           particleCount: 80,
+           spread: 60,
+           origin: { y: 0.6 },
+           colors: ['#6366f1', '#34d399', '#a855f7']
+         });
+       }
+       return next;
+     });
+   }, 2500);
+   return () => clearInterval(interval);
+ }, []);
 
  return (
  <div className="min-h-screen bg-[#020205] text-slate-50 font-sans overflow-x-hidden relative selection:bg-indigo-500/30">
@@ -173,67 +194,84 @@ export default function Landing() {
  </motion.div>
  </motion.div>
 
- {/* Interactive Floating Mockup with Parallax */}
+ {/* Auto-Playing Coded Kanban Demo */}
  <motion.div
  initial={{ opacity: 0, scale: 0.95 }}
  animate={{ opacity: 1, scale: 1 }}
  transition={{ duration: 0.8, delay: 0.2 }}
  style={{ y: mockY }}
- className="relative lg:h-[500px] flex items-center justify-center mt-12 lg:mt-0 perspective-1000"
+ className="relative lg:h-[500px] flex items-center justify-center mt-12 lg:mt-0"
  >
- <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-cyan-500/10 blur-[100px] rounded-full" />
- 
- <div className="relative w-full max-w-md p-6 rounded-2xl bg-[#0a0a0f]/60 backdrop-blur-2xl border border-slate-50/10 shadow-2xl">
- <div className="flex items-center gap-2 mb-6">
- <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
- <div className="w-3 h-3 rounded-full bg-amber-500/20 border border-amber-500/50" />
- <div className="w-3 h-3 rounded-full bg-emerald-500/20 border border-emerald-500/50" />
- </div>
- 
- <div className="space-y-4">
- {/* Mock Email Card */}
- <motion.div 
- initial={{ y: 20, opacity: 0 }}
- animate={{ y: 0, opacity: 1 }}
- transition={{ delay: 1, duration: 0.5 }}
- className="p-4 rounded-3xl bg-slate-50/5 border border-slate-50/5"
- >
- <div className="flex items-center gap-3 mb-2">
- <Mail size={16} className="text-slate-50/40" />
- <span className="text-xs font-bold text-slate-50/70">Incoming Email</span>
- </div>
- <p className="text-sm font-semibold">"Invitation to Interview: Software Engineer"</p>
- <p className="text-xs text-slate-50/40 mt-1">From: Stripe Recruiting</p>
- </motion.div>
+   <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-purple-500/10 blur-[100px] rounded-full" />
+   
+   <div className="relative w-full max-w-lg p-6 rounded-3xl bg-[#0a0a0f]/80 backdrop-blur-2xl border border-slate-50/10 shadow-2xl overflow-hidden">
+     {/* Browser/Window Header */}
+     <div className="flex items-center gap-2 mb-6 border-b border-white/5 pb-4">
+       <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
+       <div className="w-3 h-3 rounded-full bg-amber-500/20 border border-amber-500/50" />
+       <div className="w-3 h-3 rounded-full bg-emerald-500/20 border border-emerald-500/50" />
+       <div className="ml-4 text-xs font-semibold text-white/30 tracking-widest uppercase">TrackrAI Board</div>
+     </div>
+     
+     {/* Kanban Board Mockup */}
+     <div className="flex gap-4 h-[300px]">
+       
+       {/* Column 1: Applied */}
+       <div className="flex-1 bg-white/[0.02] rounded-2xl p-3 border border-white/5">
+         <div className="text-[10px] font-bold text-white/40 uppercase mb-3 px-1">Applied</div>
+         <div className="relative h-full">
+           <motion.div 
+             animate={{ 
+               x: demoState === 0 || demoState === 3 ? 0 : (demoState === 1 ? 160 : 320),
+               y: demoState === 0 || demoState === 3 ? 0 : (demoState === 1 ? 10 : 20),
+               scale: demoState === 0 || demoState === 3 ? 1 : 1.05,
+               rotate: demoState === 0 || demoState === 3 ? 0 : (demoState === 1 ? 2 : -2),
+               opacity: demoState === 3 ? 0 : 1
+             }}
+             transition={{ type: "spring", stiffness: 120, damping: 15 }}
+             className="absolute top-0 left-0 w-full z-10 p-4 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-600 shadow-[0_10px_30px_rgba(0,0,0,0.5)] cursor-grab"
+           >
+             <div className="flex justify-between items-start mb-2">
+               <span className={`text-[9px] font-bold px-2 py-0.5 rounded ${demoState >= 2 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-indigo-500/20 text-indigo-300'} uppercase tracking-wider transition-colors`}>
+                 {demoState >= 2 ? 'Offer' : 'Active'}
+               </span>
+               <GripHorizontal size={14} className="text-white/20" />
+             </div>
+             <h3 className="font-bold text-sm text-white">Stripe</h3>
+             <p className="text-[10px] text-slate-50/50 mt-1">Software Engineer</p>
+             
+             <motion.div 
+               animate={{ opacity: demoState >= 2 ? 1 : 0 }}
+               className="mt-3 flex items-center gap-1 text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded"
+             >
+               <Sparkles size={12} /> $180k/yr Confirmed!
+             </motion.div>
+           </motion.div>
+         </div>
+       </div>
 
- {/* Animated Connection */}
- <div className="flex justify-center">
- <motion.div
- animate={{ height: [0, 40], opacity: [0, 1, 0] }}
- transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
- className="w-0.5 bg-gradient-to-b from-indigo-500 to-transparent"
- />
- </div>
+       {/* Column 2: Interviewing */}
+       <div className="flex-1 bg-white/[0.02] rounded-2xl p-3 border border-white/5">
+         <div className="text-[10px] font-bold text-white/40 uppercase mb-3 px-1">Interview</div>
+         {/* Drop Zone Highlight */}
+         <motion.div 
+           animate={{ opacity: demoState === 1 ? 1 : 0 }} 
+           className="w-full h-24 rounded-xl border-2 border-dashed border-indigo-500/30 bg-indigo-500/5 transition-opacity"
+         />
+       </div>
 
- {/* Mock Kanban Card */}
- <motion.div 
- initial={{ y: 20, opacity: 0 }}
- animate={{ y: 0, opacity: 1 }}
- transition={{ delay: 2, duration: 0.5 }}
- className="p-4 rounded-3xl bg-gradient-to-br from-indigo-600/20 to-purple-600/10 border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.2)]"
- >
- <div className="flex justify-between items-start mb-4">
- <span className="text-[10px] font-bold px-2 py-1 rounded bg-indigo-500/20 text-indigo-300 uppercase tracking-wider">Interviewing</span>
- <Sparkles size={14} className="text-indigo-400" />
- </div>
- <h3 className="font-bold text-lg">Stripe</h3>
- <p className="text-xs text-slate-50/50 mt-1">Software Engineer</p>
- <div className="mt-4 text-[10px] text-slate-50/40 flex items-center gap-1 font-medium">
- <Check size={12} className="text-emerald-400" /> Automatically updated via Gmail Sync
- </div>
- </motion.div>
- </div>
- </div>
+       {/* Column 3: Offer */}
+       <div className="flex-1 bg-white/[0.02] rounded-2xl p-3 border border-emerald-500/10">
+         <div className="text-[10px] font-bold text-emerald-400/60 uppercase mb-3 px-1">Offer</div>
+         {/* Drop Zone Highlight */}
+         <motion.div 
+           animate={{ opacity: demoState === 2 ? 1 : 0 }} 
+           className="w-full h-32 rounded-xl border-2 border-dashed border-emerald-500/30 bg-emerald-500/5 transition-opacity"
+         />
+       </div>
+       
+     </div>
+   </div>
  </motion.div>
  </div>
  </section>
