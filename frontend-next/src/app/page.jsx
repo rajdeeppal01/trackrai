@@ -157,11 +157,11 @@ export default function Landing() {
 
  <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-4 pt-4">
  <Link
- href="/signin"
- className="w-full sm:w-auto px-8 py-4 rounded-3xl bg-slate-50 text-black hover:bg-gray-100 text-sm font-bold flex items-center justify-center gap-2 transition-transform hover:scale-105"
+ href="/free-resume-grader"
+ className="w-full sm:w-auto px-8 py-4 rounded-3xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-400 hover:to-purple-400 text-sm font-bold flex items-center justify-center gap-2 transition-transform hover:scale-105 shadow-[0_0_30px_rgba(99,102,241,0.5)]"
  >
- <span>Get Started — Free</span>
- <ArrowRight size={16} />
+ <Sparkles size={16} />
+ <span>Grade Your Resume for Free</span>
  </Link>
  <a
  href="#features"
@@ -364,11 +364,11 @@ export default function Landing() {
  <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6">Ready to get organized?</h2>
  <p className="text-slate-50/50 text-base mb-10 max-w-xl mx-auto">Join the job seekers who are treating their career search like a serious sales pipeline.</p>
  <Link
- href="/signin"
- className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-slate-50 text-black hover:bg-gray-200 text-sm font-bold transition-transform hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.15)]"
+ href="/free-resume-grader"
+ className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 text-white hover:from-indigo-400 hover:to-cyan-400 text-sm font-bold transition-transform hover:scale-105 shadow-[0_0_30px_rgba(99,102,241,0.5)]"
  >
- <span>Create Free Account</span>
- <ArrowUpRight size={16} />
+ <Sparkles size={16} />
+ <span>Grade Your Resume for Free</span>
  </Link>
  </section>
 

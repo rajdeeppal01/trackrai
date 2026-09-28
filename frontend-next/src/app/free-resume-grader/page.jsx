@@ -135,38 +135,47 @@ export default function FreeResumeGrader() {
                 )}
 
                 {result.improvement_tips?.length > 0 && (
-                  <div>
+                  <div className="relative">
                     <h3 className="text-lg font-bold flex items-center gap-2 text-white mb-3">
                       <Sparkles className="text-indigo-400" size={20} /> Actionable Tips
                     </h3>
-                    <ul className="space-y-3">
-                      {result.improvement_tips.map((tip, i) => (
-                        <li key={i} className="flex gap-3 text-white/70 bg-white/5 p-4 rounded-2xl text-sm leading-relaxed">
+                    
+                    <div className="relative">
+                      {/* Blurred mock content for the wall */}
+                      <ul className="space-y-3 blur-[6px] select-none opacity-60">
+                        <li className="flex gap-3 text-white/70 bg-white/5 p-4 rounded-2xl text-sm leading-relaxed">
                           <CheckCircle2 className="text-indigo-400 shrink-0 mt-0.5" size={16} />
-                          <span>{tip}</span>
+                          <span>Add more metrics and quantifiable achievements to your recent roles. (Hidden tip)</span>
                         </li>
-                      ))}
-                    </ul>
+                        <li className="flex gap-3 text-white/70 bg-white/5 p-4 rounded-2xl text-sm leading-relaxed">
+                          <CheckCircle2 className="text-indigo-400 shrink-0 mt-0.5" size={16} />
+                          <span>Rephrase your summary to align closer with the required soft skills. (Hidden tip)</span>
+                        </li>
+                        <li className="flex gap-3 text-white/70 bg-white/5 p-4 rounded-2xl text-sm leading-relaxed">
+                          <CheckCircle2 className="text-indigo-400 shrink-0 mt-0.5" size={16} />
+                          <span>Ensure your technology stack matches the strict requirements in the job description.</span>
+                        </li>
+                      </ul>
+                      
+                      {/* The Wall Overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-[#020205]/90 via-[#020205]/60 to-transparent pt-12 rounded-2xl">
+                         <div className="text-center p-6 border border-indigo-500/30 bg-indigo-900/30 backdrop-blur-md rounded-2xl shadow-2xl max-w-md mx-auto">
+                           <h4 className="font-bold text-lg text-white mb-2">Unlock Detailed Feedback</h4>
+                           <p className="text-indigo-200 text-sm mb-6">Create a free account to unlock your personalized AI improvement suggestions.</p>
+                           <Link href="/signin">
+                             <Button variant="primary" className="w-full">
+                               Create Free Account <ArrowRight className="ml-2" size={16} />
+                             </Button>
+                           </Link>
+                         </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* The Trap (Lead Magnet CTA) */}
-            <div className="mt-12 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 rounded-3xl p-8 text-center relative overflow-hidden">
-              <div className="absolute inset-0 saas-grid-bg opacity-30"></div>
-              <h3 className="text-2xl font-bold mb-3 text-white relative z-10">Stop writing resumes blindly.</h3>
-              <p className="text-indigo-200 mb-6 max-w-lg mx-auto relative z-10">
-                Sign up for TrackrAI for free to save your resume, generate AI cover letters, and track all your job applications in one beautiful dashboard.
-              </p>
-              <Link href="/signup" className="relative z-10 inline-flex">
-                <Button variant="primary" size="lg" className="px-8 shadow-xl hover:shadow-indigo-500/25">
-                  Create Free Account <ArrowRight className="ml-2" size={18} />
-                </Button>
-              </Link>
-            </div>
-            
-            <div className="mt-6 text-center">
+            <div className="mt-8 text-center">
               <button 
                 onClick={() => setResult(null)}
                 className="text-white/40 hover:text-white text-sm font-semibold transition-colors"
