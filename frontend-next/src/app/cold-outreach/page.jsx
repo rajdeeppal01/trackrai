@@ -47,6 +47,7 @@ export default function ColdOutreachTracker() {
     switch (status) {
       case 'Answered Yes': return <Check size={20} className="text-green-400" />;
       case 'Answered No': return <X size={20} className="text-red-400" />;
+      case 'Completed': return <Check size={20} className="text-emerald-400" />;
       default: return <Clock size={20} className="text-yellow-400" />;
     }
   };
