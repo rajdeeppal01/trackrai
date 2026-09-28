@@ -179,7 +179,7 @@ class ColdEmailBase(BaseModel):
     @field_validator("status")
     @classmethod
     def validate_status(cls, v: str) -> str:
-        valid = {"Pending", "Answered Yes", "Answered No"}
+        valid = {"Pending", "Answered Yes", "Answered No", "Completed"}
         if v not in valid:
             raise ValueError(f"status must be one of {sorted(valid)}")
         return v
@@ -202,7 +202,7 @@ class ColdEmailUpdate(BaseModel):
     @classmethod
     def validate_status(cls, v: Optional[str]) -> Optional[str]:
         if v is not None:
-            valid = {"Pending", "Answered Yes", "Answered No"}
+            valid = {"Pending", "Answered Yes", "Answered No", "Completed"}
             if v not in valid:
                 raise ValueError(f"status must be one of {sorted(valid)}")
         return v
