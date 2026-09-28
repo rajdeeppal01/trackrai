@@ -10,7 +10,7 @@ from app.routes.auth import get_current_user
 
 router = APIRouter()
 
-@router.get("/", response_model=List[SavedResumeResponse])
+@router.get("", response_model=List[SavedResumeResponse])
 def get_user_resumes(
     db: Session = Depends(get_db), 
     current_user: User = Depends(get_current_user)
@@ -18,7 +18,7 @@ def get_user_resumes(
     """Get all saved resumes for the authenticated user."""
     return db.query(Resume).filter(Resume.user_id == current_user.id).all()
 
-@router.post("/", response_model=SavedResumeResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=SavedResumeResponse, status_code=status.HTTP_201_CREATED)
 async def create_resume(
     name: str = Form(...),
     is_default: bool = Form(False),
