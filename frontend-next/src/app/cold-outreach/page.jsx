@@ -55,9 +55,103 @@ export default function ColdOutreachTracker() {
     switch (status) {
       case 'Answered Yes': return 'bg-green-500/10 text-green-400 border-green-500/20';
       case 'Answered No': return 'bg-red-500/10 text-red-400 border-red-500/20';
+      case 'Completed': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
       default: return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20';
     }
   };
+
+  const renderGrid = (emails) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 perspective-1000">
+      {emails.map((email) => {
+        const isFlipped = flippedCards.has(email.id);
+        return (
+          <div 
+            key={email.id} 
+            className="relative h-48 w-full group cursor-pointer"
+            style={{ perspective: '1000px' }}
+            onClick={() => toggleFlip(email.id)}
+          >
+            {/* Card Inner Container (handles the 3D flip) */}
+            <div 
+              className="w-full h-full transition-transform duration-500"
+              style={{ 
+                transformStyle: 'preserve-3d', 
+                transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)' 
+              }}
+            >
+              
+              {/* FRONT OF CARD (Uniform, No Status) */}
+              <div 
+                className="absolute inset-0 w-full h-full glass rounded-3xl border border-white/10 flex flex-col items-center justify-center p-6 shadow-lg hover:border-indigo-500/30 transition-colors bg-gradient-to-br from-[#0a0a16] to-[#13132b]"
+                style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+              >
+                <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Mail size={24} className="text-white/60" />
+                </div>
+                <h3 className="text-lg font-bold text-white/90 text-center truncate w-full">
+                  {email.company_name}
+                </h3>
+                <p className="text-xs text-white/30 mt-2 font-medium tracking-wide uppercase">
+                  Click to reveal
+                </p>
+              </div>
+
+              {/* BACK OF CARD (Reveals Status & Controls) */}
+              <div 
+                className="absolute inset-0 w-full h-full glass rounded-3xl border border-white/10 flex flex-col p-5 shadow-lg bg-[#0a0a16]"
+                style={{ 
+                  transform: 'rotateY(180deg)', 
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden' 
+                }}
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-sm font-bold text-white/90 truncate pr-2">
+                    {email.company_name}
+                  </h3>
+                  <button
+                    onClick={(e) => handleDelete(email.id, e)}
+                    disabled={submitting}
+                    className="w-8 h-8 rounded-xl bg-white/5 hover:bg-red-500/10 text-white/30 hover:text-red-400 flex items-center justify-center transition-colors shrink-0"
+                    title="Delete"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+
+                <div className="flex-1 flex flex-col justify-center">
+                  <div className="relative" onClick={(e) => e.stopPropagation()}>
+                    <select
+                      value={email.status}
+                      onChange={(e) => handleStatusChange(email.id, e.target.value)}
+                      disabled={submitting}
+                      className={`w-full appearance-none cursor-pointer border rounded-xl pl-4 pr-10 py-3 text-sm font-semibold outline-none transition-colors ${getStatusStyle(email.status)}`}
+                    >
+                      <option value="Pending" className="bg-[#0f0f13] text-white">Pending</option>
+                      <option value="Answered Yes" className="bg-[#0f0f13] text-white">Answered Yes</option>
+                      <option value="Answered No" className="bg-[#0f0f13] text-white">Answered No</option>
+                      <option value="Completed" className="bg-[#0f0f13] text-white">Completed</option>
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                      {getStatusIcon(email.status)}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 text-center">
+                  <p className="text-[10px] text-white/30 uppercase tracking-widest">
+                    Added {new Date(email.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
 
   return (
     <div className="min-h-screen p-4 md:p-8 font-sans">
@@ -112,7 +206,7 @@ export default function ColdOutreachTracker() {
           </Button>
         </div>
 
-        {/* 3D Flip Card Grid */}
+        {/* Vault Sections */}
         {loading ? (
           <div className="flex items-center justify-center h-64 text-white/40">Loading vault...</div>
         ) : filteredEmails.length === 0 ? (
@@ -122,95 +216,54 @@ export default function ColdOutreachTracker() {
             <p className="text-sm mt-2 max-w-sm">Add a company above to create your first outreach card.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 perspective-1000">
-            {filteredEmails.map((email) => {
-              const isFlipped = flippedCards.has(email.id);
+          <div className="space-y-12">
+            
+            {/* Active Vault (Pending) */}
+            {filteredEmails.filter(e => e.status === 'Pending').length > 0 && (
+              <div>
+                <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                  <Clock size={20} className="text-yellow-400" />
+                  Active Outreach
+                </h2>
+                {renderGrid(filteredEmails.filter(e => e.status === 'Pending'))}
+              </div>
+            )}
 
-              return (
-                <div 
-                  key={email.id} 
-                  className="relative h-48 w-full group cursor-pointer"
-                  style={{ perspective: '1000px' }}
-                  onClick={() => toggleFlip(email.id)}
-                >
-                  {/* Card Inner Container (handles the 3D flip) */}
-                  <div 
-                    className="w-full h-full transition-transform duration-500"
-                    style={{ 
-                      transformStyle: 'preserve-3d', 
-                      transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)' 
-                    }}
-                  >
-                    
-                    {/* FRONT OF CARD (Uniform, No Status) */}
-                    <div 
-                      className="absolute inset-0 w-full h-full glass rounded-3xl border border-white/10 flex flex-col items-center justify-center p-6 shadow-lg hover:border-indigo-500/30 transition-colors bg-gradient-to-br from-[#0a0a16] to-[#13132b]"
-                      style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
-                    >
-                      <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                        <Mail size={24} className="text-white/60" />
-                      </div>
-                      <h3 className="text-lg font-bold text-white/90 text-center truncate w-full">
-                        {email.company_name}
-                      </h3>
-                      <p className="text-xs text-white/30 mt-2 font-medium tracking-wide uppercase">
-                        Click to reveal
-                      </p>
-                    </div>
+            {/* Answered Yes */}
+            {filteredEmails.filter(e => e.status === 'Answered Yes').length > 0 && (
+              <div>
+                <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                  <Check size={20} className="text-green-400" />
+                  In Progress (Said Yes)
+                </h2>
+                {renderGrid(filteredEmails.filter(e => e.status === 'Answered Yes'))}
+              </div>
+            )}
 
-                    {/* BACK OF CARD (Reveals Status & Controls) */}
-                    <div 
-                      className="absolute inset-0 w-full h-full glass rounded-3xl border border-white/10 flex flex-col p-5 shadow-lg bg-[#0a0a16]"
-                      style={{ 
-                        transform: 'rotateY(180deg)', 
-                        backfaceVisibility: 'hidden',
-                        WebkitBackfaceVisibility: 'hidden' 
-                      }}
-                    >
-                      <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-sm font-bold text-white/90 truncate pr-2">
-                          {email.company_name}
-                        </h3>
-                        <button
-                          onClick={(e) => handleDelete(email.id, e)}
-                          disabled={submitting}
-                          className="w-8 h-8 rounded-xl bg-white/5 hover:bg-red-500/10 text-white/30 hover:text-red-400 flex items-center justify-center transition-colors shrink-0"
-                          title="Delete"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
+            {/* Completed */}
+            {filteredEmails.filter(e => e.status === 'Completed').length > 0 && (
+              <div>
+                <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                  <Check size={20} className="text-emerald-400" />
+                  Successfully Completed
+                </h2>
+                {renderGrid(filteredEmails.filter(e => e.status === 'Completed'))}
+              </div>
+            )}
 
-                      <div className="flex-1 flex flex-col justify-center">
-                        <div className="relative" onClick={(e) => e.stopPropagation()}>
-                          <select
-                            value={email.status}
-                            onChange={(e) => handleStatusChange(email.id, e.target.value)}
-                            disabled={submitting}
-                            className={`w-full appearance-none cursor-pointer border rounded-xl pl-4 pr-10 py-3 text-sm font-semibold outline-none transition-colors ${getStatusStyle(email.status)}`}
-                          >
-                            <option value="Pending" className="bg-[#0f0f13] text-white">Pending</option>
-                            <option value="Answered Yes" className="bg-[#0f0f13] text-white">Answered Yes</option>
-                            <option value="Answered No" className="bg-[#0f0f13] text-white">Answered No</option>
-                          </select>
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                            {getStatusIcon(email.status)}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-4 text-center">
-                        <p className="text-[10px] text-white/30 uppercase tracking-widest">
-                          Added {new Date(email.created_at).toLocaleDateString()}
-                        </p>
-                      </div>
-
-                    </div>
-
-                  </div>
+            {/* Answered No */}
+            {filteredEmails.filter(e => e.status === 'Answered No').length > 0 && (
+              <div>
+                <h2 className="text-xl font-bold text-white/50 mb-6 flex items-center gap-2">
+                  <X size={20} className="text-red-400/50" />
+                  Closed (Said No)
+                </h2>
+                <div className="opacity-70 hover:opacity-100 transition-opacity">
+                  {renderGrid(filteredEmails.filter(e => e.status === 'Answered No'))}
                 </div>
-              );
-            })}
+              </div>
+            )}
+
           </div>
         )}
       </div>
