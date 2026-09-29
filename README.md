@@ -14,9 +14,10 @@
 - **Gamified Kanban Pipeline** — Drag-and-drop cards between status columns with satisfying spring physics and a confetti explosion upon moving an application to "Offer".
 - **Automated Follow-up Sequences** — Proactively prompts you to follow up on applications stuck in the "Applied" stage for >7 days, instantly drafting the email via Gemini.
 - **AI Gmail Sync (Premium)** — Connect your Google account to automatically scan for job updates. Gemini 1.5 AI parses emails to move your Kanban cards instantly. Now features batched LLM analysis and robust whitelist parsing for major enterprise ATS providers (Taleo, Workday, Eightfold).
-- **Public Lead Magnet: Free Resume Grader** — A public, SEO-optimized endpoint where users can get instant AI feedback on their resume matching a job description, seamlessly funneled into signups.
+- **Interactive Landing Page Demo** — A fully coded, auto-playing 3D Kanban board demo embedded directly on the homepage, highlighting the app's gamified Drag & Drop functionality and confetti reward loops without relying on heavy video files.
+- **Public Lead Magnet: Free Resume Grader** — A public, SEO-optimized endpoint where users can get an instant AI match score for their resume. Features a "soft-signup wall" that blurs detailed actionable tips to maximize user conversion rates.
 - **ATS Resume Matcher** — Paste a job description and your resume to get an AI-generated match score and keyword analysis.
-- **Cold Outreach Vault** — Track networking and cold emails in a stress-free environment using an interactive 3D glassmorphic flip-card grid. Hides rejection statuses by default to reduce anxiety.
+- **Cold Outreach Vault** — Track networking and cold emails in a stress-free environment using an interactive 3D glassmorphic flip-card grid. Hides rejection statuses by default to reduce anxiety and tracks end-to-end flows with "Pending", "Answered Yes", "Answered No", and "Completed" statuses.
 - **Creator Portal** — A built-in admin telemetry dashboard visualizing total traffic, unique IPs, user signups, and app engagement over time.
 - **Multi-Resume Manager** — Store and manage multiple tailored resumes (Free: 2 resumes, Premium: Unlimited).
 - **Authentication & Security** — Secure JWT-based user authentication, route protection layouts, and Razorpay signature verification.
