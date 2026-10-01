@@ -173,7 +173,7 @@ export default function Landing() {
  </motion.h1>
 
  <motion.p variants={itemVariants} className="text-slate-50/50 text-base md:text-lg max-w-lg font-medium leading-relaxed">
- Ditch the spreadsheets. TrackrAI (often called Trak AI) automatically syncs with your inbox to parse recruiter emails, update your kanban board, and draft personalized cold outreach. The ultimate tool to track AI roles or any modern job.
+ Ditch the spreadsheets. TrackrAI automatically parses your recruiter emails, updates your Kanban board, and drafts personalized cold outreach—so you can focus on interviewing.
  </motion.p>
 
  <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-4 pt-4">
@@ -394,6 +394,42 @@ export default function Landing() {
  </div>
  </div>
 
+ </div>
+ </section>
+
+ {/* Objection Handling (FAQ) */}
+ <section className="max-w-4xl mx-auto px-6 py-24 relative z-10">
+ <div className="text-center mb-16">
+ <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">Frequently Asked Questions</h2>
+ <p className="text-slate-50/50 text-base">Everything you need to know about how TrackrAI works.</p>
+ </div>
+ <div className="space-y-4">
+ {[
+   {
+     q: "Is my email data safe?",
+     a: "Yes. We use secure OAuth to connect to your Gmail. We only scan for emails containing interview or application keywords, and we never sell your data or read personal emails."
+   },
+   {
+     q: "Is the Resume Grader actually free?",
+     a: "100% free. You can grade your resume against as many job descriptions as you want before you apply."
+   },
+   {
+     q: "How accurate is the ATS AI?",
+     a: "Our AI uses semantic parsing to mimic modern Applicant Tracking Systems. This means it reads your resume for context and actual experience, not just outdated keyword stuffing."
+   }
+ ].map((faq, i) => (
+   <details key={i} className="group border border-slate-50/10 bg-[#0a0a0f]/80 backdrop-blur rounded-2xl p-6 [&_summary::-webkit-details-marker]:hidden">
+     <summary className="flex justify-between items-center font-bold cursor-pointer text-slate-50">
+       {faq.q}
+       <span className="transition-transform group-open:rotate-180">
+         <svg fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+       </span>
+     </summary>
+     <p className="text-slate-50/60 mt-4 text-sm leading-relaxed">
+       {faq.a}
+     </p>
+   </details>
+ ))}
  </div>
  </section>
 
