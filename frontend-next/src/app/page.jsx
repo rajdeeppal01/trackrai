@@ -7,7 +7,7 @@ import {
  Sparkles, Briefcase, BarChart2, Mail, Check,
  ArrowRight, Play, ArrowUpRight, Zap, GripHorizontal
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useAuth } from '../context/AuthContext'
 import confetti from 'canvas-confetti'
 
@@ -80,18 +80,22 @@ export default function Landing() {
  }
 
  const [demoState, setDemoState] = useState(0); // 0: Applied, 1: Interview, 2: Offer
+ const confettiCanvasRef = useRef(null);
 
  useEffect(() => {
    const interval = setInterval(() => {
      setDemoState((prev) => {
        const next = (prev + 1) % 4; // 0, 1, 2, 3 (3 is reset delay)
        if (next === 2) {
-         confetti({
-           particleCount: 80,
-           spread: 60,
-           origin: { y: 0.6 },
-           colors: ['#6366f1', '#34d399', '#a855f7']
-         });
+         if (confettiCanvasRef.current) {
+           const myConfetti = confetti.create(confettiCanvasRef.current, { resize: true });
+           myConfetti({
+             particleCount: 80,
+             spread: 60,
+             origin: { y: 0.8, x: 0.8 },
+             colors: ['#6366f1', '#34d399', '#a855f7']
+           });
+         }
        }
        return next;
      });
@@ -205,6 +209,7 @@ export default function Landing() {
    <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-purple-500/10 blur-[100px] rounded-full" />
    
    <div className="relative w-full max-w-lg p-6 rounded-3xl bg-[#0a0a0f]/80 backdrop-blur-2xl border border-slate-50/10 shadow-2xl overflow-hidden">
+     <canvas ref={confettiCanvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-50" />
      {/* Browser/Window Header */}
      <div className="flex items-center gap-2 mb-6 border-b border-white/5 pb-4">
        <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
