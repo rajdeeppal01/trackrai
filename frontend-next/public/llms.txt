@@ -1,0 +1,28 @@
+# TrackrAI
+
+> TrackrAI (sometimes called Trak AI) is the intelligent operating system for your job search. It automatically parses recruiter emails, updates your application kanban board, and drafts personalized cold outreach.
+
+## What it does
+Ditch the spreadsheets. TrackrAI automatically parses your recruiter emails, updates your Kanban board, and drafts personalized cold outreach—so you can focus on interviewing.
+
+## Key Features
+- **Automated Inbox Parsing:** Securely connects to Gmail to scan for recruiter emails and automatically updates pipeline stages.
+- **Visual Pipeline Board:** A customizable Kanban board to track upcoming interviews, salaries, and specific job links.
+- **AI Resume Grader:** Uses semantic AI to perform contextual analysis of your experience against a job description, bypassing outdated keyword stuffing.
+- **AI Cold Emails:** Drafts highly personalized outreach messages using your resume context.
+- **Search Analytics:** Visualizes your conversion rates from application to offer in real-time.
+
+## Important Links
+- Home: https://trackrai.in/
+- Free Resume Grader: https://trackrai.in/free-resume-grader
+- Sign In / Dashboard: https://trackrai.in/signin
+
+## Frequently Asked Questions
+**Is my email data safe?**
+Yes. We use secure OAuth to connect to your Gmail. We only scan for emails containing interview or application keywords, and we never sell your data or read personal emails.
+
+**Is the Resume Grader actually free?**
+100% free. You can grade your resume against as many job descriptions as you want before you apply.
+
+**How accurate is the ATS AI?**
+Our AI uses semantic parsing to mimic modern Applicant Tracking Systems. This means it reads your resume for context and actual experience, not just outdated keyword stuffing.

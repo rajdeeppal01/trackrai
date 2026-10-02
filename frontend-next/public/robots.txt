@@ -10,4 +10,32 @@ Disallow: /copilot
 Disallow: /cold-email
 Disallow: /settings
 
+# Explicitly allow AI Search Engines and Agents to crawl public pages
+# This ensures maximum visibility in ChatGPT, Perplexity, Claude, and Google AI Overviews
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /applications
+Disallow: /pipeline
+Disallow: /analytics
+Disallow: /copilot
+Disallow: /cold-email
+Disallow: /settings
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
 Sitemap: https://trackrai.in/sitemap.xml
