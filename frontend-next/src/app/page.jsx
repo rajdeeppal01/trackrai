@@ -105,6 +105,41 @@ export default function Landing() {
 
  return (
  <div className="min-h-screen bg-[#020205] text-slate-50 font-sans overflow-x-hidden relative selection:bg-indigo-500/30">
+ <script
+   type="application/ld+json"
+   dangerouslySetInnerHTML={{
+     __html: JSON.stringify({
+       "@context": "https://schema.org",
+       "@type": "FAQPage",
+       "mainEntity": [
+         {
+           "@type": "Question",
+           "name": "Is my email data safe?",
+           "acceptedAnswer": {
+             "@type": "Answer",
+             "text": "Yes. We use secure OAuth to connect to your Gmail. We only scan for emails containing interview or application keywords, and we never sell your data or read personal emails."
+           }
+         },
+         {
+           "@type": "Question",
+           "name": "Is the Resume Grader actually free?",
+           "acceptedAnswer": {
+             "@type": "Answer",
+             "text": "100% free. You can grade your resume against as many job descriptions as you want before you apply."
+           }
+         },
+         {
+           "@type": "Question",
+           "name": "How accurate is the ATS AI?",
+           "acceptedAnswer": {
+             "@type": "Answer",
+             "text": "Our AI uses semantic parsing to mimic modern Applicant Tracking Systems. This means it reads your resume for context and actual experience, not just outdated keyword stuffing."
+           }
+         }
+       ]
+     })
+   }}
+ />
  
  {/* Global Interactive Spotlight */}
  <motion.div
