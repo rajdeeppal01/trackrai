@@ -32,5 +32,19 @@ export default function sitemap() {
     priority: 0.9,
   }));
 
-  return [...routes, ...companyRoutes, ...compareRoutes];
+  // Resource SEO routes
+  const resourceRoutes = [
+    'software-engineer',
+    'product-manager',
+    'data-scientist',
+    'marketing-manager',
+    'sales-sdr'
+  ].map((role) => ({
+    url: `${baseUrl}/resources/cold-email-templates/${role}`,
+    lastModified: new Date().toISOString(),
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }));
+
+  return [...routes, ...companyRoutes, ...compareRoutes, ...resourceRoutes];
 }
