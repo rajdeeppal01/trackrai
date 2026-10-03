@@ -24,5 +24,13 @@ export default function sitemap() {
     priority: 0.9,
   }));
 
-  return [...routes, ...companyRoutes];
+  // Compare SEO routes
+  const compareRoutes = ['teal', 'huntr', 'simplify'].map((competitor) => ({
+    url: `${baseUrl}/compare/${competitor}`,
+    lastModified: new Date().toISOString(),
+    changeFrequency: 'monthly',
+    priority: 0.9,
+  }));
+
+  return [...routes, ...companyRoutes, ...compareRoutes];
 }
