@@ -44,7 +44,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
-  const comp = competitorsData[params.competitor]
+  const resolvedParams = await params;
+  const comp = competitorsData[resolvedParams.competitor]
   if (!comp) return { title: 'Compare' }
   return {
     title: comp.title + " | TrackrAI Alternative",
@@ -52,8 +53,9 @@ export async function generateMetadata({ params }) {
   }
 }
 
-export default function ComparePage({ params }) {
-  const competitor = competitorsData[params.competitor];
+export default async function ComparePage({ params }) {
+  const resolvedParams = await params;
+  const competitor = competitorsData[resolvedParams.competitor];
   
   if (!competitor) {
     notFound();
