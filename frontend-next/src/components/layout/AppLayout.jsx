@@ -20,12 +20,20 @@ const NO_LAYOUT_PATHS = [
   '/free-resume-grader'
 ];
 
+const NO_LAYOUT_PREFIXES = [
+  '/companies',
+  '/compare',
+  '/resources',
+  '/free-resume-grader'
+];
+
 export default function AppLayout({ children }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { isAuthenticated, loading } = useAuth();
   const pathname = usePathname();
 
-  const isNoLayoutPage = NO_LAYOUT_PATHS.includes(pathname);
+  const isNoLayoutPage = NO_LAYOUT_PATHS.includes(pathname) || 
+                         NO_LAYOUT_PREFIXES.some(prefix => pathname.startsWith(prefix));
 
   // 1. If it's a public/no-layout page, don't block render with a loading spinner.
   // This ensures Googlebot gets the full HTML instantly on SSR.
