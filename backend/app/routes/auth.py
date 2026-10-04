@@ -236,12 +236,15 @@ def update_profile(
     db.refresh(current_user)
     return current_user
 
-@router.post("/dev-revoke-premium")
-def dev_revoke_premium(
+@router.post("/cancel-subscription")
+def cancel_subscription(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     current_user.is_premium = False
+    current_user.premium_expires_at = None
+    current_user.razorpay_order_id = None
+    current_user.razorpay_payment_id = None
     db.commit()
-    return {"message": "Premium status revoked for testing"}
+    return {"message": "Subscription cancelled successfully"}
 
