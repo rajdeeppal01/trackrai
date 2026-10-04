@@ -83,3 +83,20 @@ class ColdEmail(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
     user = relationship("User")
+
+
+class EmailDraft(Base):
+    __tablename__ = "email_drafts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    recipient_email = Column(String(255), nullable=False)
+    recipient_name = Column(String(100), nullable=True)
+    company = Column(String(200), nullable=True)
+    target_role = Column(String(200), nullable=True)
+    tone = Column(String(50), nullable=True)
+    subject = Column(Text, nullable=False)
+    body = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+    user = relationship("User")

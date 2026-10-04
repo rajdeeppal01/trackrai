@@ -215,3 +215,31 @@ class ColdEmailResponse(ColdEmailBase):
 
     class Config:
         from_attributes = True
+
+
+# ─── Email Draft Schemas ────────────────────────────────────────────
+
+class EmailDraftCreate(BaseModel):
+    recipient_email: str
+    recipient_name: Optional[str] = None
+    company: Optional[str] = None
+    target_role: Optional[str] = None
+    tone: Optional[str] = None
+    subject: str
+    body: str
+
+
+class EmailDraftResponse(BaseModel):
+    id: int
+    user_id: int
+    recipient_email: str
+    recipient_name: Optional[str] = None
+    company: Optional[str] = None
+    target_role: Optional[str] = None
+    tone: Optional[str] = None
+    subject: str
+    body: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

@@ -19,6 +19,7 @@ from app.routes.gmail import router as gmail_router
 from app.routes.resumes import router as resumes_router
 from app.routes.payments import router as payments_router
 from app.routes.cold_emails import router as cold_emails_router
+from app.routes.email_drafts import router as email_drafts_router
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -48,6 +49,23 @@ try:
             # Resumes table
             conn.execute(text("ALTER TABLE resumes ADD COLUMN IF NOT EXISTS file_data BYTEA"))
             conn.execute(text("ALTER TABLE resumes ADD COLUMN IF NOT EXISTS filename VARCHAR(255)"))
+
+            # Email drafts table
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS email_drafts (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                    recipient_email VARCHAR(255) NOT NULL,
+                    recipient_name VARCHAR(100),
+                    company VARCHAR(200),
+                    target_role VARCHAR(200),
+                    tone VARCHAR(50),
+                    subject TEXT NOT NULL,
+                    body TEXT NOT NULL,
+                    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+                )
+            """))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_email_drafts_user_id ON email_drafts (user_id)"))
             
             conn.commit()
         else:
@@ -151,6 +169,7 @@ app.include_router(gmail_router)
 app.include_router(resumes_router, prefix="/resumes", tags=["Resumes"])
 app.include_router(payments_router)
 app.include_router(cold_emails_router)
+app.include_router(email_drafts_router)
 
 @app.get("/")
 def root():

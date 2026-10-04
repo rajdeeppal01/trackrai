@@ -22,6 +22,7 @@ export default function ColdEmailer() {
  const [tone, setTone] = useState('Professional')
 
  const [loading, setLoading] = useState(false)
+ const [historyLoading, setHistoryLoading] = useState(true)
  const [copiedSubject, setCopiedSubject] = useState(false)
  const [copiedBody, setCopiedBody] = useState(false)
 
@@ -32,58 +33,43 @@ export default function ColdEmailer() {
  // Current active draft
  const [activeDraft, setActiveDraft] = useState(null)
  
- // History of generated drafts
+ // History of generated drafts (from DB)
  const [history, setHistory] = useState([])
 
  const [resumes, setResumes] = useState([])
  const [selectedResumeId, setSelectedResumeId] = useState('')
 
- // Load history from localStorage on mount
+ // Load history from the database on mount
  useEffect(() => {
- try {
- const saved = localStorage.getItem('trackrai_cold_emails')
- if (saved) {
- setHistory(JSON.parse(saved))
- }
- } catch (e) {
- console.error('Failed to load email drafts history', e)
- }
-
- async function fetchResumes() {
- try {
- const res = await api.get('/resumes/');
- setResumes(res.data);
- const defaultResume = res.data.find(r => r.is_default);
- if (defaultResume) {
- setSelectedResumeId(defaultResume.id.toString());
- }
- } catch (err) {
- console.error('Failed to load resumes', err);
- }
- }
- fetchResumes();
+  async function fetchData() {
+   try {
+    const [draftsRes, resumesRes] = await Promise.all([
+     api.get('/email-drafts/'),
+     api.get('/resumes/'),
+    ])
+    setHistory(draftsRes.data)
+    setResumes(resumesRes.data)
+    const defaultResume = resumesRes.data.find(r => r.is_default)
+    if (defaultResume) setSelectedResumeId(defaultResume.id.toString())
+   } catch (err) {
+    console.error('Failed to load data', err)
+   } finally {
+    setHistoryLoading(false)
+   }
+  }
+  fetchData()
  }, [])
 
  // Sync draftSubject and draftBody when activeDraft changes
  useEffect(() => {
- if (activeDraft) {
- setDraftSubject(activeDraft.subject)
- setDraftBody(activeDraft.body)
- } else {
- setDraftSubject('')
- setDraftBody('')
- }
+  if (activeDraft) {
+   setDraftSubject(activeDraft.subject)
+   setDraftBody(activeDraft.body)
+  } else {
+   setDraftSubject('')
+   setDraftBody('')
+  }
  }, [activeDraft])
-
- // Save history helper
- const saveHistory = (newHistory) => {
- setHistory(newHistory)
- try {
- localStorage.setItem('trackrai_cold_emails', JSON.stringify(newHistory))
- } catch (e) {
- console.error('Failed to save email drafts history', e)
- }
- };
 
  const handleEmailChange = (e) => {
  const val = e.target.value
@@ -107,53 +93,50 @@ export default function ColdEmailer() {
  }
 
  const handleGenerate = async (e) => {
- e.preventDefault()
- if (!email.trim()) {
- toast.error('Recipient email is required')
- return
+  e.preventDefault()
+  if (!email.trim()) {
+   toast.error('Recipient email is required')
+   return
+  }
+
+  setLoading(true)
+  try {
+   const payload = {
+    recipient_email: email,
+    recipient_name: recipientName,
+    recipient_role: recipientRole,
+    company_name: company,
+    target_role: targetRole,
+    user_bio: userBio,
+    tone: tone,
+    resume_id: selectedResumeId ? parseInt(selectedResumeId) : undefined
+   }
+   // 1. Generate the email via Gemini
+   const res = await api.post('/copilot/draft-cold-email', payload)
+
+   // 2. Persist the draft to the database
+   const saveRes = await api.post('/email-drafts/', {
+    recipient_email: email,
+    recipient_name: recipientName || null,
+    company: company || null,
+    target_role: targetRole || null,
+    tone,
+    subject: res.data.subject,
+    body: res.data.body,
+   })
+
+   const savedDraft = saveRes.data
+   setActiveDraft(savedDraft)
+   setHistory(prev => [savedDraft, ...prev.slice(0, 49)])
+   toast.success('Cold email drafted successfully!')
+  } catch (err) {
+   console.error('Failed to generate cold email', err)
+   toast.error('Failed to draft cold email')
+  } finally {
+   setLoading(false)
+  }
  }
 
- setLoading(true)
- try {
- const payload = {
- recipient_email: email,
- recipient_name: recipientName,
- recipient_role: recipientRole,
- company_name: company,
- target_role: targetRole,
- user_bio: userBio,
- tone: tone,
- resume_id: selectedResumeId ? parseInt(selectedResumeId) : undefined
- }
- const res = await api.post('/copilot/draft-cold-email', payload)
-
- const draft = {
- id: Date.now(),
- email,
- recipientName,
- recipientRole,
- company: company || 'their company',
- targetRole,
- tone,
- subject: res.data.subject,
- body: res.data.body,
- date: new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
- }
-
- setActiveDraft(draft)
- 
- // Prepend to history
- const updatedHistory = [draft, ...history.slice(0, 19)] // Limit to 20 items
- saveHistory(updatedHistory)
- 
- toast.success('Cold email drafted successfully!')
- } catch (err) {
- console.error('Failed to generate cold email', err)
- toast.error('Failed to draft cold email')
- } finally {
- setLoading(false)
- }
- }
 
  const handleCopy = (text, type) => {
  navigator.clipboard.writeText(text)
@@ -167,24 +150,25 @@ export default function ColdEmailer() {
  toast.success('Copied to clipboard!')
  }
 
- const handleDeleteHistory = (id, e) => {
- e.stopPropagation()
- const updated = history.filter(item => item.id !== id)
- saveHistory(updated)
- if (activeDraft && activeDraft.id === id) {
- setActiveDraft(null)
- }
- toast.success('Draft removed')
+ const handleDeleteHistory = async (id, e) => {
+  e.stopPropagation()
+  try {
+   await api.delete(`/email-drafts/${id}`)
+   setHistory(prev => prev.filter(item => item.id !== id))
+   if (activeDraft && activeDraft.id === id) setActiveDraft(null)
+   toast.success('Draft removed')
+  } catch (err) {
+   toast.error('Failed to remove draft')
+  }
  }
 
  const loadDraft = (draft) => {
- setActiveDraft(draft)
- setEmail(draft.email)
- setRecipientName(draft.recipientName || '')
- setRecipientRole(draft.recipientRole || 'Founder/CEO')
- setCompany(draft.company || '')
- setTargetRole(draft.targetRole || '')
- setTone(draft.tone || 'Professional')
+  setActiveDraft(draft)
+  setEmail(draft.recipient_email || '')
+  setRecipientName(draft.recipient_name || '')
+  setCompany(draft.company || '')
+  setTargetRole(draft.target_role || '')
+  setTone(draft.tone || 'Professional')
  }
 
  const downloadResume = async (id) => {
@@ -206,19 +190,19 @@ export default function ColdEmailer() {
 
  // Pre-fill mailto URL parameters safely
  const getMailtoLink = () => {
- if (!activeDraft) return '#'
- const subjectEncoded = encodeURIComponent(draftSubject)
- const bodyEncoded = encodeURIComponent(draftBody)
- return `mailto:${activeDraft.email}?subject=${subjectEncoded}&body=${bodyEncoded}`
+  if (!activeDraft) return '#'
+  const subjectEncoded = encodeURIComponent(draftSubject)
+  const bodyEncoded = encodeURIComponent(draftBody)
+  return `mailto:${activeDraft.recipient_email}?subject=${subjectEncoded}&body=${bodyEncoded}`
  }
 
  // Pre-fill Gmail web-client compose URL safely
  const getGmailLink = () => {
- if (!activeDraft) return '#'
- const to = encodeURIComponent(activeDraft.email)
- const subject = encodeURIComponent(draftSubject)
- const body = encodeURIComponent(draftBody)
- return `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${body}`
+  if (!activeDraft) return '#'
+  const to = encodeURIComponent(activeDraft.recipient_email)
+  const subject = encodeURIComponent(draftSubject)
+  const body = encodeURIComponent(draftBody)
+  return `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${body}`
  }
 
  return (
@@ -501,9 +485,9 @@ export default function ColdEmailer() {
  </div>
  <div>
  <p className="text-xs font-semibold text-white truncate max-w-[140px]">
- {item.recipientName || item.email}
+ {item.recipient_name || item.recipient_email}
  </p>
- <p className="text-[10px] text-white/35 font-medium">{item.company}</p>
+ <p className="text-[10px] text-white/35 font-medium">{item.company || '-'}</p>
  </div>
  </div>
  <button
@@ -520,7 +504,7 @@ export default function ColdEmailer() {
  </div>
 
  <div className="flex items-center justify-between text-[9px] text-white/30 pt-2 border-t ">
- <span>{item.date}</span>
+ <span>{item.created_at ? new Date(item.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ''}</span>
  <div className="flex items-center gap-0.5 text-indigo-400 font-medium">
  <span>View</span>
  <ChevronRight size={10} />
