@@ -250,17 +250,9 @@ export default function PremiumFeatures() {
  ✨ Purchase 6-Month Pass (₹499)
  </Button>
  ) : (
- <Button variant="danger" size="sm" onClick={async () => {
-   try {
-     await api.post('/auth/dev-revoke-premium')
-     setIsPremium(false)
-     toast.success('Premium revoked for testing!')
-   } catch (err) {
-     toast.error('Failed to revoke: ' + (err.response?.data?.detail || err.message))
-   }
- }}>
- Dev: Revoke Premium
- </Button>
+ <span className="px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold whitespace-nowrap">
+   ✨ Premium Active
+ </span>
  )}
  </div>
  ) : (
