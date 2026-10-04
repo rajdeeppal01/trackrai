@@ -250,9 +250,24 @@ export default function PremiumFeatures() {
  ✨ Purchase 6-Month Pass (₹499)
  </Button>
  ) : (
- <span className="px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold whitespace-nowrap">
-   ✨ Premium Active
- </span>
+ <div className="flex items-center gap-3">
+  <span className="px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold whitespace-nowrap">
+    ✨ Premium Active
+  </span>
+  <Button variant="danger" size="sm" className="opacity-70 hover:opacity-100" onClick={async () => {
+    if (confirm("Are you sure you want to cancel your premium subscription? You will lose access immediately.")) {
+      try {
+        await api.post('/auth/cancel-subscription')
+        setIsPremium(false)
+        toast.success('Subscription cancelled successfully.')
+      } catch (err) {
+        toast.error('Failed to cancel subscription.')
+      }
+    }
+  }}>
+    Cancel
+  </Button>
+ </div>
  )}
  </div>
  ) : (
