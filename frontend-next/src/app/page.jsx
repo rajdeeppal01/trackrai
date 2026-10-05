@@ -52,12 +52,7 @@ export default function Landing() {
  const { isAuthenticated, loading } = useAuth()
  const router = useRouter()
 
- // Redirect if logged in
- useEffect(() => {
-   if (isAuthenticated) {
-     router.push('/dashboard')
-   }
- }, [isAuthenticated, router])
+ // Removed auto-redirect so users can view the landing page even when logged in.
 
  useEffect(() => {
  const handleMouseMove = (e) => {
@@ -191,9 +186,15 @@ export default function Landing() {
  <Link href="/resources/resume-guide" className="text-xs font-medium text-slate-50/50 hover:text-slate-50 transition-colors hidden sm:block">
  Guides
  </Link>
- <Link href="/signin" className="px-5 py-2 rounded-full bg-slate-50 text-black hover:bg-slate-50/90 text-xs font-bold transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
- Sign In
- </Link>
+ {isAuthenticated ? (
+  <Link href="/dashboard" className="px-5 py-2 rounded-full bg-indigo-500 text-white hover:bg-indigo-400 text-xs font-bold transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)]">
+  Dashboard
+  </Link>
+ ) : (
+  <Link href="/signin" className="px-5 py-2 rounded-full bg-slate-50 text-black hover:bg-slate-50/90 text-xs font-bold transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+  Sign In
+  </Link>
+ )}
  </div>
  </nav>
 
