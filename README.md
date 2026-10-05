@@ -89,7 +89,7 @@ npm install
 npm run dev
 ```
 
-Frontend runs at: `http://localhost:3000`
+Frontend runs at: `https://trackrai.in/`
 
 ---
 
