@@ -203,11 +203,6 @@ export default function Landing() {
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
  
  <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8">
- <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-50/5 border border-slate-50/10 text-slate-50/70 text-xs font-semibold backdrop-blur-md">
- <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
- Next-Gen Job Tracking
- </motion.div>
-
  <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.05] text-slate-50">
  The <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-indigo-400 animate-[shimmer_4s_linear_infinite] bg-[length:200%_auto]">intelligent</span> way to land your next role.
  </motion.h1>
