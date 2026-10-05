@@ -11,7 +11,7 @@
 ## Features
 
 - **Dashboard** — Live stats (total, active, offers, rejections), GitHub-style activity heatmap, AI insights, upcoming pipeline items
-- **Gamified Kanban Pipeline** — Drag-and-drop cards between status columns with satisfying spring physics and a confetti explosion upon moving an application to "Offer".
+- **Gamified Kanban Pipeline** — Drag and drop cards between status columns with satisfying spring physics and a confetti explosion upon moving an application to "Offer".
 - **Automated Follow-up Sequences** — Proactively prompts you to follow up on applications stuck in the "Applied" stage for >7 days, instantly drafting the email via Gemini.
 - **AI Gmail Sync (Premium)** — Connect your Google account to automatically scan for job updates. Gemini 1.5 AI parses emails to move your Kanban cards instantly. Now features batched LLM analysis and robust whitelist parsing for major enterprise ATS providers (Taleo, Workday, Eightfold).
 - **Interactive Landing Page Demo** — A fully coded, auto-playing 3D Kanban board demo embedded directly on the homepage, highlighting the app's gamified Drag & Drop functionality and confetti reward loops without relying on heavy video files.
@@ -40,7 +40,7 @@ TrackrAI is built with a custom design language aimed at a younger, Gen-Z demogr
 | Layer | Technology |
 |---|---|
 | Frontend | Next.js App Router, React 19, Tailwind CSS v4 |
-| Animations | Framer Motion, Canvas Confetti |
+| Animations | Framer Motion |
 | Charts | Recharts |
 | AI Integration | Google Gemini 1.5 Flash API |
 | Backend | FastAPI, SQLAlchemy |
@@ -77,9 +77,6 @@ echo "RAZORPAY_KEY_SECRET=secret_..." >> .env
 
 uvicorn app.main:app --reload --port 8000
 ```
-
-Backend runs at: `http://localhost:8000`  
-API docs at: `http://localhost:8000/docs`
 
 ### Frontend
 
