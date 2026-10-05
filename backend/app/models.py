@@ -21,6 +21,7 @@ class User(Base):
     last_gmail_sync = Column(DateTime(timezone=True), nullable=True)
     is_premium = Column(Boolean, default=False, nullable=False, index=True)
     gmail_scans_used = Column(Integer, default=0, nullable=False)
+    ai_generations_used = Column(Integer, default=0, nullable=False)
     session_version = Column(Integer, default=1, nullable=False)
     razorpay_order_id = Column(String(200), nullable=True)
     razorpay_payment_id = Column(String(200), nullable=True)

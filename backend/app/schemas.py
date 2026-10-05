@@ -107,6 +107,7 @@ class UserProfileResponse(BaseModel):
     last_gmail_sync: Optional[datetime] = None
     is_premium: bool = False
     gmail_scans_used: int = 0
+    ai_generations_used: int = 0
 
     class Config:
         from_attributes = True

@@ -13,6 +13,24 @@ from app import models, schemas
 from app.database import get_db
 from app.routes.auth import get_current_user
 
+# ─── Free Tier Limits ───
+FREE_AI_GENERATIONS_LIMIT = 15
+
+def check_and_increment_ai_quota(current_user: models.User, db: Session):
+    """Enforces AI limits for free users and increments their counter."""
+    # The developer account is hardcoded out of limits (is_premium is forced true for admin elsewhere, but we can be extra safe)
+    if current_user.email == "rajdeeppalwork@gmail.com":
+        return
+        
+    if not current_user.is_premium:
+        if current_user.ai_generations_used >= FREE_AI_GENERATIONS_LIMIT:
+            raise HTTPException(
+                status_code=403, 
+                detail="You have reached your free tier limit for AI generations. Please upgrade to Premium for unlimited access."
+            )
+        current_user.ai_generations_used += 1
+        db.commit()
+
 router = APIRouter(
     prefix="/copilot",
     tags=["Copilot"],
@@ -388,6 +406,8 @@ async def copilot_chat(
         return {
             "reply": "I am currently running in Offline Heuristics Mode because the developer's Gemini API Key is not set in the server environment. Please set the GEMINI_API_KEY in the backend `.env` file."
         }
+        
+    check_and_increment_ai_quota(current_user, db)
 
     # Fetch user applications for context
     applications = db.query(models.Application).filter(models.Application.user_id == current_user.id).all()
@@ -531,6 +551,8 @@ async def draft_cold_email(
             tone=req.tone,
             sender_name=sender_name
         )
+        
+    check_and_increment_ai_quota(current_user, db)
 
     company = sanitize_prompt_input(req.company_name or extract_company_from_email(req.recipient_email) or "your company")
     recipient = sanitize_prompt_input(req.recipient_name or "there")
@@ -623,6 +645,8 @@ async def generate_intel(
 ):
     if not GEMINI_API_KEY:
         raise HTTPException(status_code=503, detail="Gemini API Key not set.")
+        
+    check_and_increment_ai_quota(current_user, db)
 
     safe_role = sanitize_prompt_input(req.role)
     safe_company = sanitize_prompt_input(req.company)
@@ -741,6 +765,8 @@ async def ats_match(
 ):
     if not GEMINI_API_KEY:
         raise HTTPException(status_code=503, detail="Gemini API Key not set.")
+        
+    check_and_increment_ai_quota(current_user, db)
         
     resume_content = req.resume_text
     if req.resume_id:
@@ -879,6 +905,8 @@ async def draft_follow_up(
 
     if not GEMINI_API_KEY:
         return fallback_draft
+
+    check_and_increment_ai_quota(current_user, db)
 
     user_context_parts = []
     if current_user.current_position:
