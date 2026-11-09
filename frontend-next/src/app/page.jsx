@@ -204,14 +204,15 @@ export default function Landing() {
  
  <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8">
  <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.05] text-slate-50">
- The <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-indigo-400 animate-[shimmer_4s_linear_infinite] bg-[length:200%_auto]">intelligent</span> way to land your next role.
+ The <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-cyan-400 to-indigo-400 animate-[shimmer_4s_linear_infinite] bg-[length:200%_auto]">intelligent</span> way to track jobs & ace interviews.
  </motion.h1>
 
  <motion.p variants={itemVariants} className="text-slate-50/50 text-base md:text-lg max-w-lg font-medium leading-relaxed">
- Ditch the spreadsheets. TrackrAI automatically parses your recruiter emails, updates your Kanban board, and drafts personalized cold outreach—so you can focus on interviewing.
+ Stop updating messy spreadsheets. TrackrAI automatically parses your recruiter emails, tracks interview stages on a Kanban board, and drafts personalized cold outreach—so you can focus on landing offers.
  </motion.p>
 
- <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-4 pt-4">
+ <motion.div variants={itemVariants} className="space-y-4 pt-4">
+ <div className="flex flex-col sm:flex-row items-center gap-4">
  <Link
  href="/free-resume-grader"
  className="w-full sm:w-auto px-8 py-4 rounded-3xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-400 hover:to-purple-400 text-sm font-bold flex items-center justify-center gap-2 transition-transform hover:scale-105 shadow-[0_0_30px_rgba(99,102,241,0.5)]"
@@ -226,6 +227,10 @@ export default function Landing() {
  <Play size={14} className="fill-current" />
  <span>See how it works</span>
  </a>
+ </div>
+ <p className="text-xs text-slate-400 font-medium tracking-wide">
+ Free forever • No credit card required • Syncs with Gmail in 1 click
+ </p>
  </motion.div>
  </motion.div>
 

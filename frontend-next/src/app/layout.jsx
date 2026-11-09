@@ -19,20 +19,20 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata = {
-  title: "TrackrAI | The Ultimate AI Job Application Tracker & Resume Grader",
-  description: "Stop getting ghosted. Manage your job applications with our stress-free 3D Kanban board and get free AI resume feedback instantly.",
+  title: "TrackrAI: AI Job Application & Interview Tracker | Ditch Spreadsheets",
+  description: "Track jobs, parse recruiter emails automatically, and organize interviews on a clean Kanban board. AI-powered cold email drafting & interview tracking for free.",
   keywords: [
     "Track AI", "TrackrAI", "Trak AI", "Rai Tracker", 
-    "AI job application tracker", "automated job search", 
-    "job pipeline tracker", "AI cold emails", "free resume grader", "ATS resume checker"
+    "track ai interview", "AI job application tracker", "automated job search", 
+    "job pipeline tracker", "interview tracker", "AI cold emails", "free resume grader", "ATS resume checker"
   ],
   metadataBase: new URL('https://trackrai.in'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: "TrackrAI | The Ultimate AI Job Application Tracker & Resume Grader",
-    description: "Stop getting ghosted. Manage your job applications with our stress-free 3D Kanban board and get free AI resume feedback instantly.",
+    title: "TrackrAI: AI Job Application & Interview Tracker | Ditch Spreadsheets",
+    description: "Track jobs, parse recruiter emails automatically, and organize interviews on a clean Kanban board. AI-powered cold email drafting & interview tracking for free.",
     url: "https://trackrai.in/",
     siteName: "TrackrAI",
     images: [
@@ -44,8 +44,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "TrackrAI | The Ultimate AI Job Application Tracker & Resume Grader",
-    description: "Stop getting ghosted. Manage your job applications with our stress-free 3D Kanban board and get free AI resume feedback instantly.",
+    title: "TrackrAI: AI Job Application & Interview Tracker | Ditch Spreadsheets",
+    description: "Track jobs, parse recruiter emails automatically, and organize interviews on a clean Kanban board. AI-powered cold email drafting & interview tracking for free.",
     images: ["https://trackrai.in/og-image.png"],
   },
   verification: {
